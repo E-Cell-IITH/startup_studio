@@ -1,7 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"net/http"
 
-func main(){
-	fmt.Println("Hello World")
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+
+	router := gin.Default()
+
+	router.GET("/test", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "hello",
+		})
+	})
+
+	router.Run(":8000")
+
 }
