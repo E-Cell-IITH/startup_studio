@@ -1,21 +1,29 @@
 package main
 
 import (
-	"net/http"
+	"os"
 
-	"github.com/gin-gonic/gin"
+	"github.com/E-Cell-IITH/startup_studio/internal/router"
 )
+
+
+// init function 
 
 func main() {
 
-	router := gin.Default()
 
-	router.GET("/test", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "hello",
-		})
-	})
 
-	router.Run(":8000")
+	// router setup
+	r := router.SetUpRouter()
+
+	PORT := os.Getenv("PORT")
+
+	if PORT == "" {
+		PORT = "8000"
+	}
+
+
+
+	r.Run(":" + PORT)
 
 }
