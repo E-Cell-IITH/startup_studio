@@ -1,13 +1,15 @@
 import './App.css'
+import { Routes,Route } from 'react-router-dom'
+import LoginScreen from './routes/Login/LoginScreen'
+
 
 function App() {
 
   return (
     <>
-      <div className='bg-black text-white min-h-screen'>
-
-        Hello
-      </div>
+        <Routes>
+            <Route path='/login' Component={LoginScreen}/>
+        </Routes>
     </>
   )
 }
