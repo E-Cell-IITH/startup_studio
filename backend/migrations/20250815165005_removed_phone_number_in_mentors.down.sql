@@ -1,0 +1,2 @@
+ALTER TABLE 
+ADD COLUMN phone_number TEXT,
