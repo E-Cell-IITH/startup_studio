@@ -24,7 +24,7 @@ func SetUpRoutes(router *gin.Engine){
 
 	auth := router.Group("/api/auth")
 	auth.POST("/login",controllers.Login)
-	auth.GET("/logout",controllers.LogOut)
+	auth.GET("/logout",controllers.Logout)
 
 
 }
