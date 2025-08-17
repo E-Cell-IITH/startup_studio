@@ -1,24 +1,20 @@
 import { createContext, useContext, useState } from "react";
 
-const UserContext = createContext()
+const UserContext = createContext();
 
-export const useUser = () => {
-    return useContext(UserContext);
-};
-
-// const [user, setUser] = useState({})
+export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
-    async function login(idToken) {
+    const [user, setUser] = useState(null);
+
+    async function login(idToken, onSuccess) {
         try {
             const response = await fetch("http://localhost:8000/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    idToken,
-                }),
+                body: JSON.stringify({ idToken }),
             });
 
             if (!response.ok) {
@@ -26,7 +22,8 @@ export const UserProvider = ({ children }) => {
             }
 
             const data = await response.json();
-            console.log("Login successful:", data);
+            setUser(data); // Store user in context
+            if (onSuccess) onSuccess(); // Call navigation callback
             return data;
         } catch (err) {
             console.error("Login error:", err);
@@ -34,12 +31,9 @@ export const UserProvider = ({ children }) => {
         }
     }
 
-
-
     return (
-        <UserContext.Provider value={{ login }}>
+        <UserContext.Provider value={{ user, login }}>
             {children}
         </UserContext.Provider>
-    )
-
-}
+    );
+};

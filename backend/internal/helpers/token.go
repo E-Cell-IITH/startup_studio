@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -9,9 +10,13 @@ import (
 )
 
 func GenerateToken(email string) (string, error) {
-	token_lifespan, err := strconv.Atoi(os.Getenv("TOKEN_HOUR_LIFESPAN"))
+	tokenLifespanStr := os.Getenv("TOKEN_HOUR_LIFESPAN")
+	if tokenLifespanStr == "" {
+		return "", fmt.Errorf("TOKEN_HOUR_LIFESPAN environment variable not set")
+	}
+	token_lifespan, err := strconv.Atoi(tokenLifespanStr)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("invalid TOKEN_HOUR_LIFESPAN value: %v", err)
 	}
 	claims := jwt.MapClaims{}
 

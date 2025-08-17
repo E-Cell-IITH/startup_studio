@@ -8,10 +8,9 @@ import (
 )
 
 // init function
-func init(){
+func init() {
 	config.Init()
 }
-
 
 func main() {
 
@@ -27,7 +26,5 @@ func main() {
 	}
 
 	r.Run(":" + PORT)
-
-
 
 }

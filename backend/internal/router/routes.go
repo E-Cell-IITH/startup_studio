@@ -7,24 +7,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func testRoute(c *gin.Context) {
 
-
-func testRoute(c* gin.Context){
-
-	c.JSON(http.StatusOK,gin.H{
-		"message" : "test",
+	c.JSON(http.StatusOK, gin.H{
+		"message": "test",
 	})
 
 }
 
+func SetUpRoutes(router *gin.Engine) {
 
-func SetUpRoutes(router *gin.Engine){
-
-	router.GET("/test",testRoute)
+	router.GET("/test", testRoute)
 
 	auth := router.Group("/api/auth")
-	auth.POST("/login",controllers.Login)
-	auth.GET("/logout",controllers.Logout)
-
+	auth.POST("/login", controllers.Login)
+	auth.GET("/logout", controllers.Logout)
 
 }

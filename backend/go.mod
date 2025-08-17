@@ -4,7 +4,6 @@ go 1.24.6
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/gin-contrib/cors v1.7.6
 	github.com/google/uuid v1.6.0
 )
 
@@ -59,3 +58,5 @@ require (
 	google.golang.org/protobuf v1.36.7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/E-Cell-IITH/startup_studio => ./

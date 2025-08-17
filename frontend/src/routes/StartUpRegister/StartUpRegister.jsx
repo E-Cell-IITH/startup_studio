@@ -52,10 +52,11 @@ const StartupRegistration = () => {
       if (res.ok) {
         navigate('/mentors');
       } else {
-        alert('Registration failed');
+        const errorText = await res.text();
+        alert('Registration failed: ' + errorText);
       }
     } catch (err) {
-      alert('Error submitting registration');
+      alert('Error submitting registration: ' + err.message);
     }
   };
 
