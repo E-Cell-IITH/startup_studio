@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useUser } from '../../Context/userContext';
+import { useNavigate } from 'react-router-dom';
 
 const StartupRegistration = () => {
+  const navigate = useNavigate();
   const { user } = useUser();
   const [formData, setFormData] = useState({
     startup_name: '',
@@ -26,11 +28,35 @@ const StartupRegistration = () => {
     }));
   };
 
+  const buildFormData = (formDataObj) => {
+    const data = new FormData();
+    for (const key in formDataObj) {
+      const value = formDataObj[key];
+      if (Array.isArray(value)) {
+        value.forEach(v => data.append(key, v));
+      } else if (value !== null && value !== undefined) {
+        data.append(key, value);
+      }
+    }
+    return data;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Startup registration data:', formData);
-    // The created_at timestamp will be handled by the backend with CURRENT_TIMESTAMP
+    const data = buildFormData(formData);
+    try {
+      const res = await fetch('/api/startup/register', {
+        method: 'POST',
+        body: data,
+      });
+      if (res.ok) {
+        navigate('/mentors');
+      } else {
+        alert('Registration failed');
+      }
+    } catch (err) {
+      alert('Error submitting registration');
+    }
   };
 
   return (

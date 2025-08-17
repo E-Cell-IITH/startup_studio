@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useUser } from '../../Context/userContext';
+import { useNavigate } from 'react-router-dom';
 
 const MentorRegistration = () => {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    startup_name: '',
+    mentor_name: '',
     industry: '',
     profile_photo_ref: null,
     phone_number: '',
@@ -21,10 +23,11 @@ const MentorRegistration = () => {
   };
 
   const handleArrayChange = (index, value, field) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: prev[field].map((item, i) => i === index ? value : item)
-    }));
+    setFormData(prev => {
+      const arr = [...prev[field]];
+      arr[index] = value;
+      return { ...prev, [field]: arr };
+    });
   };
 
   const addArrayField = (field) => {
@@ -35,12 +38,11 @@ const MentorRegistration = () => {
   };
 
   const removeArrayField = (index, field) => {
-    if (formData[field].length > 1) {
-      setFormData(prev => ({
-        ...prev,
-        [field]: prev[field].filter((_, i) => i !== index)
-      }));
-    }
+    setFormData(prev => {
+      const arr = [...prev[field]];
+      arr.splice(index, 1);
+      return { ...prev, [field]: arr };
+    });
   };
 
   const handleFileUpload = (e) => {
@@ -51,10 +53,35 @@ const MentorRegistration = () => {
     }));
   };
 
+  const buildFormData = (formDataObj) => {
+    const data = new FormData();
+    for (const key in formDataObj) {
+      const value = formDataObj[key];
+      if (Array.isArray(value)) {
+        value.forEach(v => data.append(key, v));
+      } else if (value !== null && value !== undefined) {
+        data.append(key, value);
+      }
+    }
+    return data;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Mentor registration data:', formData);
+    const data = buildFormData(formData);
+    try {
+      const res = await fetch('/api/mentor/register', {
+        method: 'POST',
+        body: data,
+      });
+      if (res.ok) {
+        navigate('/startups');
+      } else {
+        alert('Registration failed');
+      }
+    } catch (err) {
+      alert('Error submitting registration');
+    }
   };
 
   return (
@@ -95,8 +122,8 @@ const MentorRegistration = () => {
                 </label>
                 <input
                   type="text"
-                  name="startup_name"
-                  value={formData.startup_name}
+                  name="mentor_name"
+                  value={formData.mentor_name}
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
@@ -251,8 +278,8 @@ const MentorRegistration = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                 <input
                   type="text"
-                  name="startup_name"
-                  value={formData.startup_name}
+                  name="mentor_name"
+                  value={formData.mentor_name}
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
