@@ -1,14 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const FilterRoleScreen = () => {
+
+  const navigate = useNavigate()
+
   const handleStartupClick = () => {
-    console.log('Selected: Startup');
-    // Add your navigation/logic here
+    navigate("/startup-register")
   };
 
   const handleMentorClick = () => {
-    console.log('Selected: Mentor');
-    // Add your navigation/logic here
+    navigate("/mentor-register")
   };
 
   return (

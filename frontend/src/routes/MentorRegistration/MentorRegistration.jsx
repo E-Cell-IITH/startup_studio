@@ -4,7 +4,7 @@ import { useUser } from '../../Context/userContext';
 const MentorRegistration = () => {
   const { user } = useUser();
   const [formData, setFormData] = useState({
-    startup_name: '',
+    mentor_name: '',
     industry: '',
     profile_photo_ref: null,
     phone_number: '',
@@ -62,7 +62,7 @@ const MentorRegistration = () => {
       {/* Large/Medium devices */}
       <div className="hidden md:flex w-full">
         {/* Left Section */}
-        <div className="max-h-screen w-1/2 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-8 relative">
+        <div className="w-1/2 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-8 relative">
           <div className="text-center max-w-md">
             <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
               Become a
@@ -95,8 +95,8 @@ const MentorRegistration = () => {
                 </label>
                 <input
                   type="text"
-                  name="startup_name"
-                  value={formData.startup_name}
+                  name="mentor_name"
+                  value={formData.mentor_name}
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
@@ -118,7 +118,7 @@ const MentorRegistration = () => {
                 />
               </div>
 
-              
+
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -142,7 +142,7 @@ const MentorRegistration = () => {
                   type="file"
                   accept="image/*"
                   onChange={handleFileUpload}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="cursor-pointer w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
               </div>
 
@@ -163,7 +163,7 @@ const MentorRegistration = () => {
                       <button
                         type="button"
                         onClick={() => removeArrayField(index, 'experience')}
-                        className="px-3 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="cursor-pointer px-3 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         ×
                       </button>
@@ -173,7 +173,7 @@ const MentorRegistration = () => {
                 <button
                   type="button"
                   onClick={() => addArrayField('experience')}
-                  className="text-blue-600 text-sm hover:text-blue-700"
+                  className="cursor-pointer text-blue-600 text-sm hover:text-blue-700"
                 >
                   + Add another experience
                 </button>
@@ -196,7 +196,7 @@ const MentorRegistration = () => {
                       <button
                         type="button"
                         onClick={() => removeArrayField(index, 'expertise')}
-                        className="px-3 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="cursor-pointer px-3 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         ×
                       </button>
@@ -206,7 +206,7 @@ const MentorRegistration = () => {
                 <button
                   type="button"
                   onClick={() => addArrayField('expertise')}
-                  className="text-blue-600 text-sm hover:text-blue-700"
+                  className="cursor-pointer text-blue-600 text-sm hover:text-blue-700"
                 >
                   + Add another expertise
                 </button>
@@ -214,7 +214,7 @@ const MentorRegistration = () => {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                className="cursor-pointer w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
               >
                 Complete Registration
               </button>
@@ -251,8 +251,8 @@ const MentorRegistration = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                 <input
                   type="text"
-                  name="startup_name"
-                  value={formData.startup_name}
+                  name="mentor_name"
+                  value={formData.mentor_name}
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
@@ -272,7 +272,7 @@ const MentorRegistration = () => {
                 />
               </div>
 
-              
+
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
@@ -342,7 +342,7 @@ const MentorRegistration = () => {
                       <button
                         type="button"
                         onClick={() => removeArrayField(index, 'expertise')}
-                        className="px-2 py-2 text-red-600 hover:bg-red-50 rounded"
+                        className=" px-2 py-2 text-red-600 hover:bg-red-50 rounded"
                       >
                         ×
                       </button>
@@ -352,7 +352,7 @@ const MentorRegistration = () => {
                 <button
                   type="button"
                   onClick={() => addArrayField('expertise')}
-                  className="text-blue-600 text-sm"
+                  className="cursor-pointer text-blue-600 text-sm"
                 >
                   + Add expertise
                 </button>

@@ -1,15 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useUser } from '../../Context/userContext';
+import { useNavigate } from 'react-router-dom';
+
 
 const LoginScreen = () => {
 
+
   const { login } = useUser();
+
+
+
+  const navigate = useNavigate()
 
   const handleSuccess = async (credentialResponse) => {
     const idToken = credentialResponse.credential;
 
-    await login(idToken)
+    const data = await login(idToken)
+
+    // console.log(user)
+
+    if (data) {
+      navigate("/role")
+    }
 
   };
 

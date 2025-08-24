@@ -1,14 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUser } from '../../Context/userContext';
 
+
 const StartupRegistration = () => {
-  const { user } = useUser();
+
+
+  const { user, startupRegistration } = useUser()
+
+
+
   const [formData, setFormData] = useState({
     startup_name: '',
     industry: '',
     website: '',
+    phone: '',
     profile_photo_ref: null
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        user_id: user.user_id,
+      }));
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,9 +44,15 @@ const StartupRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Startup registration data:', formData);
-    // The created_at timestamp will be handled by the backend with CURRENT_TIMESTAMP
+
+    const file = formData.profile_photo_ref;
+    if (!file) {
+      alert("Please upload a profile photo");
+      return;
+    }
+
+    await startupRegistration(formData, user.user_id, file)
+
   };
 
   return (
@@ -38,7 +60,7 @@ const StartupRegistration = () => {
       {/* Large/Medium devices */}
       <div className="hidden md:flex w-full">
         {/* Left Section */}
-        <div className="max-h-screen w-1/2 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-8 relative">
+        <div className=" w-1/2 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-8 relative">
           <div className="text-center max-w-md">
             <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
               Launch Your
@@ -87,10 +109,26 @@ const StartupRegistration = () => {
                 <input
                   type="text"
                   name="industry"
+                  required
                   value={formData.industry}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                   placeholder="e.g., Technology, Healthcare, E-commerce"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Contact Number
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  placeholder="Enter your contact number"
                 />
               </div>
 
@@ -102,6 +140,7 @@ const StartupRegistration = () => {
                   type="url"
                   name="website"
                   value={formData.website}
+                  required
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                   placeholder="https://your-startup.com"
@@ -117,7 +156,8 @@ const StartupRegistration = () => {
                     type="file"
                     accept="image/*"
                     onChange={handleFileUpload}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    required
+                    className="cursor-pointer w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
                   {formData.profile_photo_ref && (
                     <div className="mt-2 text-sm text-gray-600">
@@ -132,7 +172,7 @@ const StartupRegistration = () => {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                className="cursor-pointer w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
               >
                 Complete Registration
               </button>
@@ -189,8 +229,24 @@ const StartupRegistration = () => {
                   name="industry"
                   value={formData.industry}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                   placeholder="Your industry"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Contact Number
+                </label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  placeholder="Enter Contact Number"
                 />
               </div>
 
@@ -202,6 +258,7 @@ const StartupRegistration = () => {
                   type="url"
                   name="website"
                   value={formData.website}
+                  required
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                   placeholder="https://your-startup.com"
@@ -216,6 +273,7 @@ const StartupRegistration = () => {
                   type="file"
                   accept="image/*"
                   onChange={handleFileUpload}
+                  required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-blue-50 file:text-blue-700"
                 />
                 {formData.profile_photo_ref && (
