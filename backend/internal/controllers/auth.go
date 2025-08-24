@@ -55,6 +55,8 @@ func Login(c *gin.Context) {
 	query := `SELECT id, full_name FROM users WHERE email = $1`
 	err = config.DB.QueryRowContext(ctx, query, emailStr).Scan(&id, &name)
 
+
+
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// insert user if not found
@@ -107,26 +109,59 @@ func Login(c *gin.Context) {
 
 func StartupRegistration(c *gin.Context) {
 
-	// get the startup from frontend 
+	// get the startup from frontend
 	var startup models.Startup
 
 	err := c.ShouldBindBodyWithJSON(&startup)
 
-	// validate the startup content 
+	// validate the startup content
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload"})
 		return
 	}
 
-	fmt.Println(startup);
+	// get the user id
+	userId := startup.UserID
 
-	// get the user id 
-	
+	// generate a new uuid for startups
+	uuidStr, err := helpers.GenerateUUIDFromEmail(userId)
+	if err != nil {
+		log.Printf("Failed to generate uuid: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
+	}
 
 	// insert everything to that user
+	query := `
+    INSERT INTO startups
+	(startup_id, user_id, startup_name, industry, website, profile_photo_ref,phone_number) 
+	VALUES 
+	($1,$2,$3,$4,$5,$6,$7)
+	`
 
+	ctx := c.Request.Context()
 
-	// send response 
+	_, err = config.DB.ExecContext(ctx, query,
+		uuidStr,
+		userId,
+		startup.StartupName,
+		startup.Industry,
+		startup.Website,
+		startup.ProfilePic,
+		startup.Phone,
+	)
+
+	if err != nil {
+		log.Printf("Error in registering startup: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
+	}
+
+	// send response
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Login Successfull",
+		"id":      userId,
+	})
 
 }
 

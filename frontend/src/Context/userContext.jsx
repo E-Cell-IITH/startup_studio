@@ -16,6 +16,8 @@ export const UserProvider = ({ children }) => {
 
   const [user, setUser] = useState({});
   const { showSuccess, showError } = useToast();
+  
+
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   async function login(idToken) {
@@ -40,7 +42,7 @@ export const UserProvider = ({ children }) => {
         user_id: data.id
       });
 
-      showSuccess("Login successful! Welcome back.", 4000);
+      showSuccess("Login successful! Welcome", 4000);
 
 
       return data;
@@ -67,10 +69,10 @@ export const UserProvider = ({ children }) => {
       body: file,
     })
 
-    console.log(res)
+    // console.log(res)
 
 
-    await fetch(`${BACKEND_URL}/api/auth/startup-registration`, {
+    const resStartUpRegister = await fetch(`${BACKEND_URL}/api/auth/startup-registration`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -83,8 +85,9 @@ export const UserProvider = ({ children }) => {
       })
     })
 
-
-
+    if (resStartUpRegister.status == 200) {
+      showSuccess("StartUp Registered  Successfully.", 4000);
+    }
   }
 
   const logout = () => {
