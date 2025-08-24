@@ -67,7 +67,7 @@ export const UserProvider = ({ children }) => {
       body: file,
     })
 
-    console.log(response.data)
+    console.log(res)
 
 
     await fetch(`${BACKEND_URL}/api/auth/startup-registration`, {

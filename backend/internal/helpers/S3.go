@@ -44,7 +44,7 @@ func GetPresignedURL(c *gin.Context) {
 	req, _ := svc.PutObjectRequest(&s3.PutObjectInput{
 		Bucket: aws.String(AWS_BUCKET_NAME),
 		Key:    aws.String(key),
-		ACL:    aws.String("public-read"),
+		// ACL:    aws.String("public-read"),-> my bucket private -> My ACL public-read -> created problem 
 	})
 
 	// generate presign and file url

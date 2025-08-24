@@ -121,7 +121,7 @@ func StartupRegistration(c *gin.Context) {
 	fmt.Println(startup);
 
 	// get the user id 
-
+	
 
 	// insert everything to that user
 
