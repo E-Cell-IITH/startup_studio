@@ -1,16 +1,18 @@
 package controllers
 
 import (
-	"crypto/sha256"
 	"database/sql"
-	"github.com/E-Cell-IITH/startup_studio/config"
-	"github.com/E-Cell-IITH/startup_studio/internal/helpers"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"google.golang.org/api/idtoken"
+	"fmt"
+
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/E-Cell-IITH/startup_studio/config"
+	"github.com/E-Cell-IITH/startup_studio/internal/helpers"
+	"github.com/E-Cell-IITH/startup_studio/internal/models"
+	"github.com/gin-gonic/gin"
+	"google.golang.org/api/idtoken"
 )
 
 type LoginContent struct {
@@ -19,28 +21,10 @@ type LoginContent struct {
 
 var clientID string = os.Getenv("GOOGLE_CLIENT_ID")
 
-func generateUUIDFromEmail(emailStr string) (string, error) {
-	// Step 1: Hash the email string using SHA-256
-	hash := sha256.New()
-	hash.Write([]byte(emailStr))
-	hashed := hash.Sum(nil)
-
-	// Step 2: Truncate or take the first 16 bytes of the hash
-	truncatedHash := hashed[:16]
-
-	// Step 3: Generate the UUID from the truncated hash
-	newUUID, err := uuid.FromBytes(truncatedHash)
-	if err != nil {
-		return "", err
-	}
-
-	return newUUID.String(), nil
-}
-
 func Login(c *gin.Context) {
 	// get id token and email
 	var loginRequest LoginContent
-	if err := c.BindJSON(&loginRequest); err != nil {
+	if err := c.ShouldBindBodyWithJSON(&loginRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload"})
 		return
 	}
@@ -74,7 +58,7 @@ func Login(c *gin.Context) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// insert user if not found
-			uuidStr, err := generateUUIDFromEmail(emailStr)
+			uuidStr, err := helpers.GenerateUUIDFromEmail(emailStr)
 			if err != nil {
 				log.Printf("Failed to generate uuid: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
@@ -116,7 +100,47 @@ func Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login Successfull",
+		"id":      id,
 	})
+
+}
+
+func StartupRegistration(c *gin.Context) {
+
+	// get the startup from frontend 
+	var startup models.Startup
+
+	err := c.ShouldBindBodyWithJSON(&startup)
+
+	// validate the startup content 
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload"})
+		return
+	}
+
+	fmt.Println(startup);
+
+	// get the user id 
+
+
+	// insert everything to that user
+
+
+	// send response 
+
+}
+
+func MentorRegistration(c *gin.Context) {
+
+	var mentorRequest models.Mentor
+
+	err := c.ShouldBindBodyWithJSON(&mentorRequest)
+
+	if err != nil {
+		log.Fatal("Failed to parse mentor")
+	}
+
+	fmt.Println(mentorRequest)
 
 }
 
