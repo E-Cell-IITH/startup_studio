@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const LoginScreen = () => {
 
 
-  const { login } = useUser();
+  const { login, getStartUpOrMentorId } = useUser();
 
 
 
@@ -18,11 +18,22 @@ const LoginScreen = () => {
 
     const data = await login(idToken)
 
-    // console.log(user)
+    
 
-    if (data) {
+    if (data.is_registered) {
+      const getIdSuccess = await getStartUpOrMentorId(data.user_id)
+      if (getIdSuccess) {
+        navigate("/")
+      }
+      else {
+        navigate("/login")
+      }
+    }
+    
+    else {
       navigate("/role")
     }
+
 
   };
 
@@ -55,7 +66,7 @@ const LoginScreen = () => {
         <div className="w-1/2 bg-white flex items-center justify-center p-8">
           <div className="w-full max-w-sm text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
-            <p className="text-gray-600 mb-8">Continue your startup journey</p>
+            <p className="text-graye-600 mb-8">Continue your startup journey</p>
 
             {/* Google Login Button */}
             <GoogleLogin

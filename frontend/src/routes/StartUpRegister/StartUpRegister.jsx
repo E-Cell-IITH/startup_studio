@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from '../../Context/userContext';
+import { useNavigate } from 'react-router-dom';
 
 
 const StartupRegistration = () => {
@@ -7,6 +8,7 @@ const StartupRegistration = () => {
 
   const { user, startupRegistration } = useUser()
 
+  const navigate = useNavigate()
 
 
   const [formData, setFormData] = useState({
@@ -51,7 +53,11 @@ const StartupRegistration = () => {
       return;
     }
 
-    await startupRegistration(formData, user.user_id, file)
+    const data = await startupRegistration(formData, user.user_id, file)
+
+    
+
+
 
   };
 
