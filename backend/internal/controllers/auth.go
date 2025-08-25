@@ -52,10 +52,9 @@ func Login(c *gin.Context) {
 	// check if the user exists
 	var id string
 	var name string
-	query := `SELECT id, full_name FROM users WHERE email = $1`
-	err = config.DB.QueryRowContext(ctx, query, emailStr).Scan(&id, &name)
-
-
+	var is_registered bool
+	query := `SELECT id, full_name, is_registered FROM users WHERE email = $1`
+	err = config.DB.QueryRowContext(ctx, query, emailStr).Scan(&id, &name, &is_registered)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -67,8 +66,8 @@ func Login(c *gin.Context) {
 				return
 			}
 
-			insertQuery := `INSERT INTO users (id, full_name, email) VALUES ($1, $2, $3) RETURNING id, full_name`
-			err = config.DB.QueryRowContext(ctx, insertQuery, uuidStr, fullName, emailStr).Scan(&id, &name)
+			insertQuery := `INSERT INTO users (id, full_name, email,is_registered) VALUES ($1, $2, $3,$4) RETURNING id, full_name`
+			err = config.DB.QueryRowContext(ctx, insertQuery, uuidStr, fullName, emailStr, false).Scan(&id, &name)
 			if err != nil {
 				log.Printf("Failed to insert user: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
@@ -101,8 +100,9 @@ func Login(c *gin.Context) {
 	// return successful login response
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Login Successfull",
-		"id":      id,
+		"message":       "Login Successfull",
+		"id":            id,
+		"is_registered": is_registered,
 	})
 
 }
@@ -122,6 +122,11 @@ func StartupRegistration(c *gin.Context) {
 
 	// get the user id
 	userId := startup.UserID
+
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "User ID is required"})
+		return
+	}
 
 	// generate a new uuid for startups
 	uuidStr, err := helpers.GenerateUUIDFromEmail(userId)
@@ -157,10 +162,27 @@ func StartupRegistration(c *gin.Context) {
 		return
 	}
 
+	// update the user to is registered
+	updateToRegistered := `
+    UPDATE users
+	SET is_registered = TRUE
+	WHERE id = $1;
+	`
+
+	_, err = config.DB.ExecContext(ctx, updateToRegistered, userId)
+
+	if err != nil {
+		log.Printf("Error in  updating user's registration status: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
+	}
+
 	// send response
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Login Successfull",
-		"id":      userId,
+		"message":       "Login Successfull",
+		"id":            userId,
+		"startup_id":    uuidStr,
+		"is_registered": true,
 	})
 
 }
