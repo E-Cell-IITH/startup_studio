@@ -1,2 +1,0 @@
-ALTER TABLE 
-DROP COLUMN phone_number TEXT,

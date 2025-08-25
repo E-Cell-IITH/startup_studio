@@ -2,8 +2,8 @@ CREATE TABLE users (
     id UUID PRIMARY KEY,
     full_name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    phone_number BIGINT,
-    about TEXT
+    about TEXT,
+    is_registered BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE startups (
@@ -13,14 +13,16 @@ CREATE TABLE startups (
     industry TEXT,
     website TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    profile_photo_ref TEXT
+    profile_photo_ref TEXT,
+    phone_number BIGINT
 );
 
 CREATE TABLE mentors (
     mentor_id UUID PRIMARY KEY,
     user_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
     linked_in_url TEXT,
-    profile_photo_ref TEXT
+    profile_photo_ref TEXT,
+    phone_number BIGINT
 );
 
 CREATE TABLE expertise (
