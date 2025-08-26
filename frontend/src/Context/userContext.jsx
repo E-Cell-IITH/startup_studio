@@ -44,6 +44,8 @@ export const UserProvider = ({ children }) => {
         reg_status: data.is_registered,
       });
 
+      // console.log(data)
+
       setIsAuthenticated(true)
 
       showSuccess("Login successful! Welcome", 4000);
@@ -60,7 +62,7 @@ export const UserProvider = ({ children }) => {
 
   async function getStartUpOrMentorId(userId) {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/auth/getId/:${userId}`, {
+      const response = await fetch(`${BACKEND_URL}/api/auth/getId/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -108,15 +110,13 @@ export const UserProvider = ({ children }) => {
 
   async function startupRegistration(formData, user_id, file) {
     try {
-      const res = await fetch(`${BACKEND_URL}/generate-presign?filename=${file.name}&user_id=${user_id}`)
+      const res = await fetch(`${BACKEND_URL}/api/auth/generate-presign?filename=${file.name}&user_id=${user_id}`)
       const { upload_url, file_url } = await res.json()
 
       await fetch(upload_url, {
         method: "PUT",
         body: file,
       })
-
-      // console.log(res)
 
 
       const resStartUpRegister = await fetch(`${BACKEND_URL}/api/auth/startup-registration`, {
@@ -163,7 +163,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, setUser, startupRegistration, getStartUpOrMentorId }}>
+    <UserContext.Provider value={{ user, login, logout, setUser, startupRegistration, getStartUpOrMentorId, isAuthenticated, setIsAuthenticated }}>
       {children}
     </UserContext.Provider>
   );

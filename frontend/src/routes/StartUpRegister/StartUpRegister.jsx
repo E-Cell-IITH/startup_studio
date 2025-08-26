@@ -55,10 +55,9 @@ const StartupRegistration = () => {
 
     const data = await startupRegistration(formData, user.user_id, file)
 
-    
-
-
-
+    if (data) {
+      navigate("/")
+    }
   };
 
   return (

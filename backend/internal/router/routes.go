@@ -25,8 +25,9 @@ func SetUpRoutes(router *gin.Engine) {
 	auth.GET("/logout", controllers.Logout)
 
 	// presigned url route
-	
-	router.GET("/generate-presign", helpers.GetPresignedURL)
+	auth.GET("/generate-presign", helpers.GetPresignedURL)
+	// get user id or mentor id
+	auth.GET("/getId/:userId", helpers.GetUserOrMentorId)
 
 	auth.POST("/startup-registration", controllers.StartupRegistration)
 	auth.POST("/mentor-registration")
