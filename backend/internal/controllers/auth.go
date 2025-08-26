@@ -206,3 +206,7 @@ func Logout(c *gin.Context) {
 	// set cookie life 0
 
 }
+
+func GetUserDetails(c *gin.Context) {
+
+}

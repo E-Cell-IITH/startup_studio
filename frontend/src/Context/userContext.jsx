@@ -5,6 +5,10 @@ const UserContext = createContext();
 
 export const useUser = () => {
   const context = useContext(UserContext);
+
+
+
+
   if (!context) {
     throw new Error('useUser must be used within a UserProvider');
   }
@@ -12,14 +16,32 @@ export const useUser = () => {
 };
 
 export const UserProvider = ({ children }) => {
-
-
   const [user, setUser] = useState({});
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const { showSuccess, showError } = useToast();
-
-
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/auth/me`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.error(err);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    checkAuth();
+  }, []);
+
+
 
   async function login(idToken) {
     try {
@@ -41,12 +63,11 @@ export const UserProvider = ({ children }) => {
       const data = await response.json();
       setUser({
         user_id: data.id,
-        reg_status: data.is_registered,
       });
 
       // console.log(data)
 
-      setIsAuthenticated(true)
+
 
       showSuccess("Login successful! Welcome", 4000);
       return data;
@@ -163,7 +184,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, setUser, startupRegistration, getStartUpOrMentorId, isAuthenticated, setIsAuthenticated }}>
+    <UserContext.Provider value={{ user, login, logout, setUser, startupRegistration, getStartUpOrMentorId }}>
       {children}
     </UserContext.Provider>
   );
