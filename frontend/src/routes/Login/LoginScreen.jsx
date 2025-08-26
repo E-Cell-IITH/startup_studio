@@ -18,18 +18,18 @@ const LoginScreen = () => {
 
     const data = await login(idToken)
 
-    
+
 
     if (data.is_registered) {
-      const getIdSuccess = await getStartUpOrMentorId(data.user_id)
-      if (getIdSuccess) {
-        navigate("/")
+      const idData = await getStartUpOrMentorId(data.user_id)
+      if (idData.startup_id) {
+        navigate("/mentors")
       }
-      else {
-        navigate("/login")
+      else if (idData.mentor_id) {
+        navigate("/startups")
       }
     }
-    
+
     else {
       navigate("/role")
     }

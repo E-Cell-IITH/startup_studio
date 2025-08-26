@@ -94,7 +94,7 @@ export const UserProvider = ({ children }) => {
       }
 
 
-      return true;
+      return data;
 
 
 
