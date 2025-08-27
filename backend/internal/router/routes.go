@@ -5,6 +5,7 @@ import (
 
 	"github.com/E-Cell-IITH/startup_studio/internal/controllers"
 	"github.com/E-Cell-IITH/startup_studio/internal/helpers"
+	"github.com/E-Cell-IITH/startup_studio/internal/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,13 +25,17 @@ func SetUpRoutes(router *gin.Engine) {
 	auth.POST("/login", controllers.Login)
 	auth.GET("/logout", controllers.Logout)
 
-	// presigned url route
-	auth.GET("/generate-presign", helpers.GetPresignedURL)
-	// get user id or mentor id
-	auth.GET("/getId/:userId", helpers.GetUserOrMentorId)
-	auth.POST("/startup-registration", controllers.StartupRegistration)
-	auth.POST("/mentor-registration")
+	auth.Use(middlewares.AuthMiddleware)
+	{
+		// presigned url route
+		auth.GET("/generate-presign", helpers.GetPresignedURL)
+		// get user id or mentor id
+		auth.GET("/getId/:userId", helpers.GetUserOrMentorId)
+		auth.POST("/startup-registration", controllers.StartupRegistration)
+		auth.POST("/mentor-registration", controllers.MentorRegistration)
 
-	auth.GET("/me", controllers.GetUserDetails)
+		// profile route
+		auth.GET("/me", controllers.GetUserDetails)
+	}
 
 }

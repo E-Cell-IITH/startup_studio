@@ -1,4 +1,4 @@
-import { createContext, useContext, useState,useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { useToast } from "./toastContext";
 
 const UserContext = createContext();
@@ -21,27 +21,6 @@ export const UserProvider = ({ children }) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/auth/me`, { credentials: "include" });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-        } else {
-          setUser(null);
-        }
-      } catch (err) {
-        console.error(err);
-        setUser(null);
-      } 
-    }
-
-    console.log(user)
-    checkAuth();
-  }, []);
-
-
 
   async function login(idToken) {
     try {
@@ -53,6 +32,7 @@ export const UserProvider = ({ children }) => {
         body: JSON.stringify({
           idToken,
         }),
+        credentials: "include",
       });
 
       if (response.status !== 200) {
@@ -61,8 +41,11 @@ export const UserProvider = ({ children }) => {
       }
 
       const data = await response.json();
+
+      // console.log(data)
+
       setUser({
-        user_id: data.id,
+        user_id: data.user_id,
       });
 
       // console.log(data)
@@ -88,6 +71,7 @@ export const UserProvider = ({ children }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include"
       });
 
       if (response.status !== 200) {
@@ -96,7 +80,7 @@ export const UserProvider = ({ children }) => {
       }
 
 
-      const data = response.json()
+      const data = await response.json()
 
 
 
@@ -120,7 +104,7 @@ export const UserProvider = ({ children }) => {
 
 
     } catch (e) {
-      console.error("Fetching user failed:", err);
+      console.error("Fetching user failed:", e);
 
       showError("Fetching user failed", 5000);
 
@@ -131,7 +115,10 @@ export const UserProvider = ({ children }) => {
 
   async function startupRegistration(formData, user_id, file) {
     try {
-      const res = await fetch(`${BACKEND_URL}/api/auth/generate-presign?filename=${file.name}&user_id=${user_id}`)
+      const res = await fetch(
+        `${BACKEND_URL}/api/auth/generate-presign?filename=${file.name}&user_id=${user_id}`, {
+        credentials: "include"
+      })
       const { upload_url, file_url } = await res.json()
 
       await fetch(upload_url, {
@@ -150,7 +137,8 @@ export const UserProvider = ({ children }) => {
           website: formData.website,
           user_id: user_id,
           profile_photo_ref: file_url
-        })
+        }),
+        credentials: "include"
       })
 
       if (resStartUpRegister.status != 200) {

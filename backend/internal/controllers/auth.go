@@ -87,16 +87,23 @@ func Login(c *gin.Context) {
 	if err != nil {
 		log.Printf("Failed to generate token: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
 	}
+
+	// log.Println(token)
+
 	c.SetCookie(
-		"token",     // name
-		token,       // value
-		48*60*60,    // maxAge in seconds (24 hours)
-		"/",         // path
-		"localhost", // domain -> change this to domain name in production
-		false,       // secure (true = only over HTTPS) -> true in production
-		false,       // httpOnly -> change this to true in production
+		"token",
+		token,
+		48*60*60,
+		"/",   // path
+		"localhost",    // domain → leave empty for localhost
+		false, // secure → must be true in production (HTTPS)
+		false, // httpOnly → true in production
 	)
+
+
+
 	// return successful login response
 
 	c.JSON(http.StatusOK, gin.H{

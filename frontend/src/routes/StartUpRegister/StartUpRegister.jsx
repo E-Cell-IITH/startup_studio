@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useUser } from '../../Context/userContext';
 import { useNavigate } from 'react-router-dom';
 
 const StartupRegistration = () => {
+
+
+
   const { user, startupRegistration } = useUser();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+
   const [loadingMessage, setLoadingMessage] = useState('');
 
   const [formData, setFormData] = useState({
@@ -16,14 +20,7 @@ const StartupRegistration = () => {
     profile_photo_ref: null
   });
 
-  useEffect(() => {
-    if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        user_id: user.user_id,
-      }));
-    }
-  }, [user]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,6 +41,11 @@ const StartupRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!user || !user.user_id) {
+      alert("User is not logged in.");
+      return;
+    }
+
     const file = formData.profile_photo_ref;
     if (!file) {
       alert("Please upload a profile photo");
@@ -54,31 +56,20 @@ const StartupRegistration = () => {
     setLoadingMessage('Uploading your startup profile...');
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate upload time
-      setLoadingMessage('Processing your information...');
-
       const data = await startupRegistration(formData, user.user_id, file);
 
       if (data) {
         setLoadingMessage('Registration successful! Redirecting...');
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
+        setTimeout(() => navigate("/mentors"), 1000);
       }
-    } catch (error) {
-      console.error('Registration error:', error);
+    } catch (err) {
+      console.error("Registration error:", err);
       setIsLoading(false);
       setLoadingMessage('');
     }
   };
 
-  // Loading Spinner Component
-  const LoadingSpinner = () => (
-    <div className="flex items-center justify-center space-x-2">
-      <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
-      <span className="text-blue-600 font-medium">{loadingMessage}</span>
-    </div>
-  );
+
 
   // Pulsing dots animation
   const PulsingDots = () => (
@@ -236,8 +227,8 @@ const StartupRegistration = () => {
                 type="submit"
                 disabled={isLoading}
                 className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 shadow-lg ${isLoading
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 cursor-pointer'
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 cursor-pointer'
                   }`}
               >
                 {isLoading ? (
@@ -370,8 +361,8 @@ const StartupRegistration = () => {
                 type="submit"
                 disabled={isLoading}
                 className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 shadow-lg ${isLoading
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transform hover:scale-105'
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transform hover:scale-105'
                   }`}
               >
                 {isLoading ? (
