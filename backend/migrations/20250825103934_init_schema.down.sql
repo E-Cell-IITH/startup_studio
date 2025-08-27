@@ -1,7 +1,0 @@
-DROP TABLE IF EXISTS mentorships;
-DROP TABLE IF EXISTS experience;
-DROP TABLE IF EXISTS mentor_expertise;
-DROP TABLE IF EXISTS expertise;
-DROP TABLE IF EXISTS mentors;
-DROP TABLE IF EXISTS startups;
-DROP TABLE IF EXISTS users;
