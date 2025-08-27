@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState,useEffect } from "react";
 import { useToast } from "./toastContext";
 
 const UserContext = createContext();
@@ -34,10 +34,10 @@ export const UserProvider = ({ children }) => {
       } catch (err) {
         console.error(err);
         setUser(null);
-      } finally {
-        setLoading(false);
-      }
+      } 
     }
+
+    console.log(user)
     checkAuth();
   }, []);
 

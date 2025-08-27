@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route path='/mentors' Component={MentorScreen} />
         <Route path='/startups' Component={StartUpScreen} />
-        <Route path='/login' Component={LoginScreen} />
+        <Route path='/' Component={LoginScreen} />
         <Route path='/role' Component={FilterRoleScreen} />
         <Route path='/mentor-register' Component={MentorRegistration} />
         <Route path='/startup-register' Component={StartupRegistration} />
