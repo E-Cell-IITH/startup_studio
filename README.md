@@ -9,6 +9,7 @@
 - [x] Add a column status (true or false) in mentors
 - [x] Mentor registration 
 - [ ] admin approval for mentors 
+- [ ] delete on cascade for expertise
 - [ ] Some get routes
 - [ ] Check profile picture bug in frontend
 - [ ] Edit user functionality
