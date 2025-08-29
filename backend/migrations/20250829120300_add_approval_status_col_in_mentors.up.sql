@@ -1,0 +1,1 @@
+ALTER TABLE mentors ADD COLUMN approval_status BOOLEAN DEFAULT FALSE;

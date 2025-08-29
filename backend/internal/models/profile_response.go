@@ -20,4 +20,5 @@ type MentorshipInfo struct {
 	MentorshipID string `json:"mentorship_id"`
 	StartupName  string `json:"startup_name,omitempty"`
 	MentorName   string `json:"mentor_name,omitempty"`
+	
 }

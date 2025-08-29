@@ -1,0 +1,1 @@
+ALTER TABLE mentors DROP COLUMN approval_status;

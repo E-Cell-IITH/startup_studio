@@ -1,12 +1,15 @@
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 import { Menu, X, User, LogOut, Users, UserCheck } from 'lucide-react';
 import { useUser } from '../../Context/userContext';
+import { useNavigate } from "react-router-dom"
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useUser();
+  const { user, logout } = useUser();
+  const navigate = useNavigate()
 
-  // console.log("Navbar user" , user)
+
+  console.log("Navbar user" , user)
 
   if (!user) return null;
 
@@ -19,10 +22,22 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
-    console.log('Logout clicked');
-    alert('Logout functionality to be implemented');
+    try {
+      const res = await logout();
+
+      if (res) {
+        navigate("/")
+      }
+
+
+
+    } catch (e) {
+      console.log(e)
+    }
+
+
   };
 
   const getNavigationItems = () => {

@@ -24,7 +24,8 @@ const ProtectedRoute = ({ children }) => {
                         full_name: data?.user?.username,
                         email: data?.user?.email,
                         startup_detail: data?.startup_detail,
-                        mentor_detail: data?.mentor_detail
+                        mentor_detail: data?.mentor_detail,
+                        is_admin: data?.user?.is_admin
                     });
 
 

@@ -163,9 +163,20 @@ export const UserProvider = ({ children }) => {
 
   }
 
-  const logout = () => {
+  async function logout() {
+
+    const response = await fetch(`${BACKEND_URL}/api/auth/logout`, {
+      credentials: "include"
+    })
+
+    if (response.status != 200) {
+      showError("Login failed.", 5000);
+      return false;
+    }
+
     setUser(null);
     showInfo("You have been logged out.", 3000);
+    return true;
   };
 
   return (

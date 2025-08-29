@@ -209,6 +209,21 @@ func MentorRegistration(c *gin.Context) {
 func Logout(c *gin.Context) {
 
 	// set cookie life 0
+	c.SetCookie(
+		"token",
+		"",
+		-1,
+		"/",         // path
+		"localhost", // domain → leave empty for localhost
+		false,       // secure → must be true in production (HTTPS)
+		false,       // httpOnly → true in production
+	)
+
+	// return successful login response
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Logout Successfull",
+	})
 
 }
 
@@ -227,14 +242,14 @@ func GetUserDetails(c *gin.Context) {
 
 	// fetch user info
 	queryUser := `
-        SELECT id, full_name, email, is_registered
+        SELECT id, full_name, email, is_registered,is_admin
         FROM users
         WHERE email = $1
     `
 
 	var currUser models.User
 	err := config.DB.QueryRowContext(ctx, queryUser, email).
-		Scan(&currUser.UserID, &currUser.UserName, &currUser.UserEmail, &currUser.IsRegistered)
+		Scan(&currUser.UserID, &currUser.UserName, &currUser.UserEmail, &currUser.IsRegistered,&currUser.IsAdmin)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
@@ -246,7 +261,7 @@ func GetUserDetails(c *gin.Context) {
 	}
 	resp.User = currUser
 
-	// log.Println("Found current user appended it to resp", resp)
+	log.Println("Found current user appended it to resp", resp)
 
 	// ------------------------
 	// check if the user is a startup
