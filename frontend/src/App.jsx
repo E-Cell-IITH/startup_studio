@@ -7,6 +7,7 @@ import StartupRegistration from './routes/StartUpRegister/StartUpRegister'
 import MentorScreen from './routes/Mentor/MentorScreen'
 import StartUpScreen from './routes/Startup/StartUpScreen'
 import ProtectedRoute from './routes/ProtectedRoute/ProtectedRoute'
+import ProfileScreen from './routes/ProfileScreen/ProfileScreen'
 
 function App() {
   return (
@@ -20,6 +21,11 @@ function App() {
         <Route path='/startups' element={
           <ProtectedRoute>
             <StartUpScreen />
+          </ProtectedRoute>
+        } />
+        <Route path='/profile' element={
+          <ProtectedRoute>
+            <ProfileScreen />
           </ProtectedRoute>
         } />
         <Route path='/' element={<LoginScreen />} />
