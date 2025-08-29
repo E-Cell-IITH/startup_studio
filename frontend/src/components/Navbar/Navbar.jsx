@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import { Menu, X, User, LogOut, Users, UserCheck } from 'lucide-react';
 import { useUser } from '../../Context/userContext';
 
@@ -6,11 +6,9 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUser();
 
-  useEffect(() => {
-    console.log("Navbar User:", user);
-  }, [user]);
+  // console.log("Navbar user" , user)
 
-  if (!user) return null; 
+  if (!user) return null;
 
   // Role detection
   const isStartup = user.startup_detail ? true : false;
@@ -22,7 +20,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-   
+
     console.log('Logout clicked');
     alert('Logout functionality to be implemented');
   };
