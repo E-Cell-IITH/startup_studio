@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useUser } from '../../Context/userContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,6 +16,7 @@ const StartupRegistration = () => {
     startup_name: '',
     website: '',
     phone: '',
+    about: '',
     profile_photo_ref: null
   });
 
@@ -135,7 +136,7 @@ const StartupRegistration = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Startup Name *
+                  Startup Name
                 </label>
                 <input
                   type="text"
@@ -161,6 +162,22 @@ const StartupRegistration = () => {
                   disabled={isLoading}
                   className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${isLoading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                   placeholder="Enter your contact number"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  About the Startup
+                </label>
+                <textarea
+                  type="textarea"
+                  name="about"
+                  value={formData.about}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isLoading}
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${isLoading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  placeholder="About your startup"
                 />
               </div>
 
@@ -254,7 +271,7 @@ const StartupRegistration = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Startup Name *
+                  Startup Name
                 </label>
                 <input
                   type="text"
@@ -284,6 +301,23 @@ const StartupRegistration = () => {
                   placeholder="Enter Contact Number"
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  About the Startup
+                </label>
+                <textarea
+                  type="textarea"
+                  name="about"
+                  value={formData.about}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isLoading}
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${isLoading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  placeholder="About your startup"
+                />
+              </div>
+
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

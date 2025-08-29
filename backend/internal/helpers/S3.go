@@ -49,7 +49,7 @@ func GetPresignedURL(c *gin.Context) {
 
 	// generate presign and file url
 
-	urlStr, err := req.Presign(15 * time.Minute)
+	urlStr, err := req.Presign(2 * time.Minute)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to sign url"})

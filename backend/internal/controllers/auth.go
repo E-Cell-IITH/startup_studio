@@ -3,17 +3,15 @@ package controllers
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-
-	"log"
-	"net/http"
-	"os"
-
 	"github.com/E-Cell-IITH/startup_studio/config"
 	"github.com/E-Cell-IITH/startup_studio/internal/helpers"
 	"github.com/E-Cell-IITH/startup_studio/internal/models"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"google.golang.org/api/idtoken"
+	"log"
+	"net/http"
+	"os"
 )
 
 type LoginContent struct {
@@ -142,12 +140,12 @@ func StartupRegistration(c *gin.Context) {
 		return
 	}
 
-	// insert everything to that user
+	// insert everything to that startups
 	query := `
     INSERT INTO startups
-	(startup_id, user_id, startup_name, website, profile_photo_ref,phone_number) 
+	(startup_id, user_id, startup_name, website, profile_photo_ref,about,phone_number) 
 	VALUES 
-	($1,$2,$3,$4,$5,$6)
+	($1,$2,$3,$4,$5,$6,$7)
 	`
 
 	ctx := c.Request.Context()
@@ -158,6 +156,7 @@ func StartupRegistration(c *gin.Context) {
 		startup.StartupName,
 		startup.Website,
 		startup.ProfilePic,
+		startup.About,
 		startup.Phone,
 	)
 
@@ -194,16 +193,110 @@ func StartupRegistration(c *gin.Context) {
 
 func MentorRegistration(c *gin.Context) {
 
-	var mentorRequest models.Mentor
+	// get the mentor from frontend
+	var mentor models.Mentor
 
-	err := c.ShouldBindBodyWithJSON(&mentorRequest)
-
+	err := c.ShouldBindJSON(&mentor)
 	if err != nil {
-		log.Fatal("Failed to parse mentor")
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload"})
+		return
 	}
 
-	fmt.Println(mentorRequest)
+	// get the user id
+	userId := mentor.UserID
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "User ID is required"})
+		return
+	}
 
+	// generate a new uuid for mentors
+	uuidStr, err := helpers.GenerateUUIDFromEmail(userId)
+	if err != nil {
+		log.Printf("Failed to generate uuid: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	// insert into mentors table with approval_status = false
+	query := `
+		INSERT INTO mentors
+		(mentor_id, user_id, linked_in_url, profile_photo_ref, phone_number, about, approval_status)
+		VALUES 
+		($1,$2,$3,$4,$5,$6,$7)
+	`
+
+	_, err = config.DB.ExecContext(ctx, query,
+		uuidStr,
+		userId,
+		mentor.LinkedInURL,
+		mentor.ProfilePic,
+		mentor.Phone,
+		mentor.About,
+		false,
+	)
+
+	if err != nil {
+		log.Printf("Error in registering mentor: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
+	}
+
+	// insert experiences
+	for _, exp := range mentor.Experience {
+		expID, _ := uuid.NewUUID()
+		_, err = config.DB.ExecContext(ctx, `
+			INSERT INTO experience (experience_id, experience, mentor_id)
+			VALUES ($1, $2, $3)
+		`, expID, exp, uuidStr)
+		if err != nil {
+			log.Printf("Error inserting experience: %v", err)
+		}
+	}
+
+	// insert expertise + link to mentor
+	for _, exp := range mentor.Expertise {
+		var expertiseID string
+
+		// check if expertise already exists
+		err := config.DB.QueryRowContext(ctx, `
+			SELECT expertise_id FROM expertise WHERE expertise = $1
+		`, exp).Scan(&expertiseID)
+
+		if err == sql.ErrNoRows {
+			// insert new expertise
+			newExpID, _ := uuid.NewUUID()
+			_, err = config.DB.ExecContext(ctx, `
+				INSERT INTO expertise (expertise_id, expertise)
+				VALUES ($1, $2)
+			`, newExpID, exp)
+			if err != nil {
+				log.Printf("Error inserting new expertise: %v", err)
+				continue
+			}
+			expertiseID = newExpID.String()
+		} else if err != nil {
+			log.Printf("Error checking expertise: %v", err)
+			continue
+		}
+
+		// link mentor to expertise
+		_, err = config.DB.ExecContext(ctx, `
+			INSERT INTO mentor_expertise (mentor_id, expertise_id)
+			VALUES ($1, $2)
+		`, uuidStr, expertiseID)
+		if err != nil {
+			log.Printf("Error linking mentor expertise: %v", err)
+		}
+	}
+
+	// send response
+	c.JSON(http.StatusOK, gin.H{
+		"message":   "Mentor registration submitted. Pending admin approval.",
+		"user_id":   userId,
+		"mentor_id": uuidStr,
+	})
 }
 
 func Logout(c *gin.Context) {
@@ -249,7 +342,7 @@ func GetUserDetails(c *gin.Context) {
 
 	var currUser models.User
 	err := config.DB.QueryRowContext(ctx, queryUser, email).
-		Scan(&currUser.UserID, &currUser.UserName, &currUser.UserEmail, &currUser.IsRegistered,&currUser.IsAdmin)
+		Scan(&currUser.UserID, &currUser.UserName, &currUser.UserEmail, &currUser.IsRegistered, &currUser.IsAdmin)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
@@ -341,7 +434,9 @@ func GetUserDetails(c *gin.Context) {
 	queryMentor := `
     SELECT mentor_id,
     phone_number,
+	linked_in_url,
     profile_photo_ref,
+	approval_status,
     COALESCE(about, '')
 	FROM mentors
 	WHERE user_id = $1;
@@ -349,17 +444,18 @@ func GetUserDetails(c *gin.Context) {
 	var mentor models.Mentor
 	var mentorID string
 	err = config.DB.QueryRowContext(ctx, queryMentor, currUser.UserID).
-		Scan(&mentorID, &mentor.Phone, &mentor.ProfilePic, &mentor.About)
+		Scan(&mentorID, &mentor.Phone, &mentor.LinkedInURL, &mentor.ProfilePic, &mentor.ApprovalStatus, &mentor.About)
 	if err == nil {
 		mDetail := models.MentorDetail{Mentor: mentor}
 
 		// expertise
 		expertiseQuery := `
-            SELECT e.expertise
-            FROM mentor_expertise me
-            JOIN expertise e ON me.expertise_id = e.expertise_id
-            WHERE me.mentor_id = $1
-        `
+    SELECT e.expertise
+    FROM mentor_expertise me
+    JOIN expertise e ON me.expertise_id = e.expertise_id
+    WHERE me.mentor_id = $1
+`
+
 		rowsExp, err := config.DB.QueryContext(ctx, expertiseQuery, mentorID)
 		if err != nil {
 			log.Println("error fetching expertise:", err)
@@ -380,11 +476,12 @@ func GetUserDetails(c *gin.Context) {
 
 		// experience
 		expQuery := `
-            SELECT experience
-            FROM experience
-            WHERE mentor_id = $1
-        `
+    SELECT experience
+    FROM experience
+    WHERE mentor_id = $1
+`
 		rowsExperience, err := config.DB.QueryContext(ctx, expQuery, mentorID)
+
 		if err != nil {
 			log.Println("error fetching experience:", err)
 		} else {
@@ -415,13 +512,18 @@ func GetUserDetails(c *gin.Context) {
 		} else {
 			defer rowsMs.Close()
 			for rowsMs.Next() {
-				var ms models.MentorshipInfo
-				if err := rowsMs.Scan(&ms.MentorshipID, &ms.StartupName); err != nil {
+				var mentorshipID string
+				var startupName string
+				if err := rowsMs.Scan(&mentorshipID, &startupName); err != nil {
 					log.Println("error scanning mentor mentorship row:", err)
 					continue
 				}
-				mDetail.Mentorships = append(mDetail.Mentorships, ms)
+				mDetail.Mentorships = append(mDetail.Mentorships, models.MentorshipInfo{
+					MentorshipID: mentorshipID,
+					StartupName:  startupName,
+				})
 			}
+
 			if err := rowsMs.Err(); err != nil {
 				log.Println("rows iteration error (mentor mentorships):", err)
 			}

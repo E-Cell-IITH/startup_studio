@@ -11,10 +11,10 @@ func SetUpRouter() *gin.Engine {
 
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:5173"}
-	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"} // Added OPTIONS
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"} 
 	config.AllowHeaders = []string{
 		"Origin",
-		"Content-Type", // Explicitly allow Content-Type
+		"Content-Type", 
 		"Accept",
 		"Authorization",
 		"X-Requested-With",
@@ -23,7 +23,7 @@ func SetUpRouter() *gin.Engine {
 		"Access-Control-Allow-Methods",
 	}
 	config.AllowCredentials = true
-	config.ExposeHeaders = []string{"Content-Length", "Content-Type"} // Expose headers to frontend
+	config.ExposeHeaders = []string{"Content-Length", "Content-Type"} 
 	router.Use(cors.New(config))
 
 	SetUpRoutes(router)

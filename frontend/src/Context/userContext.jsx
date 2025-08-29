@@ -129,7 +129,6 @@ export const UserProvider = ({ children }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           startup_name: formData.startup_name,
-          industry: formData.industry,
           phone: formData.phone,
           website: formData.website,
           user_id: user_id,
@@ -179,8 +178,63 @@ export const UserProvider = ({ children }) => {
     return true;
   };
 
+  async function mentorRegistration(formData, user_id, file) {
+
+    try {
+      const res = await fetch(
+        `${BACKEND_URL}/api/auth/generate-presign?filename=${file.name}&user_id=${user_id}`, {
+        credentials: "include"
+      })
+      const { upload_url, file_url } = await res.json()
+
+      await fetch(upload_url, {
+        method: "PUT",
+        body: file,
+      })
+
+      const mentorRegRes = await fetch(`${BACKEND_URL}/api/auth/mentor-registration`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          phone: formData.phone_number,
+          profile_photo_ref: file_url,
+          experience: formData.experience,
+          expertise: formData.expertise,
+          linked_in_url: formData.linked_in_url,
+          about: formData.about,
+          user_id: user_id,
+        })
+      })
+
+      if (mentorRegRes.status != 200) {
+        showError("Error registering mentor", 3000)
+      }
+
+
+      const data = mentorRegRes.json()
+
+
+      setUser(prev => ({
+        ...prev,
+        mentor_id: data.mentor_id
+      }))
+
+      showSuccess("Registration Successful", 4000);
+
+      return data;
+
+
+
+
+    } catch (e) {
+
+    }
+
+  }
+
   return (
-    <UserContext.Provider value={{ user, login, logout, setUser, startupRegistration, getStartUpOrMentorId }}>
+    <UserContext.Provider value={{ user, login, logout, setUser, startupRegistration, getStartUpOrMentorId, mentorRegistration }}>
       {children}
     </UserContext.Provider>
   );

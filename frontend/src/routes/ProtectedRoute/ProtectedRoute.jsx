@@ -18,7 +18,7 @@ const ProtectedRoute = ({ children }) => {
                 if (res.status === 200) {
                     const data = await res.json();
 
-                    // console.log(data)
+                    console.log(data)
                     setUser({
                         user_id: data?.user?.user_id,
                         full_name: data?.user?.username,
