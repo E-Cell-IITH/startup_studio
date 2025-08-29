@@ -33,6 +33,12 @@ func AuthMiddleware(c *gin.Context) {
 
 	// log.Println("Middleware passed successfully")
 
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if email, ok := claims["email"].(string); ok {
+			c.Set("email", email)
+		}
+	}
+	
 	// 4. Continue
 	c.Next()
 }

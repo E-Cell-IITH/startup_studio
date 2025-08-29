@@ -1,8 +1,12 @@
 import React from 'react'
+import Navbar from '../../components/Navbar/Navbar'
 
 const MentorScreen = () => {
     return (
-        <div>MentorScreen</div>
+        <>
+            <Navbar />
+            <div>MentorScreen</div>
+        </>
     )
 }
 

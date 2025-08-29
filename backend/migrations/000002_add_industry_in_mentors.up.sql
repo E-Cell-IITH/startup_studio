@@ -1,0 +1,2 @@
+ALTER TABLE mentors
+ADD COLUMN industry TEXT;

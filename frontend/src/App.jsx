@@ -6,19 +6,26 @@ import MentorRegistration from './routes/MentorRegistration/MentorRegistration'
 import StartupRegistration from './routes/StartUpRegister/StartUpRegister'
 import MentorScreen from './routes/Mentor/MentorScreen'
 import StartUpScreen from './routes/Startup/StartUpScreen'
-
+import ProtectedRoute from './routes/ProtectedRoute/ProtectedRoute'
 
 function App() {
-
   return (
     <>
       <Routes>
-        <Route path='/mentors' Component={MentorScreen} />
-        <Route path='/startups' Component={StartUpScreen} />
-        <Route path='/' Component={LoginScreen} />
-        <Route path='/role' Component={FilterRoleScreen} />
-        <Route path='/mentor-register' Component={MentorRegistration} />
-        <Route path='/startup-register' Component={StartupRegistration} />
+        <Route path='/mentors' element={
+          <ProtectedRoute>
+            <MentorScreen />
+          </ProtectedRoute>
+        } />
+        <Route path='/startups' element={
+          <ProtectedRoute>
+            <StartUpScreen />
+          </ProtectedRoute>
+        } />
+        <Route path='/' element={<LoginScreen />} />
+        <Route path='/role' element={<FilterRoleScreen />} />
+        <Route path='/mentor-register' element={<MentorRegistration />} />
+        <Route path='/startup-register' element={<StartupRegistration />} />
       </Routes>
     </>
   )

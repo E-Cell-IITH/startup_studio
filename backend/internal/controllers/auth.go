@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"log"
@@ -96,13 +97,11 @@ func Login(c *gin.Context) {
 		"token",
 		token,
 		48*60*60,
-		"/",   // path
-		"localhost",    // domain → leave empty for localhost
-		false, // secure → must be true in production (HTTPS)
-		false, // httpOnly → true in production
+		"/",         // path
+		"localhost", // domain → leave empty for localhost
+		false,       // secure → must be true in production (HTTPS)
+		false,       // httpOnly → true in production
 	)
-
-
 
 	// return successful login response
 
@@ -146,9 +145,9 @@ func StartupRegistration(c *gin.Context) {
 	// insert everything to that user
 	query := `
     INSERT INTO startups
-	(startup_id, user_id, startup_name, industry, website, profile_photo_ref,phone_number) 
+	(startup_id, user_id, startup_name, website, profile_photo_ref,phone_number) 
 	VALUES 
-	($1,$2,$3,$4,$5,$6,$7)
+	($1,$2,$3,$4,$5,$6)
 	`
 
 	ctx := c.Request.Context()
@@ -157,7 +156,6 @@ func StartupRegistration(c *gin.Context) {
 		uuidStr,
 		userId,
 		startup.StartupName,
-		startup.Industry,
 		startup.Website,
 		startup.ProfilePic,
 		startup.Phone,
@@ -215,5 +213,214 @@ func Logout(c *gin.Context) {
 }
 
 func GetUserDetails(c *gin.Context) {
+	var resp models.UserResponse
+	ctx := c.Request.Context()
 
+	// get email from middleware context
+	email, exists := c.Get("email")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "email not found in token"})
+		return
+	}
+
+	// log.Println("Got email from request", email)
+
+	// fetch user info
+	queryUser := `
+        SELECT id, full_name, email, is_registered
+        FROM users
+        WHERE email = $1
+    `
+
+	var currUser models.User
+	err := config.DB.QueryRowContext(ctx, queryUser, email).
+		Scan(&currUser.UserID, &currUser.UserName, &currUser.UserEmail, &currUser.IsRegistered)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		} else {
+			log.Println("error fetching user:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch user"})
+		}
+		return
+	}
+	resp.User = currUser
+
+	// log.Println("Found current user appended it to resp", resp)
+
+	// ------------------------
+	// check if the user is a startup
+	// ------------------------
+
+	// log.Println("Going to check for startup")
+
+	queryStartup := `
+    SELECT startup_id,
+    startup_name,
+	website,
+    phone_number,
+    profile_photo_ref,
+    COALESCE(about, '')
+    FROM startups
+    WHERE user_id = $1
+	`
+
+	var startup models.Startup
+	var startupID string
+	err = config.DB.QueryRowContext(ctx, queryStartup, currUser.UserID).
+		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.ProfilePic, &startup.About)
+
+	// log.Println("Ran the startup query, error:", err)
+	// log.Println(startupID)
+	// log.Println(startup)
+	startup.UserID = currUser.UserID.String()
+
+	if err == nil {
+		sDetail := models.StartupDetail{Startup: startup}
+
+		// log.Println("Going to look for startup mentorships")
+
+		// fetch mentorships for startup
+		mentorshipQuery := `
+            SELECT m.mentorship_id, mt.full_name
+            FROM mentorships m
+            JOIN mentors me ON m.mentor_id = me.mentor_id
+            JOIN users mt ON me.user_id = mt.id
+            WHERE m.startup_id = $1
+        `
+		rows, err := config.DB.QueryContext(ctx, mentorshipQuery, startupID)
+
+		// log.Println("Ran query for startup mentorships")
+
+		if err != nil {
+			log.Println("error fetching startup mentorships:", err)
+		} else {
+			defer rows.Close()
+			for rows.Next() {
+				var ms models.MentorshipInfo
+				if err := rows.Scan(&ms.MentorshipID, &ms.MentorName); err != nil {
+					log.Println("error scanning startup mentorship row:", err)
+					continue
+				}
+				sDetail.Mentorships = append(sDetail.Mentorships, ms)
+
+				// log.Println("got the mentorships")
+
+			}
+			if err := rows.Err(); err != nil {
+				log.Println("rows iteration error (startup mentorships):", err)
+			}
+		}
+
+		resp.StartupDetail = &sDetail
+
+		// log.Println("Current user is a startup appended in startup", resp)
+
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+
+	// ------------------------
+	// check if the user is a mentor
+	// ------------------------
+	queryMentor := `
+    SELECT mentor_id,
+    phone_number,
+    profile_photo_ref,
+    COALESCE(about, '')
+	FROM mentors
+	WHERE user_id = $1;
+    `
+	var mentor models.Mentor
+	var mentorID string
+	err = config.DB.QueryRowContext(ctx, queryMentor, currUser.UserID).
+		Scan(&mentorID, &mentor.Phone, &mentor.ProfilePic, &mentor.About)
+	if err == nil {
+		mDetail := models.MentorDetail{Mentor: mentor}
+
+		// expertise
+		expertiseQuery := `
+            SELECT e.expertise
+            FROM mentor_expertise me
+            JOIN expertise e ON me.expertise_id = e.expertise_id
+            WHERE me.mentor_id = $1
+        `
+		rowsExp, err := config.DB.QueryContext(ctx, expertiseQuery, mentorID)
+		if err != nil {
+			log.Println("error fetching expertise:", err)
+		} else {
+			defer rowsExp.Close()
+			for rowsExp.Next() {
+				var exp string
+				if err := rowsExp.Scan(&exp); err != nil {
+					log.Println("error scanning expertise row:", err)
+					continue
+				}
+				mDetail.Expertise = append(mDetail.Expertise, exp)
+			}
+			if err := rowsExp.Err(); err != nil {
+				log.Println("rows iteration error (expertise):", err)
+			}
+		}
+
+		// experience
+		expQuery := `
+            SELECT experience
+            FROM experience
+            WHERE mentor_id = $1
+        `
+		rowsExperience, err := config.DB.QueryContext(ctx, expQuery, mentorID)
+		if err != nil {
+			log.Println("error fetching experience:", err)
+		} else {
+			defer rowsExperience.Close()
+			for rowsExperience.Next() {
+				var exp string
+				if err := rowsExperience.Scan(&exp); err != nil {
+					log.Println("error scanning experience row:", err)
+					continue
+				}
+				mDetail.Experience = append(mDetail.Experience, exp)
+			}
+			if err := rowsExperience.Err(); err != nil {
+				log.Println("rows iteration error (experience):", err)
+			}
+		}
+
+		// mentorships
+		mentorshipQuery := `
+            SELECT m.mentorship_id, s.startup_name
+            FROM mentorships m
+            JOIN startups s ON m.startup_id = s.startup_id
+            WHERE m.mentor_id = $1
+        `
+		rowsMs, err := config.DB.QueryContext(ctx, mentorshipQuery, mentorID)
+		if err != nil {
+			log.Println("error fetching mentor mentorships:", err)
+		} else {
+			defer rowsMs.Close()
+			for rowsMs.Next() {
+				var ms models.MentorshipInfo
+				if err := rowsMs.Scan(&ms.MentorshipID, &ms.StartupName); err != nil {
+					log.Println("error scanning mentor mentorship row:", err)
+					continue
+				}
+				mDetail.Mentorships = append(mDetail.Mentorships, ms)
+			}
+			if err := rowsMs.Err(); err != nil {
+				log.Println("rows iteration error (mentor mentorships):", err)
+			}
+		}
+
+		resp.MentorDetail = &mDetail
+
+		log.Println("current user is a mentor appended into resp", resp)
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+
+	log.Println(resp)
+
+	// fallback: just return user info
+	c.JSON(http.StatusOK, resp)
 }

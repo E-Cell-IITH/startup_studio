@@ -14,7 +14,6 @@ const StartupRegistration = () => {
 
   const [formData, setFormData] = useState({
     startup_name: '',
-    industry: '',
     website: '',
     phone: '',
     profile_photo_ref: null
@@ -149,23 +148,6 @@ const StartupRegistration = () => {
                   placeholder="Enter your startup name"
                 />
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Industry
-                </label>
-                <input
-                  type="text"
-                  name="industry"
-                  required
-                  value={formData.industry}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${isLoading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                  placeholder="e.g., Technology, Healthcare, E-commerce"
-                />
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contact Number
@@ -286,21 +268,6 @@ const StartupRegistration = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Industry
-                </label>
-                <input
-                  type="text"
-                  name="industry"
-                  value={formData.industry}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isLoading}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${isLoading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                  placeholder="Your industry"
-                />
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
