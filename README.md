@@ -11,5 +11,6 @@
 - [ ] admin approval for mentors 
 - [ ] delete on cascade for expertise
 - [ ] Some get routes
+- [ ] get mentorship option for startup 
 - [ ] Check profile picture bug in frontend
 - [ ] Edit user functionality
