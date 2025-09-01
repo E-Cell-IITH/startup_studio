@@ -42,10 +42,10 @@ export const MentorProvider = ({ children }) => {
         }
     }
 
-    async function approveMentor(userId, mentorId) {
+    async function approveMentor(adminUserId, mentorUserId) {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/admin/mentor/approve/${userId}/${mentorId}`, {
-                method: "PUT",
+            const response = await fetch(`${BACKEND_URL}/api/admin/mentor/approve/${adminUserId}/${mentorUserId}`, {
+                method: "PATCH",
                 credentials: "include"
             })
 
@@ -56,7 +56,6 @@ export const MentorProvider = ({ children }) => {
             }
 
             showSuccess("Mentor Approved")
-
             return true;
 
         } catch (e) {
@@ -66,11 +65,36 @@ export const MentorProvider = ({ children }) => {
         }
     }
 
+    async function rejectMentor(adminUserId, mentorUserId) {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/admin/mentor/reject/${adminUserId}/${mentorUserId}`, {
+                method : "DELETE",
+                credentials : "include"
+            })
+
+            if (response.status != 200) {
+                showError("Mentor rejection failed")
+                return false;
+            }
+
+
+            showSuccess("Mentor Rejected")
+            return true;
+
+        } catch (e) {
+            console.error(e)
+            showError("Mentor Rejection Failed")
+            return false;
+        }
+
+
+
+    }
 
 
 
 
-    return <MentorContext.Provider value={{ getAllNonApprovedMentors, approveMentor }}>
+    return <MentorContext.Provider value={{ getAllNonApprovedMentors, approveMentor, rejectMentor }}>
         {children}
 
     </MentorContext.Provider>

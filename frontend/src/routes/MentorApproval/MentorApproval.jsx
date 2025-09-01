@@ -8,11 +8,16 @@ const MentorApproval = () => {
     const { user } = useUser()
     const [mentors, setMentors] = useState([])
     const [selectedMentor, setSelectedMentor] = useState(null)
-    const { getAllNonApprovedMentors , approveMentor } = useMentor()
+    const { getAllNonApprovedMentors, approveMentor, rejectMentor } = useMentor()
 
     async function fetchMentors() {
         const data = await getAllNonApprovedMentors(user.user_id)
-        // console.log(data)
+        console.log(data.mentors)
+
+        if (data.mentors == null) {
+            return
+        }
+
         setMentors(data.mentors)
     }
 
@@ -29,14 +34,30 @@ const MentorApproval = () => {
     }
 
     const handleApproveMentor = async (mentorId) => {
-        // Update local state
+
+
+        const res = await approveMentor(user.user_id, mentorId)
+
+        if (!res) {
+
+            console.log('Approving mentor failed')
+        }
+
+        setMentors(mentors.filter(mentor => mentor.user_id !== mentorId))
+        setSelectedMentor(null)
+        console.log('Approving mentor:', mentorId)
+    }
+
+    const handleRejectMentor = async (mentorId) => {
+
+
+        await rejectMentor(user.user_id, mentorId)
+
         setMentors(mentors.filter(mentor => mentor.user_id !== mentorId))
         setSelectedMentor(null)
 
-        approveMentor(user.user_id)
 
-
-        console.log('Approving mentor:', mentorId)
+        console.log('Rejecting mentor:', mentorId)
     }
 
     return (
@@ -49,12 +70,12 @@ const MentorApproval = () => {
                         <p className="text-gray-600">Review and approve mentor applications</p>
                         <div className="mt-4">
                             <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
-                                {mentors.length} Pending Approvals
+                                {mentors != null ? `${mentors.length}` : '0'} Pending Approvals
                             </span>
                         </div>
                     </div>
 
-                    {mentors.length === 0 ? (
+                    {mentors != null && mentors.length === 0 ? (
                         <div className="text-center py-16">
                             <div className="text-gray-400 mb-4">
                                 <User size={64} className="mx-auto" />
@@ -64,7 +85,7 @@ const MentorApproval = () => {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {mentors.map((mentor,index) => (
+                            {mentors != null && mentors.map((mentor, index) => (
                                 <div
                                     key={index}
                                     onClick={() => handleMentorClick(mentor)}
@@ -215,10 +236,10 @@ const MentorApproval = () => {
                                             onClick={() => handleApproveMentor(selectedMentor.user_id)}
                                             className="flex-1 cursor-pointer bg-blue-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
                                         >
-                                            Approve Mentor
+                                            Approve 
                                         </button>
                                         <button
-                                            onClick={handleCloseModal}
+                                            onClick={() => handleRejectMentor(selectedMentor.user_id)}
                                             className="flex-1  cursor-pointer  text-white py-3 px-6 rounded-lg font-semibold bg-red-500 transition-colors"
                                         >
                                             Reject
