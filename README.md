@@ -10,6 +10,7 @@
 - [x] Mentor registration 
 - [x] admin approval for mentors 
 - [x] delete on cascade for expertise
+- [ ] show profile page according to startup or mentor
 - [ ] Fetch all the mentors 
 - [ ] Fetch all the startups 
 - [ ] get mentorship option for startup 
