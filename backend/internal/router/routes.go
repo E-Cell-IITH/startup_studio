@@ -46,4 +46,12 @@ func SetUpRoutes(router *gin.Engine) {
 		mentor.GET("/:mentorId", controllers.GetMentorByID)
 	}
 
+	admin := router.Group("/api/admin")
+
+	admin.Use(middlewares.AuthMiddleware)
+	{
+		admin.GET("/mentors/approval/:userId",controllers.GetAllNonApprovedMentors)
+		
+	}
+
 }

@@ -9,4 +9,5 @@ type Mentor struct {
 	Expertise      []string `json:"expertise"`
 	About          string   `json:"about"`
 	ApprovalStatus bool     `json:"approval_status"`
+	MentorName     string   `json:"mentor_name"`
 }

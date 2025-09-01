@@ -209,6 +209,23 @@ func MentorRegistration(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
+
+	// get the user name from user id
+	
+
+	queryName :=
+		`
+	SELECT full_name FROM users WHERE id = $1
+	`
+
+	err = config.DB.QueryRowContext(ctx, queryName, userId).Scan(&mentor.MentorName)
+	if err != nil {
+		log.Printf("Failed to query name: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
+	}
+
 	// generate a new uuid for mentors
 	uuidStr, err := helpers.GenerateUUIDFromEmail(userId)
 	if err != nil {
@@ -217,14 +234,12 @@ func MentorRegistration(c *gin.Context) {
 		return
 	}
 
-	ctx := c.Request.Context()
-
 	// insert into mentors table with approval_status = false
 	query := `
 		INSERT INTO mentors
-		(mentor_id, user_id, linked_in_url, profile_photo_ref, phone_number, about, approval_status)
+		(mentor_id, user_id, linked_in_url, profile_photo_ref, phone_number, about, approval_status,mentor_name)
 		VALUES 
-		($1,$2,$3,$4,$5,$6,$7)
+		($1,$2,$3,$4,$5,$6,$7,$8)
 	`
 
 	_, err = config.DB.ExecContext(ctx, query,
@@ -235,6 +250,7 @@ func MentorRegistration(c *gin.Context) {
 		mentor.Phone,
 		mentor.About,
 		false,
+		mentor.MentorName,
 	)
 
 	if err != nil {

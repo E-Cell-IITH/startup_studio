@@ -14,3 +14,4 @@
 - [ ] get mentorship option for startup 
 - [ ] Check profile picture bug in frontend
 - [ ] Edit user functionality
+- [ ] render only the parts which being fetched by backend 

@@ -9,7 +9,7 @@ const Navbar = () => {
   const navigate = useNavigate()
 
 
-  console.log("Navbar user" , user)
+  // console.log("Navbar user", user)
 
   if (!user) return null;
 
@@ -50,7 +50,10 @@ const Navbar = () => {
       baseItems.push({ name: 'All Startups', href: '/startups', icon: Users });
     }
     if (isAdmin) {
+      baseItems.length = 0
       baseItems.push({ name: 'Mentor Approval', href: '/mentor-approval', icon: UserCheck });
+      baseItems.push({ name: 'All Mentors', href: '/mentors', icon: Users });
+      baseItems.push({ name: 'All Startups', href: '/startups', icon: Users });
     }
 
     baseItems.push({ name: 'Profile', href: '/profile', icon: User });

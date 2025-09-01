@@ -155,8 +155,8 @@ export const UserProvider = ({ children }) => {
       return data;
     }
     catch (e) {
-      console.error("Login error:", e);
-      showError("Login failed.", 5000);
+      console.error("Startup reg error:", e);
+      showError("Startup Registration Failed.", 5000);
       throw err;
     }
 
@@ -164,19 +164,29 @@ export const UserProvider = ({ children }) => {
 
   async function logout() {
 
-    const response = await fetch(`${BACKEND_URL}/api/auth/logout`, {
-      credentials: "include"
-    })
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/auth/logout`, {
+        credentials: "include"
+      })
 
-    if (response.status != 200) {
-      showError("Login failed.", 5000);
-      return false;
+      if (response.status != 200) {
+        showError("Logout failed.", 5000);
+        return false;
+      }
+
+      setUser(null);
+      showSuccess("You have been logged out.", 3000);
+      return true;
     }
+    catch (e) {
+      console.error("Logout error:", e);
 
-    setUser(null);
-    showInfo("You have been logged out.", 3000);
-    return true;
-  };
+      showError("Logout Failed.", 5000);
+
+      throw e;
+    }
+  }
+
 
   async function mentorRegistration(formData, user_id, file) {
 
@@ -228,7 +238,11 @@ export const UserProvider = ({ children }) => {
 
 
     } catch (e) {
+      console.error("Login error:", e);
 
+      showError("Mentor Registration Failed.", 5000);
+
+      throw e;
     }
 
   }

@@ -18,7 +18,7 @@ const ProtectedRoute = ({ children }) => {
                 if (res.status === 200) {
                     const data = await res.json();
 
-                    console.log(data)
+                    // console.log(data)
                     setUser({
                         user_id: data?.user?.user_id,
                         full_name: data?.user?.username,
@@ -59,7 +59,7 @@ const ProtectedRoute = ({ children }) => {
                 <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center border border-blue-100">
                     <div className="mb-6">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">"Loading Your Details"</h3>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">"Loading Details"</h3>
                         <PulsingDots />
                     </div>
                     <div className="text-sm text-gray-500">Please wait a moment...</div>

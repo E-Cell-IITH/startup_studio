@@ -8,6 +8,7 @@ import MentorScreen from './routes/Mentor/MentorScreen'
 import StartUpScreen from './routes/Startup/StartUpScreen'
 import ProtectedRoute from './routes/ProtectedRoute/ProtectedRoute'
 import ProfileScreen from './routes/ProfileScreen/ProfileScreen'
+import MentorApproval from './routes/MentorApproval/MentorApproval'
 
 function App() {
   return (
@@ -28,6 +29,13 @@ function App() {
             <ProfileScreen />
           </ProtectedRoute>
         } />
+
+        <Route path='/mentor-approval' element={
+          <ProtectedRoute>
+            <MentorApproval />
+          </ProtectedRoute>
+        } />
+
         <Route path='/' element={<LoginScreen />} />
         <Route path='/role' element={<FilterRoleScreen />} />
         <Route path='/mentor-register' element={<MentorRegistration />} />
