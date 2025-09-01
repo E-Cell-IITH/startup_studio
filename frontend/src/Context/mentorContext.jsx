@@ -42,11 +42,35 @@ export const MentorProvider = ({ children }) => {
         }
     }
 
+    async function approveMentor(userId, mentorId) {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/admin/mentor/approve/${userId}/${mentorId}`, {
+                method: "PUT",
+                credentials: "include"
+            })
+
+
+            if (response.status != 200) {
+                showError("Mentor Approval Failed")
+                return false;
+            }
+
+            showSuccess("Mentor Approved")
+
+            return true;
+
+        } catch (e) {
+            console.error(e)
+            showError("Mentor Approval Failed")
+            return false;
+        }
+    }
 
 
 
 
-    return <MentorContext.Provider value={{ getAllNonApprovedMentors }}>
+
+    return <MentorContext.Provider value={{ getAllNonApprovedMentors, approveMentor }}>
         {children}
 
     </MentorContext.Provider>

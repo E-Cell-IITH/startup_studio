@@ -17,14 +17,13 @@ func GetAllNonApprovedMentors(c *gin.Context) {
 
 	// check if the person is admin or not
 	var isAdmin bool
-	var fullName string
 
 	queryUser := `
-		SELECT is_admin, full_name FROM users WHERE id = $1;
+		SELECT is_admin FROM users WHERE id = $1;
 	`
 
 	ctx := c.Request.Context()
-	err := config.DB.QueryRowContext(ctx, queryUser, userId).Scan(&isAdmin, &fullName)
+	err := config.DB.QueryRowContext(ctx, queryUser, userId).Scan(&isAdmin)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
@@ -109,5 +108,83 @@ func GetAllNonApprovedMentors(c *gin.Context) {
 }
 
 func ApproveAMentor(c *gin.Context) {
+	userId := c.Param("userId")
 
+	// check if user is admin
+	var isAdmin bool
+	queryUser := `SELECT is_admin FROM users WHERE id = $1;`
+
+	ctx := c.Request.Context()
+	err := config.DB.QueryRowContext(ctx, queryUser, userId).Scan(&isAdmin)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
+		return
+	}
+
+	if !isAdmin {
+		c.JSON(http.StatusForbidden, gin.H{"message": "You are not an admin"})
+		return
+	}
+
+	// get mentorId
+	mentorId := c.Param("mentorId")
+
+	// update mentor approval
+	queryUpdate := `UPDATE mentors SET approval_status = TRUE WHERE mentor_id = $1`
+	_, err = config.DB.ExecContext(ctx, queryUpdate, mentorId)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to approve mentor"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Mentor approved successfully",
+	})
+}
+
+func RejectMentor(c *gin.Context) {
+	userId := c.Param("userId")
+
+	var isAdmin bool
+	queryUser := `SELECT is_admin FROM users WHERE id = $1;`
+
+	ctx := c.Request.Context()
+	err := config.DB.QueryRowContext(ctx, queryUser, userId).Scan(&isAdmin)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
+		return
+	}
+
+	if !isAdmin {
+		c.JSON(http.StatusForbidden, gin.H{"message": "You are not an admin"})
+		return
+	}
+
+	mentorId := c.Param("mentorId")
+
+	// find mentor's user_id
+	var mentorUserId string
+	queryMentorUserId := `SELECT user_id FROM mentors WHERE mentor_id = $1`
+	err = config.DB.QueryRowContext(ctx, queryMentorUserId, mentorId).Scan(&mentorUserId)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to fetch mentor"})
+		return
+	}
+
+	// delete user 
+	queryDelete := `DELETE FROM users WHERE id = $1`
+	_, err = config.DB.ExecContext(ctx, queryDelete, mentorUserId)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to reject mentor"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Mentor rejected and user deleted successfully",
+	})
 }

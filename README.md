@@ -8,9 +8,10 @@
 - [x] Add a column user_status (admin or general) in users
 - [x] Add a column status (true or false) in mentors
 - [x] Mentor registration 
-- [ ] admin approval for mentors 
-- [ ] delete on cascade for expertise
-- [ ] Some get routes
+- [x] admin approval for mentors 
+- [x] delete on cascade for expertise
+- [ ] Fetch all the mentors 
+- [ ] Fetch all the startups 
 - [ ] get mentorship option for startup 
 - [ ] Check profile picture bug in frontend
 - [ ] Edit user functionality

@@ -1,0 +1,11 @@
+-- Down Migration: Re-adding `ON DELETE CASCADE` to `mentor_expertise`
+
+-- Drop the foreign key constraints without `ON DELETE CASCADE`
+ALTER TABLE mentor_expertise
+    DROP CONSTRAINT mentor_expertise_mentor_id_fkey,
+    DROP CONSTRAINT mentor_expertise_expertise_id_fkey;
+
+-- Re-add the foreign key constraints with `ON DELETE CASCADE`
+ALTER TABLE mentor_expertise
+    ADD CONSTRAINT mentor_expertise_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES mentors(mentor_id) ON DELETE CASCADE,
+    ADD CONSTRAINT mentor_expertise_expertise_id_fkey FOREIGN KEY (expertise_id) REFERENCES expertise(expertise_id) ON DELETE CASCADE;

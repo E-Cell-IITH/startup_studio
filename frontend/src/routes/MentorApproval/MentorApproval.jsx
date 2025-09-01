@@ -8,7 +8,7 @@ const MentorApproval = () => {
     const { user } = useUser()
     const [mentors, setMentors] = useState([])
     const [selectedMentor, setSelectedMentor] = useState(null)
-    const { getAllNonApprovedMentors } = useMentor()
+    const { getAllNonApprovedMentors , approveMentor } = useMentor()
 
     async function fetchMentors() {
         const data = await getAllNonApprovedMentors(user.user_id)
@@ -28,11 +28,14 @@ const MentorApproval = () => {
         setSelectedMentor(null)
     }
 
-    const handleApproveMentor = (mentorId) => {
+    const handleApproveMentor = async (mentorId) => {
         // Update local state
         setMentors(mentors.filter(mentor => mentor.user_id !== mentorId))
         setSelectedMentor(null)
-        // Here you would call your API to approve the mentor
+
+        approveMentor(user.user_id)
+
+
         console.log('Approving mentor:', mentorId)
     }
 
