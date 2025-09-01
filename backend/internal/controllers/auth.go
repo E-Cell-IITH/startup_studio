@@ -192,7 +192,6 @@ func StartupRegistration(c *gin.Context) {
 }
 
 func MentorRegistration(c *gin.Context) {
-
 	// get the mentor from frontend
 	var mentor models.Mentor
 
@@ -212,13 +211,7 @@ func MentorRegistration(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	// get the user name from user id
-	
-
-	queryName :=
-		`
-	SELECT full_name FROM users WHERE id = $1
-	`
-
+	queryName := `SELECT full_name FROM users WHERE id = $1`
 	err = config.DB.QueryRowContext(ctx, queryName, userId).Scan(&mentor.MentorName)
 	if err != nil {
 		log.Printf("Failed to query name: %v", err)
@@ -226,7 +219,7 @@ func MentorRegistration(c *gin.Context) {
 		return
 	}
 
-	// generate a new uuid for mentors
+	// generate a new uuid for mentor
 	uuidStr, err := helpers.GenerateUUIDFromEmail(userId)
 	if err != nil {
 		log.Printf("Failed to generate uuid: %v", err)
@@ -237,9 +230,8 @@ func MentorRegistration(c *gin.Context) {
 	// insert into mentors table with approval_status = false
 	query := `
 		INSERT INTO mentors
-		(mentor_id, user_id, linked_in_url, profile_photo_ref, phone_number, about, approval_status,mentor_name)
-		VALUES 
-		($1,$2,$3,$4,$5,$6,$7,$8)
+		(mentor_id, user_id, linked_in_url, profile_photo_ref, phone_number, about, approval_status, mentor_name)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
 	`
 
 	_, err = config.DB.ExecContext(ctx, query,
@@ -252,7 +244,6 @@ func MentorRegistration(c *gin.Context) {
 		false,
 		mentor.MentorName,
 	)
-
 	if err != nil {
 		log.Printf("Error in registering mentor: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
@@ -271,39 +262,14 @@ func MentorRegistration(c *gin.Context) {
 		}
 	}
 
-	// insert expertise + link to mentor
+	// insert expertise directly into mentor_expertise
 	for _, exp := range mentor.Expertise {
-		var expertiseID string
-
-		// check if expertise already exists
-		err := config.DB.QueryRowContext(ctx, `
-			SELECT expertise_id FROM expertise WHERE expertise = $1
-		`, exp).Scan(&expertiseID)
-
-		if err == sql.ErrNoRows {
-			// insert new expertise
-			newExpID, _ := uuid.NewUUID()
-			_, err = config.DB.ExecContext(ctx, `
-				INSERT INTO expertise (expertise_id, expertise)
-				VALUES ($1, $2)
-			`, newExpID, exp)
-			if err != nil {
-				log.Printf("Error inserting new expertise: %v", err)
-				continue
-			}
-			expertiseID = newExpID.String()
-		} else if err != nil {
-			log.Printf("Error checking expertise: %v", err)
-			continue
-		}
-
-		// link mentor to expertise
 		_, err = config.DB.ExecContext(ctx, `
-			INSERT INTO mentor_expertise (mentor_id, expertise_id)
+			INSERT INTO mentor_expertise (mentor_id, expertise)
 			VALUES ($1, $2)
-		`, uuidStr, expertiseID)
+		`, uuidStr, exp)
 		if err != nil {
-			log.Printf("Error linking mentor expertise: %v", err)
+			log.Printf("Error inserting expertise: %v", err)
 		}
 	}
 
@@ -314,6 +280,7 @@ func MentorRegistration(c *gin.Context) {
 		"mentor_id": uuidStr,
 	})
 }
+
 
 func Logout(c *gin.Context) {
 
@@ -347,11 +314,9 @@ func GetUserDetails(c *gin.Context) {
 		return
 	}
 
-	// log.Println("Got email from request", email)
-
 	// fetch user info
 	queryUser := `
-        SELECT id, full_name, email, is_registered,is_admin
+        SELECT id, full_name, email, is_registered, is_admin
         FROM users
         WHERE email = $1
     `
@@ -370,23 +335,18 @@ func GetUserDetails(c *gin.Context) {
 	}
 	resp.User = currUser
 
-	log.Println("Found current user appended it to resp", resp)
-
 	// ------------------------
 	// check if the user is a startup
 	// ------------------------
-
-	// log.Println("Going to check for startup")
-
 	queryStartup := `
-    SELECT startup_id,
-    startup_name,
-	website,
-    phone_number,
-    profile_photo_ref,
-    COALESCE(about, '')
-    FROM startups
-    WHERE user_id = $1
+        SELECT startup_id,
+               startup_name,
+               website,
+               phone_number,
+               profile_photo_ref,
+               COALESCE(about, '')
+        FROM startups
+        WHERE user_id = $1
 	`
 
 	var startup models.Startup
@@ -394,15 +354,10 @@ func GetUserDetails(c *gin.Context) {
 	err = config.DB.QueryRowContext(ctx, queryStartup, currUser.UserID).
 		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.ProfilePic, &startup.About)
 
-	// log.Println("Ran the startup query, error:", err)
-	// log.Println(startupID)
-	// log.Println(startup)
 	startup.UserID = currUser.UserID.String()
 
 	if err == nil {
 		sDetail := models.StartupDetail{Startup: startup}
-
-		// log.Println("Going to look for startup mentorships")
 
 		// fetch mentorships for startup
 		mentorshipQuery := `
@@ -413,9 +368,6 @@ func GetUserDetails(c *gin.Context) {
             WHERE m.startup_id = $1
         `
 		rows, err := config.DB.QueryContext(ctx, mentorshipQuery, startupID)
-
-		// log.Println("Ran query for startup mentorships")
-
 		if err != nil {
 			log.Println("error fetching startup mentorships:", err)
 		} else {
@@ -427,9 +379,6 @@ func GetUserDetails(c *gin.Context) {
 					continue
 				}
 				sDetail.Mentorships = append(sDetail.Mentorships, ms)
-
-				// log.Println("got the mentorships")
-
 			}
 			if err := rows.Err(); err != nil {
 				log.Println("rows iteration error (startup mentorships):", err)
@@ -437,9 +386,6 @@ func GetUserDetails(c *gin.Context) {
 		}
 
 		resp.StartupDetail = &sDetail
-
-		// log.Println("Current user is a startup appended in startup", resp)
-
 		c.JSON(http.StatusOK, resp)
 		return
 	}
@@ -448,14 +394,14 @@ func GetUserDetails(c *gin.Context) {
 	// check if the user is a mentor
 	// ------------------------
 	queryMentor := `
-    SELECT mentor_id,
-    phone_number,
-	linked_in_url,
-    profile_photo_ref,
-	approval_status,
-    COALESCE(about, '')
-	FROM mentors
-	WHERE user_id = $1;
+        SELECT mentor_id,
+               phone_number,
+               linked_in_url,
+               profile_photo_ref,
+               approval_status,
+               COALESCE(about, '')
+        FROM mentors
+        WHERE user_id = $1;
     `
 	var mentor models.Mentor
 	var mentorID string
@@ -464,14 +410,12 @@ func GetUserDetails(c *gin.Context) {
 	if err == nil {
 		mDetail := models.MentorDetail{Mentor: mentor}
 
-		// expertise
+		// expertise (now directly from mentor_expertise.expertise)
 		expertiseQuery := `
-    SELECT e.expertise
-    FROM mentor_expertise me
-    JOIN expertise e ON me.expertise_id = e.expertise_id
-    WHERE me.mentor_id = $1
-`
-
+            SELECT expertise
+            FROM mentor_expertise
+            WHERE mentor_id = $1
+        `
 		rowsExp, err := config.DB.QueryContext(ctx, expertiseQuery, mentorID)
 		if err != nil {
 			log.Println("error fetching expertise:", err)
@@ -492,12 +436,11 @@ func GetUserDetails(c *gin.Context) {
 
 		// experience
 		expQuery := `
-    SELECT experience
-    FROM experience
-    WHERE mentor_id = $1
-`
+            SELECT experience
+            FROM experience
+            WHERE mentor_id = $1
+        `
 		rowsExperience, err := config.DB.QueryContext(ctx, expQuery, mentorID)
-
 		if err != nil {
 			log.Println("error fetching experience:", err)
 		} else {
@@ -539,21 +482,17 @@ func GetUserDetails(c *gin.Context) {
 					StartupName:  startupName,
 				})
 			}
-
 			if err := rowsMs.Err(); err != nil {
 				log.Println("rows iteration error (mentor mentorships):", err)
 			}
 		}
 
 		resp.MentorDetail = &mDetail
-
-		log.Println("current user is a mentor appended into resp", resp)
 		c.JSON(http.StatusOK, resp)
 		return
 	}
 
-	log.Println(resp)
-
 	// fallback: just return user info
 	c.JSON(http.StatusOK, resp)
 }
+

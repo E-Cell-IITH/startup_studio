@@ -51,8 +51,8 @@ func SetUpRoutes(router *gin.Engine) {
 	admin.Use(middlewares.AuthMiddleware)
 	{
 		admin.GET("/mentors/approval/:userId",controllers.GetAllNonApprovedMentors)
-		admin.PUT("/mentors/approve/:userId/:mentorId",controllers.ApproveAMentor)
-		admin.DELETE("/mentors/reject/:userId/:mentorId",controllers.RejectMentor)
+		admin.PATCH("/mentor/approve/:adminUserId/:mentorUserId",controllers.ApproveAMentor)
+		admin.DELETE("/mentor/reject/:adminUserId/:mentorUserId",controllers.RejectMentor)
 	}
 
 }
