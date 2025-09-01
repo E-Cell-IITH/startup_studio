@@ -9,7 +9,7 @@
 - [x] Add a column status (true or false) in mentors
 - [x] Mentor registration 
 - [x] admin approval for mentors 
-- [x] delete on cascade for expertise
+- [x] on delete cascade for expertise
 - [ ] show profile page according to startup or mentor
 - [ ] Fetch all the mentors 
 - [ ] Fetch all the startups 
