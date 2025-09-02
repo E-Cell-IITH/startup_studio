@@ -10,7 +10,9 @@ import {
     Camera,
     ExternalLink,
     UserCheck,
-    Briefcase
+    Briefcase,
+    Award,
+    Star
 } from 'lucide-react';
 import { useUser } from '../../Context/userContext';
 import Navbar from '../../components/Navbar/Navbar';
@@ -21,14 +23,12 @@ const ProfileScreen = () => {
 
     const userData = user;
 
-    console.log(userData.startup_detail?.profile_photo_ref )
+    // console.log(userData)
 
     const mentorships = userData.startup_detail?.mentorships || userData.mentor_detail?.mentorships
 
     const isStartup = userData.mentor_detail === undefined && userData.startup_detail !== undefined;
     const isMentor = userData.startup_detail === undefined && userData.mentor_detail !== undefined;
-
-
 
     const handleChangePhoto = () => {
         alert('Change photo functionality to be implemented');
@@ -39,9 +39,9 @@ const ProfileScreen = () => {
             <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
                 <div className="relative">
                     <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 border-4 border-blue-500">
-                        {userData.startup_detail?.profile_photo_ref ? (
+                        {userData.startup_detail?.profile_photo_ref || userData.mentor_detail?.profile_photo_ref ? (
                             <img
-                                src={userData.startup_detail.profile_photo_ref}
+                                src={userData.startup_detail?.profile_photo_ref || userData.mentor_detail?.profile_photo_ref}
                                 alt="Profile"
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
@@ -84,7 +84,6 @@ const ProfileScreen = () => {
                         </div>
                     )}
                 </div>
-
             </div>
         </div>
     );
@@ -125,6 +124,24 @@ const ProfileScreen = () => {
                         </div>
                     </div>
                 )}
+
+                {isMentor && userData.mentor_detail?.linked_in_url && (
+                    <div className="flex items-center space-x-3">
+                        <Globe className="text-gray-400" size={18} />
+                        <div>
+                            <p className="text-sm text-gray-500">LinkedIn</p>
+                            <a
+                                href={userData.mentor_detail.linked_in_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-semibold text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+                            >
+                                <span>LinkedIn Profile</span>
+                                <ExternalLink size={14} />
+                            </a>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -143,16 +160,66 @@ const ProfileScreen = () => {
                     {
                         about ? (
                             <>
-
                                 {about}
                             </>
                         ) : (
                             <>
-                                No about
+                                No about information available
                             </>
                         )
-
                     }
+                </div>
+            </div>
+        );
+    };
+
+    const ExperienceSection = () => {
+        if (!isMentor || !userData.mentor_detail?.experience || userData.mentor_detail.experience.length === 0) {
+            return null;
+        }
+
+        return (
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+                    <Briefcase className="text-blue-500" />
+                    <span>Experience</span>
+                </h2>
+                <div className="space-y-3">
+                    {userData.mentor_detail.experience.map((exp, index) => (
+                        <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <Award className="text-blue-600" size={16} />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-gray-700 font-medium">{exp}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+    const ExpertiseSection = () => {
+        if (!isMentor || !userData.mentor_detail?.expertise || userData.mentor_detail.expertise.length === 0) {
+            return null;
+        }
+
+        return (
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+                    <Star className="text-blue-500" />
+                    <span>Expertise</span>
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                    {userData.mentor_detail.expertise.map((skill, index) => (
+                        <span
+                            key={index}
+                            className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full"
+                        >
+                            {skill}
+                        </span>
+                    ))}
                 </div>
             </div>
         );
@@ -219,10 +286,11 @@ const ProfileScreen = () => {
         <div className="">
             <Navbar />
             <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
-
                 <ProfileHeader />
                 <ContactInfo />
                 <AboutSection />
+                {isMentor && <ExperienceSection />}
+                {isMentor && <ExpertiseSection />}
                 <MentorshipsSection />
             </div>
         </div>
