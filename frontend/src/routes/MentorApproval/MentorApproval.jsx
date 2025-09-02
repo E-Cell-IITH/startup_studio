@@ -3,6 +3,7 @@ import { X, Phone, ExternalLink, User, Award, Briefcase } from 'lucide-react'
 import Navbar from '../../components/Navbar/Navbar'
 import { useUser } from '../../Context/userContext'
 import { useMentor } from '../../Context/mentorContext'
+import Footer from '../../components/Footer/Footer'
 
 const MentorApproval = () => {
     const { user } = useUser()
@@ -63,7 +64,7 @@ const MentorApproval = () => {
     return (
         <>
             <Navbar />
-            <div className="min-h-screen bg-white">
+            <div className=" bg-white">
                 <div className="container mx-auto px-4 py-8">
                     <div className="mb-8">
                         <h1 className="text-3xl font-bold text-gray-800 mb-2">Mentor Approval Dashboard</h1>
@@ -251,6 +252,7 @@ const MentorApproval = () => {
                     )}
                 </div>
             </div>
+            <Footer/>
         </>
     )
 }

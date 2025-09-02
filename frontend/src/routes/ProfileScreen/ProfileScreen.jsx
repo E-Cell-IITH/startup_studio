@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useUser } from '../../Context/userContext';
 import Navbar from '../../components/Navbar/Navbar';
+import Footer from '../../components/Footer/Footer';
 
 const ProfileScreen = () => {
 
@@ -293,6 +294,7 @@ const ProfileScreen = () => {
                 {isMentor && <ExpertiseSection />}
                 <MentorshipsSection />
             </div>
+            <Footer/>
         </div>
     );
 };
