@@ -17,6 +17,8 @@ const LoginScreen = () => {
       const idToken = credentialResponse.credential;
       const data = await login(idToken);
 
+      // console.log(data)
+
       if (data.is_registered) {
         setLoadingMessage('Getting your profile...');
         const idData = await getStartUpOrMentorId(data.user_id);

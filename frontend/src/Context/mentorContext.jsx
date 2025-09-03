@@ -91,10 +91,34 @@ export const MentorProvider = ({ children }) => {
 
     }
 
+    async function getAllMentors(){
+        try{    
+            const response = await fetch(`${BACKEND_URL}/api/mentors/`, {
+                credentials : "include"
+            })
+
+            if(response.status != 200){
+                showError("Fetching Mentors Failed")
+                return 
+            }
+
+            const data = await response.json()
+
+            // console.log(data)
+
+            return data
+
+
+        }catch(e){
+            console.error(e)
+            showError("Error fetching All Mentors")
+            return
+        }
+    }
 
 
 
-    return <MentorContext.Provider value={{ getAllNonApprovedMentors, approveMentor, rejectMentor }}>
+    return <MentorContext.Provider value={{ getAllNonApprovedMentors, approveMentor, rejectMentor, getAllMentors }}>
         {children}
 
     </MentorContext.Provider>

@@ -79,7 +79,7 @@ export const UserProvider = ({ children }) => {
 
       const data = await response.json()
 
-
+      
 
       if (data.startup_id) {
         setUser(prev => ({

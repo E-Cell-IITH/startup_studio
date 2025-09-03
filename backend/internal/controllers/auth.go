@@ -1,17 +1,20 @@
 package controllers
 
 import (
+	"context"
 	"database/sql"
 	"errors"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/E-Cell-IITH/startup_studio/config"
 	"github.com/E-Cell-IITH/startup_studio/internal/helpers"
 	"github.com/E-Cell-IITH/startup_studio/internal/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"google.golang.org/api/idtoken"
-	"log"
-	"net/http"
-	"os"
 )
 
 type LoginContent struct {
@@ -46,6 +49,8 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	log.Println(emailStr)
+
 	fullName, _ := payload.Claims["name"].(string)
 
 	// check if the user exists
@@ -79,6 +84,7 @@ func Login(c *gin.Context) {
 		}
 	}
 
+	log.Println(is_registered)
 	// generate jwt token
 
 	token, err := helpers.GenerateToken(emailStr)
@@ -273,6 +279,22 @@ func MentorRegistration(c *gin.Context) {
 		}
 	}
 
+	// change is_registered to true for mentor
+	querySetIsRegistered :=
+		`
+	UPDATE users
+	SET is_registered = TRUE
+	WHERE id = $1;
+	`
+
+	_, err = config.DB.ExecContext(ctx, querySetIsRegistered, userId)
+
+	if err != nil {
+		log.Printf("Error in  updating user's registration status: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
+	}
+
 	// send response
 	c.JSON(http.StatusOK, gin.H{
 		"message":   "Mentor registration submitted. Pending admin approval.",
@@ -280,7 +302,6 @@ func MentorRegistration(c *gin.Context) {
 		"mentor_id": uuidStr,
 	})
 }
-
 
 func Logout(c *gin.Context) {
 
@@ -305,14 +326,23 @@ func Logout(c *gin.Context) {
 
 func GetUserDetails(c *gin.Context) {
 	var resp models.UserResponse
-	ctx := c.Request.Context()
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	defer cancel()
 
 	// get email from middleware context
-	email, exists := c.Get("email")
+	emailVal, exists := c.Get("email")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "email not found in token"})
 		return
 	}
+
+	email, ok := emailVal.(string)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email format in token"})
+		return
+	}
+
+	log.Println(email)
 
 	// fetch user info
 	queryUser := `
@@ -495,4 +525,3 @@ func GetUserDetails(c *gin.Context) {
 	// fallback: just return user info
 	c.JSON(http.StatusOK, resp)
 }
-
