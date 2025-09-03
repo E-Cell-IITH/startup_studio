@@ -11,8 +11,9 @@
 - [x] admin approval for mentors 
 - [x] on delete cascade for expertise
 - [x] show profile page according to startup or mentor
-- [ ] Fetch all the mentors 
+- [x] Fetch all the mentors 
 - [ ] Fetch all the startups 
+- [ ] bug in /api/auth/me query and /api/mentors
 - [ ] get mentorship option for startup 
 - [ ] Check profile picture bug in frontend
 - [ ] Edit user functionality
