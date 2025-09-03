@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 
@@ -66,40 +65,32 @@ func GetAllNonApprovedMentors(c *gin.Context) {
 	var mentors []models.Mentor
 
 	for rows.Next() {
-		var mentor models.Mentor
-		var experiences, expertises []sql.NullString
+	var mentor models.Mentor
+	var experiences, expertises []string
 
-		err := rows.Scan(
-			&mentor.UserID,
-			&mentor.Phone,
-			&mentor.ProfilePic,
-			&mentor.LinkedInURL,
-			&mentor.About,
-			&mentor.ApprovalStatus,
-			&mentor.MentorName,
-			pq.Array(&experiences),
-			pq.Array(&expertises),
-		)
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error scanning mentor data"})
-			return
-		}
-
-		// convert []sql.NullString -> []string
-		for _, exp := range experiences {
-			if exp.Valid {
-				mentor.Experience = append(mentor.Experience, exp.String)
-			}
-		}
-		for _, ex := range expertises {
-			if ex.Valid {
-				mentor.Expertise = append(mentor.Expertise, ex.String)
-			}
-		}
-
-		mentors = append(mentors, mentor)
+	err := rows.Scan(
+		&mentor.UserID,
+		&mentor.Phone,
+		&mentor.ProfilePic,
+		&mentor.LinkedInURL,
+		&mentor.About,
+		&mentor.ApprovalStatus,
+		&mentor.MentorName,
+		pq.Array(&experiences),
+		pq.Array(&expertises),
+	)
+	if err != nil {
+		log.Println("scan error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error scanning mentor data"})
+		return
 	}
+
+	mentor.Experience = experiences
+	mentor.Expertise = expertises
+
+	mentors = append(mentors, mentor)
+}
+
 
 	// respond with all non-approved mentors
 	c.JSON(http.StatusOK, gin.H{

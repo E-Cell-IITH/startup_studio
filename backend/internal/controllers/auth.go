@@ -1,14 +1,12 @@
 package controllers
 
 import (
-	"context"
+	
 	"database/sql"
 	"errors"
 	"log"
 	"net/http"
 	"os"
-	"time"
-
 	"github.com/E-Cell-IITH/startup_studio/config"
 	"github.com/E-Cell-IITH/startup_studio/internal/helpers"
 	"github.com/E-Cell-IITH/startup_studio/internal/models"
@@ -49,7 +47,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	log.Println(emailStr)
+	// log.Println(emailStr)
 
 	fullName, _ := payload.Claims["name"].(string)
 
@@ -326,8 +324,7 @@ func Logout(c *gin.Context) {
 
 func GetUserDetails(c *gin.Context) {
 	var resp models.UserResponse
-	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
-	defer cancel()
+	ctx := c.Request.Context()
 
 	// get email from middleware context
 	emailVal, exists := c.Get("email")
@@ -342,7 +339,7 @@ func GetUserDetails(c *gin.Context) {
 		return
 	}
 
-	log.Println(email)
+	// log.Println(email)
 
 	// fetch user info
 	queryUser := `

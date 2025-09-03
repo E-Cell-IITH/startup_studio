@@ -43,7 +43,6 @@ func SetUpRoutes(router *gin.Engine) {
 	mentor.Use(middlewares.AuthMiddleware)
 	{
 		mentor.GET("/", controllers.GetAllMentors)
-		mentor.GET("/:mentorId", controllers.GetMentorByID)
 	}
 
 	admin := router.Group("/api/admin")

@@ -10,7 +10,6 @@ import {
     Award,
     Star,
     Briefcase,
-    MapPin,
     Check,
     Search
 } from 'lucide-react';
@@ -42,7 +41,7 @@ const MentorScreen = () => {
         };
 
         fetchMentors();
-    }, [getAllMentors]);
+    }, []);
 
 
 

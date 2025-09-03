@@ -13,7 +13,7 @@
 - [x] show profile page according to startup or mentor
 - [x] Fetch all the mentors 
 - [ ] Fetch all the startups 
-- [ ] bug in /api/auth/me query and /api/mentors
+- [x] bug in /api/auth/me query and /api/mentors
 - [ ] get mentorship option for startup 
 - [ ] Check profile picture bug in frontend
 - [ ] Edit user functionality

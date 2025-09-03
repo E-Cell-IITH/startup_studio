@@ -76,7 +76,7 @@ const MentorApproval = () => {
                 {/* Profile Header */}
                 <div className="flex items-start space-x-5 mb-6">
                     <div className="relative flex-shrink-0">
-                        <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-orange-500 to-red-500 shadow-lg">
+                        <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-500 to-blue-500 shadow-lg">
                             {mentor.profile_photo_ref ? (
                                 <img
                                     src={mentor.profile_photo_ref}
@@ -92,15 +92,15 @@ const MentorApproval = () => {
                                 {mentor.mentor_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                             </div>
                         </div>
-                        <div className="absolute -top-1 -right-1 w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                        <div className="absolute -top-1 -right-1 w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
                             <Clock size={14} className="text-white" />
                         </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2 truncate group-hover:text-orange-600 transition-colors">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 truncate group-hover:text-blue-600 transition-colors">
                             {mentor.mentor_name}
                         </h3>
-                        <div className="flex items-center text-orange-600 text-sm font-medium mb-3">
+                        <div className="flex items-center text-blue-600 text-sm font-medium mb-3">
                             <AlertCircle size={16} className="mr-2" />
                             <span>Pending Approval</span>
                         </div>
@@ -121,7 +121,7 @@ const MentorApproval = () => {
                             {mentor.expertise.slice(0, 3).map((skill, index) => (
                                 <span
                                     key={index}
-                                    className="inline-flex items-center px-3 py-1.5 bg-orange-50 text-orange-700 text-xs font-semibold rounded-full border border-orange-100"
+                                    className="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full border border-blue-100"
                                 >
                                     {skill}
                                 </span>
@@ -151,8 +151,8 @@ const MentorApproval = () => {
                             </div>
                         )}
                     </div>
-                    <div className="flex items-center text-orange-600 font-semibold text-sm group-hover:text-orange-700 transition-colors">
-                        <span>Review Application</span>
+                    <div className="flex items-center text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition-colors">
+                        <span>Review </span>
                         <ExternalLink size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
                     </div>
                 </div>
@@ -171,7 +171,7 @@ const MentorApproval = () => {
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center"
+                        className="w-10 h-10 cursor-pointer rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center"
                     >
                         <X size={20} className="text-gray-600" />
                     </button>
@@ -182,7 +182,7 @@ const MentorApproval = () => {
                     {/* Profile Header */}
                     <div className="flex items-start space-x-8 mb-8">
                         <div className="relative flex-shrink-0">
-                            <div className="w-32 h-32 rounded-3xl overflow-hidden bg-gradient-to-br from-orange-500 to-red-500 shadow-xl">
+                            <div className="w-32 h-32 rounded-3xl overflow-hidden bg-blue-500 shadow-xl">
                                 {mentor.profile_photo_ref ? (
                                     <img
                                         src={mentor.profile_photo_ref}
@@ -198,13 +198,13 @@ const MentorApproval = () => {
                                     {mentor.mentor_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                                 </div>
                             </div>
-                            <div className="absolute -top-2 -right-2 w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                            <div className="absolute -top-2 -right-2 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
                                 <Clock size={18} className="text-white" />
                             </div>
                         </div>
                         <div className="flex-1">
                             <h3 className="text-3xl font-bold text-gray-900 mb-3">{mentor.mentor_name}</h3>
-                            <div className="flex items-center text-orange-600 mb-4">
+                            <div className="flex items-center text-blue-600 mb-4">
                                 <AlertCircle size={20} className="mr-2" />
                                 <span className="font-semibold">Pending Approval</span>
                             </div>
@@ -259,7 +259,7 @@ const MentorApproval = () => {
                             <div className="space-y-3">
                                 {mentor.experience.map((exp, index) => (
                                     <div key={index} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                                        <div className="flex items-start space-x-4">
+                                        <div className="flex items-center space-x-4">
                                             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                                 <Award className="text-blue-600" size={16} />
                                             </div>
@@ -297,14 +297,14 @@ const MentorApproval = () => {
                     <div className="flex space-x-4 pt-6 border-t border-gray-100">
                         <button
                             onClick={() => handleApproveMentor(mentor.user_id)}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center space-x-2"
+                            className="flex-1 cursor-pointer bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center space-x-2"
                         >
                             <CheckCircle size={20} />
                             <span>Approve Mentor</span>
                         </button>
                         <button
                             onClick={() => handleRejectMentor(mentor.user_id)}
-                            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center space-x-2"
+                            className="flex-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center space-x-2"
                         >
                             <X size={20} />
                             <span>Reject Application</span>
@@ -337,24 +337,12 @@ const MentorApproval = () => {
                                 placeholder="Search applications by name or expertise..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-16 pr-6 py-5 text-lg border-2 border-gray-200 rounded-3xl focus:outline-none focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all shadow-sm"
+                                className="w-full pl-16 pr-6 py-5 text-lg border-2 border-gray-200 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all shadow-sm"
                             />
                         </div>
                     </div>
 
-                    {/* Status Badge */}
-                    <div className="flex justify-center mt-8">
-                        <div className="inline-flex items-center space-x-3">
-                            <div className="bg-orange-100 border-2 border-orange-200 rounded-2xl px-6 py-3">
-                                <div className="flex items-center space-x-3">
-                                    <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
-                                    <span className="text-orange-700 font-bold text-lg">
-                                        {filteredMentors?.length || 0} Pending Approvals
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
 

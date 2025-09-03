@@ -106,6 +106,8 @@ export const MentorProvider = ({ children }) => {
 
             // console.log(data)
 
+            showSuccess("Fetched all mentors")
+
             return data
 
 
