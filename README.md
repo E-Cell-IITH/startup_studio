@@ -14,6 +14,7 @@
 - [x] Fetch all the mentors 
 - [x] Fetch all the startups 
 - [x] bug in /api/auth/me query and /api/mentors
+- [ ] move all queries to db 
 - [ ] get mentorship option for startup 
 - [ ] Check profile picture bug in frontend
 - [ ] Edit user functionality
