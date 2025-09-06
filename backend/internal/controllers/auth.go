@@ -82,7 +82,7 @@ func Login(c *gin.Context) {
 		}
 	}
 
-	log.Println(is_registered)
+	// log.Println(is_registered)
 	// generate jwt token
 
 	token, err := helpers.GenerateToken(emailStr)
@@ -151,6 +151,11 @@ func StartupRegistration(c *gin.Context) {
 	VALUES 
 	($1,$2,$3,$4,$5,$6,$7)
 	`
+	// log.Println(startup.StartupName)
+	// log.Println(startup.Website)
+	// log.Println(startup.ProfilePic)
+	// log.Println(startup.About)
+	// log.Println(startup.Phone)
 
 	ctx := c.Request.Context()
 
@@ -351,6 +356,14 @@ func GetUserDetails(c *gin.Context) {
 	var currUser models.User
 	err := config.DB.QueryRowContext(ctx, queryUser, email).
 		Scan(&currUser.UserID, &currUser.UserName, &currUser.UserEmail, &currUser.IsRegistered, &currUser.IsAdmin)
+
+	// log.Println(currUser.UserID)
+	// log.Println(currUser.UserName)
+	// log.Println(currUser.UserEmail)
+	// log.Println(currUser.IsRegistered)
+	// log.Println(currUser.IsAdmin)
+
+
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})

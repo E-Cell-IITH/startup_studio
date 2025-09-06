@@ -12,9 +12,9 @@
 - [x] on delete cascade for expertise
 - [x] show profile page according to startup or mentor
 - [x] Fetch all the mentors 
-- [ ] Fetch all the startups 
+- [x] Fetch all the startups 
 - [x] bug in /api/auth/me query and /api/mentors
 - [ ] get mentorship option for startup 
 - [ ] Check profile picture bug in frontend
 - [ ] Edit user functionality
-- [ ] render only the parts which being fetched by backend 
+- [ ] render only the parts which are being fetched by backend 

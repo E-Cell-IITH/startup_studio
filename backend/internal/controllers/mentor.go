@@ -12,9 +12,7 @@ import (
 )
 
 func GetAllMentors(c *gin.Context) {
-	// create a base context with timeout
-	baseCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	ctx := c.Request.Context()
 
 	query := `
 		SELECT mentor_id,
@@ -29,7 +27,7 @@ func GetAllMentors(c *gin.Context) {
 		WHERE approval_status = $1;
 	`
 
-	rows, err := config.DB.QueryContext(baseCtx, query, true)
+	rows, err := config.DB.QueryContext(ctx, query, true)
 	if err != nil {
 		log.Println("error fetching mentors:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch mentors"})

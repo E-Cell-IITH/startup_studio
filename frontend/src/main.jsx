@@ -7,19 +7,22 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { UserProvider } from './Context/userContext.jsx';
 import { ToastProvider } from './Context/toastContext.jsx';
 import { MentorProvider } from './Context/mentorContext.jsx';
+import { StartupProvider } from './Context/startupContext.jsx';
 
 createRoot(document.getElementById('root')).render(
 
   <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
     <ToastProvider>
       <MentorProvider>
-        <UserProvider>
-          <BrowserRouter>
-            <StrictMode>
-              <App />
-            </StrictMode>
-          </BrowserRouter>
-        </UserProvider>
+        <StartupProvider>
+          <UserProvider>
+            <BrowserRouter>
+              <StrictMode>
+                <App />
+              </StrictMode>
+            </BrowserRouter>
+          </UserProvider>
+        </StartupProvider>
       </MentorProvider>
     </ToastProvider>
   </GoogleOAuthProvider>,

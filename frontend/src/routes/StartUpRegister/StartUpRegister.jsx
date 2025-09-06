@@ -18,7 +18,9 @@ const StartupRegistration = () => {
     phone: '',
     about: '',
     profile_photo_ref: null
-  });
+  })
+
+  // console.log(formData)
 
 
 

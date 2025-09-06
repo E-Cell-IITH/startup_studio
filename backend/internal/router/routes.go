@@ -45,13 +45,20 @@ func SetUpRoutes(router *gin.Engine) {
 		mentor.GET("/", controllers.GetAllMentors)
 	}
 
+	startup := router.Group("/api/startups")
+
+	startup.Use(middlewares.AuthMiddleware)
+	{
+		startup.GET("/", controllers.GetAllStartUps)
+	}
+
 	admin := router.Group("/api/admin")
 
 	admin.Use(middlewares.AuthMiddleware)
 	{
-		admin.GET("/mentors/approval/:userId",controllers.GetAllNonApprovedMentors)
-		admin.PATCH("/mentor/approve/:adminUserId/:mentorUserId",controllers.ApproveAMentor)
-		admin.DELETE("/mentor/reject/:adminUserId/:mentorUserId",controllers.RejectMentor)
+		admin.GET("/mentors/approval/:userId", controllers.GetAllNonApprovedMentors)
+		admin.PATCH("/mentor/approve/:adminUserId/:mentorUserId", controllers.ApproveAMentor)
+		admin.DELETE("/mentor/reject/:adminUserId/:mentorUserId", controllers.RejectMentor)
 	}
 
 }
