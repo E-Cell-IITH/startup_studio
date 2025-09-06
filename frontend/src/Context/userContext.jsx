@@ -132,6 +132,7 @@ export const UserProvider = ({ children }) => {
           phone: formData.phone,
           website: formData.website,
           user_id: user_id,
+          about : formData.about,
           profile_photo_ref: file_url
         }),
         credentials: "include"
