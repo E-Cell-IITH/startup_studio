@@ -317,7 +317,7 @@ const MentorApproval = () => {
 
     return (
         <>
-            <Navbar />
+            {/* <Navbar /> */}
             <div className="bg-white">
                 {/* Header Section */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -387,7 +387,7 @@ const MentorApproval = () => {
             {selectedMentor && (
                 <MentorModal mentor={selectedMentor} onClose={handleCloseModal} />
             )}
-            <Footer />
+            {/* <Footer /> */}
         </>
     )
 }

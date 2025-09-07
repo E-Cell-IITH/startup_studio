@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Menu, X, User, LogOut, Users, UserCheck } from 'lucide-react';
 import { useUser } from '../../Context/userContext';
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, logout } = useUser();
   const navigate = useNavigate()
-
 
   // console.log("Navbar user", user)
 
@@ -23,21 +22,15 @@ const Navbar = () => {
   };
 
   const handleLogout = async () => {
-
     try {
       const res = await logout();
 
       if (res) {
         navigate("/")
       }
-
-
-
     } catch (e) {
       console.log(e)
     }
-
-
   };
 
   const getNavigationItems = () => {
@@ -85,14 +78,14 @@ const Navbar = () => {
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <a
+                  <Link
                     key={item.name}
-                    href={item.href}
+                    to={item.href}
                     className="text-white hover:bg-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition duration-300 ease-in-out"
                   >
                     <Icon size={18} />
                     <span>{item.name}</span>
-                  </a>
+                  </Link>
                 );
               })}
             </div>
@@ -138,15 +131,15 @@ const Navbar = () => {
             {navigationItems.map((item) => {
               const Icon = item.icon;
               return (
-                <a
+                <Link
                   key={item.name}
-                  href={item.href}
+                  to={item.href}
                   className="text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2 transition duration-300 ease-in-out"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <Icon size={18} />
                   <span>{item.name}</span>
-                </a>
+                </Link>
               );
             })}
 

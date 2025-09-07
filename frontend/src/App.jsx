@@ -9,12 +9,18 @@ import StartUpScreen from './routes/Startup/StartUpScreen'
 import ProtectedRoute from './routes/ProtectedRoute/ProtectedRoute'
 import ProfileScreen from './routes/ProfileScreen/ProfileScreen'
 import MentorApproval from './routes/MentorApproval/MentorApproval'
+import MainLayout from './Layout/Layout'
 
 function App() {
   return (
-    <>
-      <Routes>
-        
+    <Routes>
+
+      <Route path='/' element={<LoginScreen />} />
+      <Route path='/role' element={<FilterRoleScreen />} />
+      <Route path='/mentor-register' element={<MentorRegistration />} />
+      <Route path='/startup-register' element={<StartupRegistration />} />
+
+      <Route element={<MainLayout />}>
         <Route path='/mentors' element={
           <ProtectedRoute>
             <MentorScreen />
@@ -30,19 +36,14 @@ function App() {
             <ProfileScreen />
           </ProtectedRoute>
         } />
-
         <Route path='/mentor-approval' element={
           <ProtectedRoute>
             <MentorApproval />
           </ProtectedRoute>
         } />
+      </Route>
 
-        <Route path='/' element={<LoginScreen />} />
-        <Route path='/role' element={<FilterRoleScreen />} />
-        <Route path='/mentor-register' element={<MentorRegistration />} />
-        <Route path='/startup-register' element={<StartupRegistration />} />
-      </Routes>
-    </>
+    </Routes>
   )
 }
 
