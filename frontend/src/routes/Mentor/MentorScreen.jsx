@@ -11,40 +11,42 @@ import {
     Star,
     Briefcase,
     Check,
-    Search
+    Search,
+    Loader2
 } from 'lucide-react';
-import Navbar from '../../components/Navbar/Navbar';
-import Footer from '../../components/Footer/Footer';
 import { useMentor } from '../../Context/mentorContext';
 
 const MentorScreen = () => {
     const { getAllMentors } = useMentor();
-    const [mentors,setMentors] = useState([]);
+    const [mentors, setMentors] = useState([]);
     const [selectedMentor, setSelectedMentor] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredMentors, setFilteredMentors] = useState([]);
-
-
+    const [loading, setLoading] = useState(true); // Add loading state
 
     useEffect(() => {
         const fetchMentors = async () => {
-            const data = await getAllMentors();
+            try {
+                setLoading(true); // Set loading to true when starting fetch
+                const data = await getAllMentors();
 
-            if (!data) {
-                console.log("error fetching mentors");
-                return;
+                if (!data) {
+                    console.log("error fetching mentors");
+                    return;
+                }
+
+                // console.log(data);
+                setMentors(data.mentors);
+                setFilteredMentors(data.mentors);
+            } catch (error) {
+                console.error("Error fetching mentors:", error);
+            } finally {
+                setLoading(false); // Set loading to false when fetch completes
             }
-
-            // console.log(data);
-            setMentors(data.mentors)
-            setFilteredMentors(data.mentors);
         };
 
         fetchMentors();
     }, []);
-
-
-
 
     useEffect(() => {
         const filtered = mentors.filter(mentor =>
@@ -63,6 +65,52 @@ const MentorScreen = () => {
     const closeMentorModal = () => {
         setSelectedMentor(null);
     };
+
+    // Loading Skeleton Component
+    const MentorCardSkeleton = () => (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-pulse">
+            <div className="p-8">
+                <div className="flex items-start space-x-5 mb-6">
+                    <div className="w-20 h-20 bg-gray-200 rounded-2xl"></div>
+                    <div className="flex-1">
+                        <div className="h-6 bg-gray-200 rounded mb-2 w-3/4"></div>
+                        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div className="mb-6">
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2 w-5/6"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                </div>
+                <div className="flex space-x-2 mb-6">
+                    <div className="h-7 bg-gray-200 rounded-full w-20"></div>
+                    <div className="h-7 bg-gray-200 rounded-full w-24"></div>
+                    <div className="h-7 bg-gray-200 rounded-full w-16"></div>
+                </div>
+                <div className="flex justify-between items-center">
+                    <div className="h-4 bg-gray-200 rounded w-20"></div>
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                </div>
+            </div>
+        </div>
+    );
+
+    // Main Loading Component
+    const MentorsLoading = () => (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="text-center mb-12">
+                <div className="inline-flex items-center space-x-2 text-blue-600">
+                    <Loader2 className="animate-spin" size={24} />
+                    <span className="text-lg font-semibold">Loading mentors...</span>
+                </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[...Array(3)].map((_, index) => (
+                    <MentorCardSkeleton key={index} />
+                ))}
+            </div>
+        </div>
+    );
 
     const MentorCard = ({ mentor }) => (
         <div
@@ -317,10 +365,41 @@ const MentorScreen = () => {
         </div>
     );
 
+    // Show loading state while fetching
+    if (loading) {
+        return (
+            <>
+                <div className="bg-white">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                        <div className="text-center">
+                            <h1 className="text-5xl font-bold text-gray-900 mb-4">Our Mentors</h1>
+                            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                                Connect with industry experts who are passionate about helping you grow
+                            </p>
+                        </div>
+
+                        {/* Search Bar - disabled while loading */}
+                        <div className="max-w-2xl mx-auto mt-12">
+                            <div className="relative">
+                                <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400" size={24} />
+                                <input
+                                    type="text"
+                                    placeholder="Search mentors by name or expertise..."
+                                    disabled
+                                    className="w-full pl-16 pr-6 py-5 text-lg border-2 border-gray-200 rounded-3xl bg-gray-50 cursor-not-allowed"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <MentorsLoading />
+            </>
+        );
+    }
+
     return (
         <>
-            <Navbar />
-            <div className="bg-white ">
+            <div className="bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                     <div className="text-center">
                         <h1 className="text-5xl font-bold text-gray-900 mb-4">Our Mentors</h1>
@@ -375,7 +454,6 @@ const MentorScreen = () => {
             {selectedMentor && (
                 <MentorModal mentor={selectedMentor} onClose={closeMentorModal} />
             )}
-            <Footer />
         </>
     );
 };

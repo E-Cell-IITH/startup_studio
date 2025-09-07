@@ -14,8 +14,9 @@
 - [x] Fetch all the mentors 
 - [x] Fetch all the startups 
 - [x] bug in /api/auth/me query and /api/mentors
+- [x] improve client side rendering
+- [x] add loading indicator while fetching startups and mentors 
 - [ ] move all queries to db 
 - [ ] get mentorship option for startup 
 - [ ] Check profile picture bug in frontend
 - [ ] Edit user functionality
-- [ ] render only the parts which are being fetched by backend 
