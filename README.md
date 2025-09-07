@@ -20,3 +20,4 @@
 - [ ] get mentorship option for startup 
 - [ ] Check profile picture bug in frontend
 - [ ] Edit user functionality
+- [ ] mail to ecell when a mentor registers
