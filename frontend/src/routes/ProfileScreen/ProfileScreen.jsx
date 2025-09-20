@@ -55,12 +55,6 @@ const ProfileScreen = () => {
                             {userData.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                         </div>
                     </div>
-                    <button
-                        onClick={handleChangePhoto}
-                        className="absolute -bottom-2 -right-2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition duration-200"
-                    >
-                        <Camera size={16} />
-                    </button>
                 </div>
 
                 <div className="flex-1 text-center md:text-left">

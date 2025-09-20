@@ -49,7 +49,7 @@ const MentorScreen = () => {
     }, []);
 
     useEffect(() => {
-        const filtered = mentors.filter(mentor =>
+        const filtered = mentors != null &&  mentors.filter(mentor =>
             mentor.mentor_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (mentor.expertise && mentor.expertise.some(skill =>
                 skill.toLowerCase().includes(searchTerm.toLowerCase())
