@@ -10,7 +10,7 @@ func SetUpRouter() *gin.Engine {
 	router := gin.Default()
 
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:5173"}
+	config.AllowOrigins = []string{"http://localhost:5173", "https://ss.ecelliith.org.in"}
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"} 
 	config.AllowHeaders = []string{
 		"Origin",
