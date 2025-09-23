@@ -83,7 +83,7 @@ const Navbar = () => {
                     to={item.href}
                     className="text-white hover:bg-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition duration-300 ease-in-out"
                   >
-                    <Icon size={18} />
+                    {/* <Icon size={18} /> */}
                     <span>{item.name}</span>
                   </Link>
                 );

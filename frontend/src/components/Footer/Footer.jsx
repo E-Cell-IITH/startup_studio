@@ -52,75 +52,15 @@ const Footer = () => {
     ];
 
     const socialLinks = [
-        { name: "LinkedIn", icon: Linkedin, href: "#", color: "hover:text-blue-600" },
-        { name: "Twitter", icon: Twitter, href: "#", color: "hover:text-blue-400" },
-        { name: "Instagram", icon: Instagram, href: "#", color: "hover:text-pink-600" },
-        { name: "Facebook", icon: Facebook, href: "#", color: "hover:text-blue-700" },
-        { name: "GitHub", icon: Github, href: "#", color: "hover:text-gray-900" }
+        { name: "LinkedIn", icon: Linkedin, href: "https://in.linkedin.com/company/ecell-iith", color: "hover:text-blue-600" },
+        { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/ecell_iith/?hl=en", color: "hover:text-pink-600" },      
+        { name: "GitHub", icon: Github, href: "https://github.com/orgs/E-Cell-IITH", color: "hover:text-gray-900" }
     ];
 
     return (
         <footer className="bg-gray-50 border-t border-gray-200">
-            {/* Main Footer Content */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {/* Brand Section */}
-                    <div className="lg:col-span-1">
-                        <div className="flex items-center space-x-2 mb-4">
-                            <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                                <Building className="text-white" size={24} />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-gray-800">Startup Studio</h3>
-                                <p className="text-sm text-blue-600 font-medium">IIT Hyderabad</p>
-                            </div>
-                        </div>
-                        <p className="text-gray-600 text-sm mb-6 leading-relaxed">
-                            Empowering the next generation of entrepreneurs through mentorship, 
-                            resources, and community support. Building the startup ecosystem at IIT Hyderabad.
-                        </p>
-                        
-                        {/* Contact Info */}
-                        <div className="space-y-2">
-                            <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                <MapPin size={16} className="text-blue-500" />
-                                <span>IIT Hyderabad, Kandi, Sangareddy</span>
-                            </div>
-                            <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                <Mail size={16} className="text-blue-500" />
-                                <a href="mailto:ecell@iith.ac.in" className="hover:text-blue-600 transition duration-200">
-                                    ecell@iith.ac.in
-                                </a>
-                            </div>
-                            <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                <Phone size={16} className="text-blue-500" />
-                                <span>+91 XXX XXX XXXX</span>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Footer Links */}
-                    {footerSections.map((section, index) => (
-                        <div key={index}>
-                            <h4 className="text-lg font-semibold text-gray-800 mb-4">{section.title}</h4>
-                            <ul className="space-y-2">
-                                {section.links.map((link, linkIndex) => (
-                                    <li key={linkIndex}>
-                                        <a
-                                            href={link.href}
-                                            className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition duration-200 text-sm"
-                                        >
-                                            {link.icon && <link.icon size={14} />}
-                                            <span>{link.name}</span>
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
-
-            </div>
+            
 
             {/* Bottom Footer */}
             <div className="bg-white border-t border-gray-200">

@@ -17,7 +17,7 @@ const StartupRegistration = () => {
     website: '',
     phone: '',
     about: '',
-    profile_photo_ref: null
+    // profile_photo_ref: null
   })
 
   // console.log(formData)
@@ -32,13 +32,13 @@ const StartupRegistration = () => {
     }));
   };
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    setFormData(prev => ({
-      ...prev,
-      profile_photo_ref: file
-    }));
-  };
+  // const handleFileUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     profile_photo_ref: file
+  //   }));
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,17 +48,12 @@ const StartupRegistration = () => {
       return;
     }
 
-    const file = formData.profile_photo_ref;
-    if (!file) {
-      alert("Please upload a profile photo");
-      return;
-    }
 
     setIsLoading(true);
     setLoadingMessage('Uploading your startup profile...');
 
     try {
-      const data = await startupRegistration(formData, user.user_id, file);
+      const data = await startupRegistration(formData, user.user_id);
 
       if (data) {
         setLoadingMessage('Registration successful! Redirecting...');
@@ -199,31 +194,7 @@ const StartupRegistration = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Startup Logo / Profile Photo
-                </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                    required
-                    disabled={isLoading}
-                    className={`cursor-pointer w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 ${isLoading ? 'bg-gray-100 cursor-not-allowed file:bg-gray-100 file:text-gray-500' : ''}`}
-                  />
-                  {formData.profile_photo_ref && (
-                    <div className="mt-2 text-sm text-gray-600 flex items-center">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                      Selected: {formData.profile_photo_ref.name}
-                    </div>
-                  )}
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Upload your startup logo or a representative image
-                </p>
-              </div>
-
+              
               <button
                 type="submit"
                 disabled={isLoading}
@@ -337,28 +308,7 @@ const StartupRegistration = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Startup Logo / Profile Photo
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  required
-                  disabled={isLoading}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-blue-50 file:text-blue-700 ${isLoading ? 'bg-gray-100 cursor-not-allowed file:bg-gray-100 file:text-gray-500' : ''}`}
-                />
-                {formData.profile_photo_ref && (
-                  <div className="mt-1 text-xs text-gray-600 flex items-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                    Selected: {formData.profile_photo_ref.name}
-                  </div>
-                )}
-                <p className="text-xs text-gray-500 mt-1">
-                  Upload your startup logo or representative image
-                </p>
-              </div>
+
 
               <button
                 type="submit"

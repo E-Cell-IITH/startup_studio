@@ -62,7 +62,7 @@ const ProtectedRoute = ({ children }) => {
         <div className="bg-white rounded-2xl shadow-lg p-10 max-w-md w-full text-center border border-gray-200 backdrop-blur-sm">
           <LoadingSpinner />
           <div className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">Loading Your Dashboard</h3>
+            {/* <h3 className="text-xl font-semibold text-gray-800 mb-3">Loading Your Dashboard</h3> */}
             <p className="text-gray-600 mb-4">Authenticating and preparing your data</p>
             <PulsingDots />
           </div>

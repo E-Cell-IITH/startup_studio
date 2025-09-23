@@ -9,7 +9,7 @@ const MentorRegistration = () => {
   const [loadingMessage, setLoadingMessage] = useState('');
 
   const [formData, setFormData] = useState({
-    profile_photo_ref: null,
+    // profile_photo_ref: null,
     linked_in_url: '',
     phone_number: '',
     about: '',
@@ -48,13 +48,13 @@ const MentorRegistration = () => {
     }
   };
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    setFormData(prev => ({
-      ...prev,
-      profile_photo_ref: file
-    }));
-  };
+  // const handleFileUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     profile_photo_ref: file
+  //   }));
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,17 +64,17 @@ const MentorRegistration = () => {
       return;
     }
 
-    const file = formData.profile_photo_ref;
-    if (!file) {
-      alert("Please upload a profile photo");
-      return;
-    }
+    // const file = formData.profile_photo_ref;
+    // if (!file) {
+    //   alert("Please upload a profile photo");
+    //   return;
+    // }
 
     setIsLoading(true);
     setLoadingMessage('Creating your mentor profile...');
 
     try {
-      const data = await mentorRegistration(formData, user.user_id, file)
+      const data = await mentorRegistration(formData, user.user_id)
 
       if (data) {
         setLoadingMessage('Registration successful! Redirecting...');
@@ -199,30 +199,7 @@ const MentorRegistration = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Profile Photo
-                </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                    required
-                    disabled={isLoading}
-                    className={`cursor-pointer w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 ${isLoading ? 'bg-gray-100 cursor-not-allowed file:bg-gray-100 file:text-gray-500' : ''}`}
-                  />
-                  {formData.profile_photo_ref && (
-                    <div className="mt-2 text-sm text-gray-600 flex items-center">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                      Selected: {formData.profile_photo_ref.name}
-                    </div>
-                  )}
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Upload your profile photo
-                </p>
-              </div>
+           
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -389,7 +366,7 @@ const MentorRegistration = () => {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
                 <input
                   type="file"
@@ -408,7 +385,7 @@ const MentorRegistration = () => {
                 <p className="text-xs text-gray-500 mt-1">
                   Upload your profile photo
                 </p>
-              </div>
+              </div> */}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Experience</label>

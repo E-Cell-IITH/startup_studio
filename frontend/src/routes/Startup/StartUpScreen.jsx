@@ -300,7 +300,7 @@ const StartUpScreen = () => {
 
                     {/* Action Buttons */}
                     <div className="flex space-x-4 pt-6 border-t border-gray-100">
-                        <button disabled className="flex-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <button className="flex-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                             Connect with Startup
                         </button>
                     </div>
@@ -313,13 +313,11 @@ const StartUpScreen = () => {
     if (loading) {
         return (
             <>
-                <div className="bg-white">
+                <div className=" bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                         <div className="text-center">
-                            <h1 className="text-5xl font-bold text-gray-900 mb-4">Our Startups</h1>
-                            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                                Discover innovative startups looking for mentorship and guidance
-                            </p>
+                            <h1 className="text-3xl font-bold text-gray-900 mb-4">Our Startups</h1>
+                           
                         </div>
 
                         {/* Search Bar - disabled while loading */}
@@ -343,13 +341,11 @@ const StartUpScreen = () => {
 
     return (
         <>
-            <div className="bg-white">
+            <div className=" bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                     <div className="text-center">
-                        <h1 className="text-5xl font-bold text-gray-900 mb-4">Our Startups</h1>
-                        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                            Discover innovative startups looking for mentorship and guidance
-                        </p>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-4">Our Startups</h1>
+                  
                     </div>
 
                     {/* Search Bar */}
@@ -369,7 +365,7 @@ const StartUpScreen = () => {
             </div>
 
             {/* Startups Grid */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 {filteredStartups && filteredStartups.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredStartups.map((startup) => (

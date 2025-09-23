@@ -20,7 +20,6 @@ func GetAllMentors(c *gin.Context) {
 		       mentor_name,
 		       phone_number,
 		       linked_in_url,
-		       profile_photo_ref,
 		       approval_status,
 		       COALESCE(about, '')
 		FROM mentors
@@ -47,7 +46,6 @@ func GetAllMentors(c *gin.Context) {
 			&m.MentorName,
 			&m.Phone,
 			&m.LinkedInURL,
-			&m.ProfilePic,
 			&m.ApprovalStatus,
 			&m.About,
 		)

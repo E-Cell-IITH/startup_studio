@@ -147,9 +147,9 @@ func StartupRegistration(c *gin.Context) {
 	// insert everything to that startups
 	query := `
     INSERT INTO startups
-	(startup_id, user_id, startup_name, website, profile_photo_ref,about,phone_number) 
+	(startup_id, user_id, startup_name, website,about,phone_number) 
 	VALUES 
-	($1,$2,$3,$4,$5,$6,$7)
+	($1,$2,$3,$4,$5,$6)
 	`
 	// log.Println(startup.StartupName)
 	// log.Println(startup.Website)
@@ -164,7 +164,6 @@ func StartupRegistration(c *gin.Context) {
 		userId,
 		startup.StartupName,
 		startup.Website,
-		startup.ProfilePic,
 		startup.About,
 		startup.Phone,
 	)
@@ -239,15 +238,14 @@ func MentorRegistration(c *gin.Context) {
 	// insert into mentors table with approval_status = false
 	query := `
 		INSERT INTO mentors
-		(mentor_id, user_id, linked_in_url, profile_photo_ref, phone_number, about, approval_status, mentor_name)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+		(mentor_id, user_id, linked_in_url, phone_number, about, approval_status, mentor_name)
+		VALUES ($1,$2,$3,$4,$5,$6,$7)
 	`
 
 	_, err = config.DB.ExecContext(ctx, query,
 		uuidStr,
 		userId,
 		mentor.LinkedInURL,
-		mentor.ProfilePic,
 		mentor.Phone,
 		mentor.About,
 		false,
@@ -383,7 +381,6 @@ func GetUserDetails(c *gin.Context) {
                startup_name,
                website,
                phone_number,
-               profile_photo_ref,
                COALESCE(about, '')
         FROM startups
         WHERE user_id = $1
@@ -392,7 +389,7 @@ func GetUserDetails(c *gin.Context) {
 	var startup models.Startup
 	var startupID string
 	err = config.DB.QueryRowContext(ctx, queryStartup, currUser.UserID).
-		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.ProfilePic, &startup.About)
+		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.About)
 
 	startup.UserID = currUser.UserID.String()
 
@@ -437,7 +434,6 @@ func GetUserDetails(c *gin.Context) {
         SELECT mentor_id,
                phone_number,
                linked_in_url,
-               profile_photo_ref,
                approval_status,
                COALESCE(about, '')
         FROM mentors
@@ -446,7 +442,7 @@ func GetUserDetails(c *gin.Context) {
 	var mentor models.Mentor
 	var mentorID string
 	err = config.DB.QueryRowContext(ctx, queryMentor, currUser.UserID).
-		Scan(&mentorID, &mentor.Phone, &mentor.LinkedInURL, &mentor.ProfilePic, &mentor.ApprovalStatus, &mentor.About)
+		Scan(&mentorID, &mentor.Phone, &mentor.LinkedInURL,  &mentor.ApprovalStatus, &mentor.About)
 	if err == nil {
 		mDetail := models.MentorDetail{Mentor: mentor}
 

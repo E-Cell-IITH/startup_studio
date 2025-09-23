@@ -48,7 +48,6 @@ func GetAllNonApprovedMentors(c *gin.Context) {
     SELECT 
         m.user_id,
         m.phone_number,
-        m.profile_photo_ref,
         m.linked_in_url,
         m.about,
         m.approval_status,
@@ -79,7 +78,6 @@ func GetAllNonApprovedMentors(c *gin.Context) {
 		err := rows.Scan(
 			&mentor.UserID,
 			&mentor.Phone,
-			&mentor.ProfilePic,
 			&mentor.LinkedInURL,
 			&mentor.About,
 			&mentor.ApprovalStatus,

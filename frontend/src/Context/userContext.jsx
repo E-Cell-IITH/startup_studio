@@ -110,18 +110,18 @@ export const UserProvider = ({ children }) => {
   }
 
 
-  async function startupRegistration(formData, user_id, file) {
+  async function startupRegistration(formData, user_id) {
     try {
-      const res = await fetch(
-        `${BACKEND_URL}/api/auth/generate-presign?filename=${file.name}&user_id=${user_id}`, {
-        credentials: "include"
-      })
-      const { upload_url, file_url } = await res.json()
+      // const res = await fetch(
+      //   `${BACKEND_URL}/api/auth/generate-presign?filename=${file.name}&user_id=${user_id}`, {
+      //   credentials: "include"
+      // })
+      // const { upload_url, file_url } = await res.json()
 
-      await fetch(upload_url, {
-        method: "PUT",
-        body: file,
-      })
+      // await fetch(upload_url, {
+      //   method: "PUT",
+      //   body: file,
+      // })
 
 
       const resStartUpRegister = await fetch(`${BACKEND_URL}/api/auth/startup-registration`, {
@@ -133,7 +133,6 @@ export const UserProvider = ({ children }) => {
           website: formData.website,
           user_id: user_id,
           about : formData.about,
-          profile_photo_ref: file_url
         }),
         credentials: "include"
       })
@@ -189,19 +188,19 @@ export const UserProvider = ({ children }) => {
   }
 
 
-  async function mentorRegistration(formData, user_id, file) {
+  async function mentorRegistration(formData, user_id) {
 
     try {
-      const res = await fetch(
-        `${BACKEND_URL}/api/auth/generate-presign?filename=${file.name}&user_id=${user_id}`, {
-        credentials: "include"
-      })
-      const { upload_url, file_url } = await res.json()
+      // const res = await fetch(
+      //   `${BACKEND_URL}/api/auth/generate-presign?filename=${file.name}&user_id=${user_id}`, {
+      //   credentials: "include"
+      // })
+      // const { upload_url, file_url } = await res.json()
 
-      await fetch(upload_url, {
-        method: "PUT",
-        body: file,
-      })
+      // await fetch(upload_url, {
+      //   method: "PUT",
+      //   body: file,
+      // })
 
       const mentorRegRes = await fetch(`${BACKEND_URL}/api/auth/mentor-registration`, {
         method: "POST",
@@ -209,7 +208,6 @@ export const UserProvider = ({ children }) => {
         credentials: "include",
         body: JSON.stringify({
           phone: formData.phone_number,
-          profile_photo_ref: file_url,
           experience: formData.experience,
           expertise: formData.expertise,
           linked_in_url: formData.linked_in_url,

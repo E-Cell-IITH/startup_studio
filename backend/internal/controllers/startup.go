@@ -19,7 +19,6 @@ func GetAllStartUps(c *gin.Context) {
 		       s.startup_name,
 		       s.website,
 		       s.phone_number,
-		       s.profile_photo_ref,
 		       COALESCE(s.about, '')
 		FROM startups s
 		JOIN users u ON s.user_id = u.id
@@ -46,7 +45,6 @@ func GetAllStartUps(c *gin.Context) {
 			&s.StartupName,
 			&s.Website,
 			&s.Phone,
-			&s.ProfilePic,
 			&s.About,
 		)
 		if err != nil {
