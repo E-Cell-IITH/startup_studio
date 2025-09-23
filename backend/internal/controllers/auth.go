@@ -94,16 +94,18 @@ func Login(c *gin.Context) {
 	}
 
 	// log.Println(token)
+	c.SetSameSite(http.SameSiteNoneMode)
 
 	c.SetCookie(
 		"token",
 		token,
 		48*60*60,
 		"/",         // path
-		"startup-studio-pink.vercel.app", // domain → leave empty for localhost
+		"", // domain → leave empty for localhost
 		true,       // secure → must be true in production (HTTPS)
 		true,       // httpOnly → true in production
 	)
+
 
 	// return successful login response
 
