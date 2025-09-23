@@ -1,6 +1,9 @@
 package router
 
 import (
+	"os"
+	"strings"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -9,8 +12,11 @@ func SetUpRouter() *gin.Engine {
 	gin.SetMode(gin.DebugMode)
 	router := gin.Default()
 
+	origins := os.Getenv("ALLOWED_ORIGINS")
+	allowedOrigins := strings.Split(origins, ",")
+
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:5173", "https://ss.ecelliith.org.in"}
+	config.AllowOrigins = allowedOrigins
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"} 
 	config.AllowHeaders = []string{
 		"Origin",
