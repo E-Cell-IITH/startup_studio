@@ -185,12 +185,12 @@ const MentorScreen = () => {
                 {/* Footer */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        {mentor.phone && (
+                        {/* {mentor.phone && (
                             <div className="flex items-center space-x-2">
                                 <Phone size={14} />
                                 <span className="font-medium">Available</span>
                             </div>
-                        )}
+                        )} */}
                         {mentor.linked_in_url && (
                             <div className="flex items-center space-x-2">
                                 <Globe size={14} />
