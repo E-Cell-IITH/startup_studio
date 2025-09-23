@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -26,8 +25,8 @@ func GetUserOrMentorId(c *gin.Context) {
 
 	err := config.DB.QueryRowContext(ctx, queryStartUp, userId).Scan(&startupId)
 
-	if err != nil && err != sql.ErrNoRows {
 
+	if err != nil && err != sql.ErrNoRows {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to fetch startup id",
@@ -35,7 +34,7 @@ func GetUserOrMentorId(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("Got the startup ID")
+
 
 	// if startup id exists return from here
 	if startupId != uuid.Nil {
@@ -46,6 +45,7 @@ func GetUserOrMentorId(c *gin.Context) {
 		return
 	}
 
+
 	// startup id not found check for mentor
 
 	queryMentor :=
@@ -53,13 +53,15 @@ func GetUserOrMentorId(c *gin.Context) {
 	SELECT mentor_id from mentors WHERE user_id = $1
 	`
 	err = config.DB.QueryRowContext(ctx, queryMentor, userId).Scan(&mentorId)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil && err != sql.ErrNoRows{
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to fetch mentor id",
 		})
 		return
 	}
+
+
 
 	// send response
 	if mentorId != uuid.Nil {
@@ -70,7 +72,6 @@ func GetUserOrMentorId(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("Got mentor details")
 
 	log.Println("Mentor Not found")
 

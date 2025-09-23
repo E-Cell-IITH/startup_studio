@@ -100,7 +100,7 @@ func Login(c *gin.Context) {
 		token,
 		48*60*60,
 		"/",         // path
-		"", // domain → leave empty for localhost
+		"https://startup-studio-pink.vercel.app", // domain → leave empty for localhost
 		true,       // secure → must be true in production (HTTPS)
 		true,       // httpOnly → true in production
 	)
