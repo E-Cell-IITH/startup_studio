@@ -100,9 +100,9 @@ func Login(c *gin.Context) {
 		token,
 		48*60*60,
 		"/",         // path
-		"localhost", // domain → leave empty for localhost
-		false,       // secure → must be true in production (HTTPS)
-		false,       // httpOnly → true in production
+		"", // domain → leave empty for localhost
+		true,       // secure → must be true in production (HTTPS)
+		true,       // httpOnly → true in production
 	)
 
 	// return successful login response
