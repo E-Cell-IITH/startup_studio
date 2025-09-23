@@ -24,6 +24,9 @@ const MentorScreen = () => {
     const [filteredMentors, setFilteredMentors] = useState([]);
     const [loading, setLoading] = useState(true); // Add loading state
 
+
+
+
     useEffect(() => {
         const fetchMentors = async () => {
             try {
@@ -49,7 +52,7 @@ const MentorScreen = () => {
     }, []);
 
     useEffect(() => {
-        const filtered = mentors != null &&  mentors.filter(mentor =>
+        const filtered = mentors != null && mentors.filter(mentor =>
             mentor.mentor_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (mentor.expertise && mentor.expertise.some(skill =>
                 skill.toLowerCase().includes(searchTerm.toLowerCase())
@@ -66,6 +69,9 @@ const MentorScreen = () => {
         setSelectedMentor(null);
     };
 
+    const handleConnectClick = () => {
+        alert("Feature in progress")
+    }
     // Loading Skeleton Component
     const MentorCardSkeleton = () => (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-pulse">
@@ -356,7 +362,7 @@ const MentorScreen = () => {
 
                     {/* Action Buttons */}
                     <div className="flex space-x-4 pt-6 border-t border-gray-100">
-                        <button className="flex-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <button onClick={handleConnectClick} className="flex-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                             Connect with Mentor
                         </button>
                     </div>
@@ -400,7 +406,7 @@ const MentorScreen = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                     <div className="text-center">
                         <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Mentors</h1>
-                       
+
                     </div>
 
                     {/* Search Bar */}
