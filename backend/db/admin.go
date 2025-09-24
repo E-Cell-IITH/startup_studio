@@ -94,7 +94,6 @@ func ApproveMentor(c context.Context, mentorUserID string) error {
 	}
 
 	//update mentor approval
-
 	queryUpdate := `UPDATE mentors SET approval_status = $1 WHERE mentor_id = $2`
 
 	_, err = config.DB.ExecContext(c, queryUpdate, true, mentorId)
