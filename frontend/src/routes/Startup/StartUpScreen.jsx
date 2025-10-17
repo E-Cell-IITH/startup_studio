@@ -65,6 +65,10 @@ const StartUpScreen = () => {
         setSelectedStartup(null);
     };
 
+    const handleStartupConnectClick = () => {
+        alert("Feature in progress")
+    }
+
     // Access check - show this regardless of loading state
     if (!(user?.mentor_detail?.approval_status || user?.is_admin)) {
         return (
@@ -300,7 +304,7 @@ const StartUpScreen = () => {
 
                     {/* Action Buttons */}
                     <div className="flex space-x-4 pt-6 border-t border-gray-100">
-                        <button className="flex-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <button onClick={handleStartupConnectClick} className="flex-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                             Connect with Startup
                         </button>
                     </div>

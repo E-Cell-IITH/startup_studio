@@ -63,8 +63,8 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <div className="flex items-center">
-            
-              <span className="ml-2 text-white font-semibold text-lg hidden sm:block">
+              
+              <span className="ml-2 text-white font-semibold text-lg ">
                 Startup Studio
               </span>
             </div>
