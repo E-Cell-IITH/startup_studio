@@ -40,7 +40,8 @@ const Navbar = () => {
       baseItems.push({ name: 'All Mentors', href: '/mentors', icon: Users });
     }
     if (isMentor) {
-      baseItems.push({ name: 'All Startups', href: '/startups', icon: Users });
+      baseItems.push({ name: 'All Startups', href: '/startups', icon: Users }); 
+      baseItems.push({ name: 'All Mentors', href: '/mentors', icon: Users });
     }
     if (isAdmin) {
       baseItems.length = 0

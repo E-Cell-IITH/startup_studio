@@ -17,12 +17,12 @@ const LoginScreen = () => {
       const idToken = credentialResponse.credential;
       const data = await login(idToken);
 
-      // console.log(data)
+      console.log(data)
 
       if (data.is_registered) {
         setLoadingMessage('Getting your profile...');
         const idData = await getStartUpOrMentorId(data.user_id);
-
+        // console.log(idData)
         if (idData.startup_id) {
           setLoadingMessage('Redirecting to mentors...');
           setTimeout(() => navigate("/mentors"), 500);

@@ -1,36 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Users, Target, Rocket, Award, Calendar, Globe, TrendingUp, Menu, X } from 'lucide-react';
 import Footer from "../../components/Footer/Footer";
+import { Link } from 'react-router-dom';
 
 
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-    const [isVisible, setIsVisible] = useState({});
-    
-      useEffect(() => {
-        const elements = document.querySelectorAll('[data-animate]');
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                const id = entry.target.id;
-                setIsVisible((prev) => ({ ...prev, [id]: true }));
-                observer.unobserve(entry.target);
-              }
-            });
-          },
-          { threshold: 0.2 }
-        );
-    
-        elements.forEach((el) => {
-          observer.observe(el);
-        });
-    
-        return () => observer.disconnect();
-      }, []);
+  const [isVisible, setIsVisible] = useState({});
 
-      
+  useEffect(() => {
+    const elements = document.querySelectorAll('[data-animate]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            setIsVisible((prev) => ({ ...prev, [id]: true }));
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    elements.forEach((el) => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -42,34 +43,30 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation - Horizontal */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-blue-600 shadow-lg py-3' : 'bg-blue-600 py-4'
-      }`}>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-blue-600 shadow-lg py-3' : 'bg-blue-600 py-4'
+        }`}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Startup Studio</h1>
-            
+
             {/* Horizontal Desktop Menu - All items in one line */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="/" className="text-white hover:text-blue-200 transition-colors duration-300 font-medium">
+              <Link to="/" className="text-white hover:text-blue-200 transition-colors duration-300 font-medium cursor-pointer">
                 Home
-              </a>
-              <a href="/mentors" className="text-white hover:text-blue-200 transition-colors duration-300 font-medium">
+              </Link>
+              <Link to="/mentors" className="text-white hover:text-blue-200 transition-colors duration-300 font-medium cursor-pointer">
                 Mentors
-              </a>
-              <a href="/startups" className="text-white hover:text-blue-200 transition-colors duration-300 font-medium">
+              </Link>
+              <Link to="/startups" className="text-white hover:text-blue-200 transition-colors duration-300 font-medium cursor-pointer">
                 Startups
-              </a>
-              <a href="/contact" className="text-white hover:text-blue-200 transition-colors duration-300 font-medium">
-                E-Cell
-              </a>
-              <button className="bg-white text-blue-600 px-6 py-2 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300 shadow-md hover:shadow-lg">
+              </Link>
+              <Link className="bg-white cursor-pointer text-blue-600 px-6 py-2 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300 shadow-md hover:shadow-lg">
                 Join the Cohort
-              </button>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
-            <button 
+            <button
               className="md:hidden text-white"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
@@ -80,13 +77,12 @@ const LandingPage = () => {
           {/* Mobile Menu */}
           {isMenuOpen && (
             <div className="md:hidden bg-blue-700 px-6 py-4 space-y-3 animate-fadeIn mt-4">
-              <a href="#home" className="block text-white hover:text-blue-200 transition-colors">Home</a>
-              <a href="#mentors" className="block text-white hover:text-blue-200 transition-colors">Mentors</a>
-              <a href="#startups" className="block text-white hover:text-blue-200 transition-colors">Startups</a>
-              <a href="#contact" className="block text-white hover:text-blue-200 transition-colors">E-Cell [FF4]</a>
-              <button className="w-full bg-white text-blue-600 px-6 py-2 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300">
+              <Link href="/" className="block text-white hover:text-blue-200 transition-colors">Home</Link>
+              <Link href="/mentors" className="block text-white hover:text-blue-200 transition-colors">Mentors</Link>
+              <Link href="/startups" className="block text-white hover:text-blue-200 transition-colors">Startups</Link>
+              <Link className="w-full bg-white text-blue-600 px-6 py-2 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300">
                 Join the Cohort
-              </button>
+              </Link>
             </div>
           )}
         </div>
@@ -102,49 +98,45 @@ const LandingPage = () => {
         </div>
 
         <div className="max-w-6xl mx-auto text-center relative z-10" >
-            <div id="hero-title"
-          data-animate
-          className={`transition-all duration-1000 transform ${
-            isVisible['hero-title'] ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
-          }`}>
-          <h2 className="text-6xl md:text-7xl font-extrabold text-gray-900 mb-6 ">
-            Startup <span className="text-blue-600">Studio</span>
-          </h2>
+          <div id="hero-title"
+            data-animate
+            className={`transition-all duration-1000 transform ${isVisible['hero-title'] ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+              }`}>
+            <h2 className="text-6xl md:text-7xl font-extrabold text-gray-900 mb-6 ">
+              Startup <span className="text-blue-600">Studio</span>
+            </h2>
           </div>
           <div id="sub-title"
-          data-animate
-          className={`transition-all duration-1400 transform ${
-            isVisible['hero-title'] ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
-          }`}>
-          <p className="text-3xl md:text-4xl text-gray-700 mb-6 font-light ">
-            Turn Your Idea Into Reality
-          </p>
+            data-animate
+            className={`transition-all duration-1400 transform ${isVisible['hero-title'] ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+              }`}>
+            <p className="text-3xl md:text-4xl text-gray-700 mb-6 font-light ">
+              Turn Your Idea Into Reality
+            </p>
           </div>
           <div id="sub-title"
-          data-animate
-          className={`transition-all duration-1700 transform ${
-            isVisible['hero-title'] ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
-          }`}>
-          <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed ">
-            Every great startup begins with conviction - but conviction grows faster with the right mentorship. 
-            If you've ever had that one idea you couldn't stop thinking about - this is where you make it real.
-          </p>
+            data-animate
+            className={`transition-all duration-1700 transform ${isVisible['hero-title'] ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+              }`}>
+            <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed ">
+              Every great startup begins with conviction - but conviction grows faster with the right mentorship.
+              If you've ever had that one idea you couldn't stop thinking about - this is where you make it real.
+            </p>
           </div>
           <div
             id="sub-title"
             data-animate
-            className={`transition-all duration-2000 transform ${
-                isVisible['hero-title']? 'translate-y-0 opacity-100': 'translate-y-20 opacity-0'
-            }`}
-            >
-            <button className="group border-2 border-blue-600 text-blue-600 px-10 py-4 rounded-full font-semibold text-lg hover:bg-blue-700 transition-all hover:text-white duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transform mx-auto">
-                Join Cohort
-                <ArrowRight
+            className={`transition-all duration-2000 transform ${isVisible['hero-title'] ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+              }`}
+          >
+            <button className="group border-2 border-blue-600 cursor-pointer text-blue-600 px-10 py-4 rounded-full font-semibold text-lg hover:bg-blue-700 transition-all hover:text-white duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transform mx-auto">
+              Join Cohort
+              <ArrowRight
                 size={20}
                 className="group-hover:translate-x-1 transition-transform duration-300"
-                />
+              />
             </button>
-            </div>
+          </div>
 
         </div>
       </section>
@@ -159,7 +151,7 @@ const LandingPage = () => {
               A 90-day, high-touch mentorship program bridging the gap between "I have an idea" and "I built something that works"
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
@@ -199,7 +191,7 @@ const LandingPage = () => {
                 color: "orange"
               }
             ].map((item, index) => (
-              <div 
+              <div
                 key={index}
                 className="group bg-white p-8 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-blue-200 hover:-translate-y-2 transform cursor-pointer"
               >
@@ -283,7 +275,7 @@ const LandingPage = () => {
             <h3 className="text-5xl font-bold text-gray-900 mb-6">Cohort Details</h3>
             <div className="w-24 h-1 bg-blue-600 mx-auto"></div>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-10 mb-16">
             {[
               { icon: <Calendar />, label: "Duration", value: "90 Days", desc: "Intensive program" },
@@ -327,7 +319,7 @@ const LandingPage = () => {
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
         </div>
-        
+
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <h3 className="text-5xl font-bold mb-8">Why Startup Studio?</h3>
           <p className="text-2xl mb-10 font-light">
@@ -353,7 +345,7 @@ const LandingPage = () => {
             <h3 className="text-5xl font-bold text-gray-900 mb-6">E-Cell IIT Hyderabad</h3>
             <div className="w-24 h-1 bg-blue-600 mx-auto mb-8"></div>
           </div>
-          
+
           <div className="bg-white rounded-3xl shadow-2xl p-12 border border-gray-100">
             <p className="text-xl text-gray-700 leading-relaxed mb-8 text-center">
               Startup Studio is powered by the <span className="font-bold text-blue-600">Entrepreneurship Cell, IIT Hyderabad</span>, a student-led initiative dedicated to fostering innovation and entrepreneurial excellence on campus and beyond.
@@ -380,14 +372,14 @@ const LandingPage = () => {
           <p className="text-2xl mb-10 font-light">
             Applications for the upcoming cohort are now open.
           </p>
-          <button className="group bg-white text-blue-600 px-12 py-5 rounded-full font-bold text-xl hover:bg-gray-100 transition-all duration-300 flex items-center gap-3 mx-auto shadow-2xl hover:shadow-3xl hover:scale-110 transform">
-            Apply Now 
+          <button className="group hover:cursor-pointer bg-white text-blue-600 px-12 py-5 rounded-full font-bold text-xl hover:bg-gray-100 transition-all duration-300 flex items-center gap-3 mx-auto shadow-2xl hover:shadow-3xl hover:scale-110 transform">
+            Apply Now
             <ArrowRight size={28} className="group-hover:translate-x-2 transition-transform duration-300" />
-          </button>
+          </button>   
         </div>
       </section>
-      
-       <div classname = "bg-gray-900 text-white py-12 px-6"><Footer/></div>
+
+      <div classname="bg-gray-900 text-white py-12 px-6"><Footer /></div>
     </div>
   );
 };
