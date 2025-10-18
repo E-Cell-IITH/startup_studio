@@ -1,5 +1,6 @@
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
+import LandingPage from './routes/LandingPage/landingpage'
 import LoginScreen from './routes/Login/LoginScreen'
 import FilterRoleScreen from './routes/FilterRoleScreen/FilterRoleScreen'
 import MentorRegistration from './routes/MentorRegistration/MentorRegistration'
@@ -14,8 +15,8 @@ import MainLayout from './Layout/Layout'
 function App() {
   return (
     <Routes>
-
-      <Route path='/' element={<LoginScreen />} />
+      <Route path ='/' element={<LandingPage />}/>
+      <Route path='/login' element={<LoginScreen />} />
       <Route path='/role' element={<FilterRoleScreen />} />
       <Route path='/mentor-register' element={<MentorRegistration />} />
       <Route path='/startup-register' element={<StartupRegistration />} />

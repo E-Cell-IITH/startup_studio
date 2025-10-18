@@ -47,7 +47,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// log.Println(emailStr)
+	log.Println(emailStr)
 
 	fullName, _ := payload.Claims["name"].(string)
 
@@ -55,6 +55,9 @@ func Login(c *gin.Context) {
 	var id string
 	var name string
 	var is_registered bool
+
+
+
 	query := `SELECT id, full_name, is_registered FROM users WHERE email = $1`
 	err = config.DB.QueryRowContext(ctx, query, emailStr).Scan(&id, &name, &is_registered)
 
@@ -82,7 +85,7 @@ func Login(c *gin.Context) {
 		}
 	}
 
-	// log.Println(is_registered)
+	
 	// generate jwt token
 
 	token, err := helpers.GenerateToken(emailStr)
