@@ -330,7 +330,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <div className="bg-gray-900 text-white py-12 px-6"><Footer /></div>
+      <Footer />
     </div>
   );
 };
