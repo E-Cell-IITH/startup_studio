@@ -1,17 +1,16 @@
 package controllers
 
 import (
-	
 	"database/sql"
 	"errors"
 	"log"
 	"net/http"
 	"os"
-	"github.com/E-Cell-IITH/startup_studio/config"
+
+	"github.com/E-Cell-IITH/startup_studio/internal/db"
 	"github.com/E-Cell-IITH/startup_studio/internal/helpers"
 	"github.com/E-Cell-IITH/startup_studio/internal/models"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"google.golang.org/api/idtoken"
 )
 
@@ -22,7 +21,6 @@ type LoginContent struct {
 var clientID string = os.Getenv("GOOGLE_CLIENT_ID")
 
 func Login(c *gin.Context) {
-	// get id token and email
 	var loginRequest LoginContent
 	if err := c.ShouldBindBodyWithJSON(&loginRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload"})
@@ -32,7 +30,6 @@ func Login(c *gin.Context) {
 	idTokenFrontend := loginRequest.ID
 	ctx := c.Request.Context()
 
-	// verify id token
 	payload, err := idtoken.Validate(ctx, idTokenFrontend, clientID)
 	if err != nil {
 		log.Printf("Token validation failed: %v", err)
@@ -47,267 +44,123 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	log.Println(emailStr)
-
 	fullName, _ := payload.Claims["name"].(string)
 
-	// check if the user exists
-	var id string
-	var name string
-	var is_registered bool
-
-
-
-	query := `SELECT id, full_name, is_registered FROM users WHERE email = $1`
-	err = config.DB.QueryRowContext(ctx, query, emailStr).Scan(&id, &name, &is_registered)
-
+	// Fetch or insert user
+	user, err := db.GetUserByEmail(ctx, emailStr)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			// insert user if not found
-			uuidStr, err := helpers.GenerateUUIDFromEmail(emailStr)
+			user, err = db.InsertUser(ctx, fullName, emailStr)
 			if err != nil {
-				log.Printf("Failed to generate uuid: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
-				return
-			}
-
-			insertQuery := `INSERT INTO users (id, full_name, email,is_registered) VALUES ($1, $2, $3,$4) RETURNING id, full_name`
-			err = config.DB.QueryRowContext(ctx, insertQuery, uuidStr, fullName, emailStr, false).Scan(&id, &name)
-			if err != nil {
-				log.Printf("Failed to insert user: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 				return
 			}
 		} else {
-			log.Printf("Error checking user: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 			return
 		}
 	}
 
-	
-	// generate jwt token
-
 	token, err := helpers.GenerateToken(emailStr)
-
 	if err != nil {
 		log.Printf("Failed to generate token: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 		return
 	}
 
-	// log.Println(token)
 	c.SetSameSite(http.SameSiteNoneMode)
-
-	c.SetCookie(
-		"token",
-		token,
-		48*60*60,
-		"/",         // path
-		"", // domain → leave empty for localhost
-		true,       // secure → must be true in production (HTTPS)
-		true,       // httpOnly → true in production
-	)
-
-
-	// return successful login response
+	c.SetCookie("token", token, 48*60*60, "/", "", true, true)
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":       "Login Successfull",
-		"user_id":       id,
-		"is_registered": is_registered,
+		"message":       "Login Successful",
+		"user_id":       user.UserID,
+		"is_registered": user.IsRegistered,
 	})
-
 }
 
 func StartupRegistration(c *gin.Context) {
-
-	// get the startup from frontend
 	var startup models.Startup
 
-	err := c.ShouldBindBodyWithJSON(&startup)
-
-	// validate the startup content
-	if err != nil {
+	if err := c.ShouldBindBodyWithJSON(&startup); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload"})
 		return
 	}
 
-	// get the user id
-	userId := startup.UserID
-
-	if userId == "" {
+	if startup.UserID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "User ID is required"})
 		return
 	}
 
-	// generate a new uuid for startups
-	uuidStr, err := helpers.GenerateUUIDFromEmail(userId)
-	if err != nil {
-		log.Printf("Failed to generate uuid: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
-		return
-	}
-
-	// insert everything to that startups
-	query := `
-    INSERT INTO startups
-	(startup_id, user_id, startup_name, website,about,phone_number) 
-	VALUES 
-	($1,$2,$3,$4,$5,$6)
-	`
-	// log.Println(startup.StartupName)
-	// log.Println(startup.Website)
-	// log.Println(startup.ProfilePic)
-	// log.Println(startup.About)
-	// log.Println(startup.Phone)
-
 	ctx := c.Request.Context()
 
-	_, err = config.DB.ExecContext(ctx, query,
-		uuidStr,
-		userId,
-		startup.StartupName,
-		startup.Website,
-		startup.About,
-		startup.Phone,
-	)
-
+	startupID, err := db.InsertStartup(ctx, startup)
 	if err != nil {
-		log.Printf("Error in registering startup: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 		return
 	}
 
-	// update the user to is registered
-	updateToRegistered := `
-    UPDATE users
-	SET is_registered = TRUE
-	WHERE id = $1;
-	`
-
-	_, err = config.DB.ExecContext(ctx, updateToRegistered, userId)
-
+	err = db.MarkUserAsRegistered(ctx, startup.UserID)
 	if err != nil {
-		log.Printf("Error in  updating user's registration status: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 		return
 	}
 
-	// send response
 	c.JSON(http.StatusOK, gin.H{
-		"message":       "Login Successfull",
-		"id":            userId,
-		"startup_id":    uuidStr,
+		"message":       "startup registration successful",
+		"id":            startup.UserID,
+		"startup_id":    startupID,
 		"is_registered": true,
 	})
-
 }
 
 func MentorRegistration(c *gin.Context) {
-	// get the mentor from frontend
 	var mentor models.Mentor
 
-	err := c.ShouldBindJSON(&mentor)
-	if err != nil {
+	if err := c.ShouldBindJSON(&mentor); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload"})
 		return
 	}
 
-	// get the user id
-	userId := mentor.UserID
-	if userId == "" {
+	if mentor.UserID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "User ID is required"})
 		return
 	}
 
 	ctx := c.Request.Context()
 
-	// get the user name from user id
-	queryName := `SELECT full_name FROM users WHERE id = $1`
-	err = config.DB.QueryRowContext(ctx, queryName, userId).Scan(&mentor.MentorName)
+	// Fetch mentor's name from users table
+	name, err := db.GetUserNameByID(ctx, mentor.UserID)
 	if err != nil {
-		log.Printf("Failed to query name: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
+		return
+	}
+	mentor.MentorName = name
+
+	// Insert mentor
+	mentorID, err := db.InsertMentor(ctx, mentor)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 		return
 	}
 
-	// generate a new uuid for mentor
-	uuidStr, err := helpers.GenerateUUIDFromEmail(userId)
-	if err != nil {
-		log.Printf("Failed to generate uuid: %v", err)
+	// Insert experience and expertise
+	db.InsertMentorExperience(ctx, mentorID, mentor.Experience)
+	db.InsertMentorExpertise(ctx, mentorID, mentor.Expertise)
+
+	// Mark user as registered
+	if err := db.MarkUserAsRegistered(ctx, mentor.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 		return
 	}
 
-	// insert into mentors table with approval_status = false
-	query := `
-		INSERT INTO mentors
-		(mentor_id, user_id, linked_in_url, phone_number, about, approval_status, mentor_name)
-		VALUES ($1,$2,$3,$4,$5,$6,$7)
-	`
-
-	_, err = config.DB.ExecContext(ctx, query,
-		uuidStr,
-		userId,
-		mentor.LinkedInURL,
-		mentor.Phone,
-		mentor.About,
-		false,
-		mentor.MentorName,
-	)
-	if err != nil {
-		log.Printf("Error in registering mentor: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
-		return
-	}
-
-	// insert experiences
-	for _, exp := range mentor.Experience {
-		expID, _ := uuid.NewUUID()
-		_, err = config.DB.ExecContext(ctx, `
-			INSERT INTO experience (experience_id, experience, mentor_id)
-			VALUES ($1, $2, $3)
-		`, expID, exp, uuidStr)
-		if err != nil {
-			log.Printf("Error inserting experience: %v", err)
-		}
-	}
-
-	// insert expertise directly into mentor_expertise
-	for _, exp := range mentor.Expertise {
-		_, err = config.DB.ExecContext(ctx, `
-			INSERT INTO mentor_expertise (mentor_id, expertise)
-			VALUES ($1, $2)
-		`, uuidStr, exp)
-		if err != nil {
-			log.Printf("Error inserting expertise: %v", err)
-		}
-	}
-
-	// change is_registered to true for mentor
-	querySetIsRegistered :=
-		`
-	UPDATE users
-	SET is_registered = TRUE
-	WHERE id = $1;
-	`
-
-	_, err = config.DB.ExecContext(ctx, querySetIsRegistered, userId)
-
-	if err != nil {
-		log.Printf("Error in  updating user's registration status: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
-		return
-	}
-
-	// send response
+	// Send response
 	c.JSON(http.StatusOK, gin.H{
 		"message":   "Mentor registration submitted. Pending admin approval.",
-		"user_id":   userId,
-		"mentor_id": uuidStr,
+		"user_id":   mentor.UserID,
+		"mentor_id": mentorID,
 	})
 }
+
 
 func Logout(c *gin.Context) {
 
@@ -340,194 +193,41 @@ func GetUserDetails(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "email not found in token"})
 		return
 	}
-
 	email, ok := emailVal.(string)
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email format in token"})
 		return
 	}
 
-	// log.Println(email)
-
 	// fetch user info
-	queryUser := `
-        SELECT id, full_name, email, is_registered, is_admin
-        FROM users
-        WHERE email = $1
-    `
-
-	var currUser models.User
-	err := config.DB.QueryRowContext(ctx, queryUser, email).
-		Scan(&currUser.UserID, &currUser.UserName, &currUser.UserEmail, &currUser.IsRegistered, &currUser.IsAdmin)
-
-	// log.Println(currUser.UserID)
-	// log.Println(currUser.UserName)
-	// log.Println(currUser.UserEmail)
-	// log.Println(currUser.IsRegistered)
-	// log.Println(currUser.IsAdmin)
-
-
+	currUser, err := db.GetUserDetailsByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		} else {
-			log.Println("error fetching user:", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch user"})
 		}
 		return
 	}
-	resp.User = currUser
+	resp.User = *currUser
 
-	// ------------------------
-	// check if the user is a startup
-	// ------------------------
-	queryStartup := `
-        SELECT startup_id,
-               startup_name,
-               website,
-               phone_number,
-               COALESCE(about, '')
-        FROM startups
-        WHERE user_id = $1
-	`
-
-	var startup models.Startup
-	var startupID string
-	err = config.DB.QueryRowContext(ctx, queryStartup, currUser.UserID).
-		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.About)
-
-	startup.UserID = currUser.UserID.String()
-
+	// check if user is a startup
+	startup, startupID, err := db.GetStartupByUserID(ctx, currUser.UserID.String())
 	if err == nil {
-		sDetail := models.StartupDetail{Startup: startup}
-
-		// fetch mentorships for startup
-		mentorshipQuery := `
-            SELECT m.mentorship_id, mt.full_name
-            FROM mentorships m
-            JOIN mentors me ON m.mentor_id = me.mentor_id
-            JOIN users mt ON me.user_id = mt.id
-            WHERE m.startup_id = $1
-        `
-		rows, err := config.DB.QueryContext(ctx, mentorshipQuery, startupID)
-		if err != nil {
-			log.Println("error fetching startup mentorships:", err)
-		} else {
-			defer rows.Close()
-			for rows.Next() {
-				var ms models.MentorshipInfo
-				if err := rows.Scan(&ms.MentorshipID, &ms.MentorName); err != nil {
-					log.Println("error scanning startup mentorship row:", err)
-					continue
-				}
-				sDetail.Mentorships = append(sDetail.Mentorships, ms)
-			}
-			if err := rows.Err(); err != nil {
-				log.Println("rows iteration error (startup mentorships):", err)
-			}
-		}
-
+		sDetail := models.StartupDetail{Startup: *startup}
+		sDetail.Mentorships, _ = db.GetStartupMentorships(ctx, startupID)
 		resp.StartupDetail = &sDetail
 		c.JSON(http.StatusOK, resp)
 		return
 	}
 
-	// ------------------------
-	// check if the user is a mentor
-	// ------------------------
-	queryMentor := `
-        SELECT mentor_id,
-               phone_number,
-               linked_in_url,
-               approval_status,
-               COALESCE(about, '')
-        FROM mentors
-        WHERE user_id = $1;
-    `
-	var mentor models.Mentor
-	var mentorID string
-	err = config.DB.QueryRowContext(ctx, queryMentor, currUser.UserID).
-		Scan(&mentorID, &mentor.Phone, &mentor.LinkedInURL,  &mentor.ApprovalStatus, &mentor.About)
+	// check if user is a mentor
+	mentor, mentorID, err := db.GetMentorByUserID(ctx, currUser.UserID.String())
 	if err == nil {
-		mDetail := models.MentorDetail{Mentor: mentor}
-
-		// expertise (now directly from mentor_expertise.expertise)
-		expertiseQuery := `
-            SELECT expertise
-            FROM mentor_expertise
-            WHERE mentor_id = $1
-        `
-		rowsExp, err := config.DB.QueryContext(ctx, expertiseQuery, mentorID)
-		if err != nil {
-			log.Println("error fetching expertise:", err)
-		} else {
-			defer rowsExp.Close()
-			for rowsExp.Next() {
-				var exp string
-				if err := rowsExp.Scan(&exp); err != nil {
-					log.Println("error scanning expertise row:", err)
-					continue
-				}
-				mDetail.Expertise = append(mDetail.Expertise, exp)
-			}
-			if err := rowsExp.Err(); err != nil {
-				log.Println("rows iteration error (expertise):", err)
-			}
-		}
-
-		// experience
-		expQuery := `
-            SELECT experience
-            FROM experience
-            WHERE mentor_id = $1
-        `
-		rowsExperience, err := config.DB.QueryContext(ctx, expQuery, mentorID)
-		if err != nil {
-			log.Println("error fetching experience:", err)
-		} else {
-			defer rowsExperience.Close()
-			for rowsExperience.Next() {
-				var exp string
-				if err := rowsExperience.Scan(&exp); err != nil {
-					log.Println("error scanning experience row:", err)
-					continue
-				}
-				mDetail.Experience = append(mDetail.Experience, exp)
-			}
-			if err := rowsExperience.Err(); err != nil {
-				log.Println("rows iteration error (experience):", err)
-			}
-		}
-
-		// mentorships
-		mentorshipQuery := `
-            SELECT m.mentorship_id, s.startup_name
-            FROM mentorships m
-            JOIN startups s ON m.startup_id = s.startup_id
-            WHERE m.mentor_id = $1
-        `
-		rowsMs, err := config.DB.QueryContext(ctx, mentorshipQuery, mentorID)
-		if err != nil {
-			log.Println("error fetching mentor mentorships:", err)
-		} else {
-			defer rowsMs.Close()
-			for rowsMs.Next() {
-				var mentorshipID string
-				var startupName string
-				if err := rowsMs.Scan(&mentorshipID, &startupName); err != nil {
-					log.Println("error scanning mentor mentorship row:", err)
-					continue
-				}
-				mDetail.Mentorships = append(mDetail.Mentorships, models.MentorshipInfo{
-					MentorshipID: mentorshipID,
-					StartupName:  startupName,
-				})
-			}
-			if err := rowsMs.Err(); err != nil {
-				log.Println("rows iteration error (mentor mentorships):", err)
-			}
-		}
-
+		mDetail := models.MentorDetail{Mentor: *mentor}
+		mDetail.Expertise = db.GetMentorExpertise(ctx, mentorID)
+		mDetail.Experience = db.GetMentorExperience(ctx, mentorID)
+		mDetail.Mentorships = db.GetMentorMentorships(ctx, mentorID)
 		resp.MentorDetail = &mDetail
 		c.JSON(http.StatusOK, resp)
 		return

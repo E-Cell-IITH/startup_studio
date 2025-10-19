@@ -5,200 +5,106 @@ import (
 	"net/http"
 
 	"github.com/E-Cell-IITH/startup_studio/config"
-	"github.com/E-Cell-IITH/startup_studio/internal/models"
+	"github.com/E-Cell-IITH/startup_studio/internal/db"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/lib/pq"
 )
 
+// GetAllNonApprovedMentors fetches all mentors pending admin approval
 func GetAllNonApprovedMentors(c *gin.Context) {
-	// get the user id from params
-	userId := c.Param("userId")
+	userID := c.Param("userId")
+	requestEmail, _ := c.Get("email")
 
-	requestEmail, _ := c.Get("email") 
-
-	// check if the person is admin or not
+	ctx := c.Request.Context()
 	var isAdmin bool
 	var dbEmail string
 
-	queryUser := `
-		SELECT is_admin, email FROM users WHERE id = $1;
-	`
-
-	ctx := c.Request.Context()
-	err := config.DB.QueryRowContext(ctx, queryUser, userId).Scan(&isAdmin, &dbEmail)
-	if err != nil {
-		log.Println(err)
+	query := `SELECT is_admin, email FROM users WHERE id = $1;`
+	if err := config.DB.QueryRowContext(ctx, query, userID).Scan(&isAdmin, &dbEmail); err != nil {
+		log.Println("user check error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
 		return
 	}
 
 	if requestEmail != dbEmail {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Hey, I too have some brain."})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unauthorized access attempt detected."})
 		return
 	}
-
 	if !isAdmin {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "You are not an admin"})
+		c.JSON(http.StatusForbidden, gin.H{"message": "You are not an admin"})
 		return
 	}
 
-	// query to fetch all non-approved mentors
-	queryMentors := `
-    SELECT 
-        m.user_id,
-        m.phone_number,
-        m.linked_in_url,
-        m.about,
-        m.approval_status,
-        m.mentor_name,
-        COALESCE(ARRAY_AGG(DISTINCT e.experience) FILTER (WHERE e.experience IS NOT NULL), '{}') AS experiences,
-        COALESCE(ARRAY_AGG(DISTINCT me.expertise) FILTER (WHERE me.expertise IS NOT NULL), '{}') AS expertises
-    FROM mentors m
-    LEFT JOIN experience e ON m.mentor_id = e.mentor_id
-    LEFT JOIN mentor_expertise me ON m.mentor_id = me.mentor_id
-    WHERE m.approval_status = FALSE
-    GROUP BY m.mentor_id;
-`
-
-	rows, err := config.DB.QueryContext(ctx, queryMentors)
+	mentors, err := db.GetAllNonApprovedMentors(ctx)
 	if err != nil {
-		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to fetch mentors"})
 		return
 	}
-	defer rows.Close()
 
-	var mentors []models.Mentor
-
-	for rows.Next() {
-		var mentor models.Mentor
-		var experiences, expertises []string
-
-		err := rows.Scan(
-			&mentor.UserID,
-			&mentor.Phone,
-			&mentor.LinkedInURL,
-			&mentor.About,
-			&mentor.ApprovalStatus,
-			&mentor.MentorName,
-			pq.Array(&experiences),
-			pq.Array(&expertises),
-		)
-		if err != nil {
-			log.Println("scan error:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error scanning mentor data"})
-			return
-		}
-
-		mentor.Experience = experiences
-		mentor.Expertise = expertises
-
-		mentors = append(mentors, mentor)
-	}
-
-	// respond with all non-approved mentors
-	c.JSON(http.StatusOK, gin.H{
-		"mentors": mentors,
-	})
+	c.JSON(http.StatusOK, gin.H{"mentors": mentors})
 }
 
+// ApproveAMentor marks a mentor as approved
 func ApproveAMentor(c *gin.Context) {
-	adminUserId := c.Param("adminUserId")
-
+	adminUserID := c.Param("adminUserId")
 	requestEmail, _ := c.Get("email")
 
+	ctx := c.Request.Context()
 	var isAdmin bool
 	var dbEmail string
-	queryUser := `SELECT is_admin, email FROM users WHERE id = $1;`
 
-	ctx := c.Request.Context()
-	err := config.DB.QueryRowContext(ctx, queryUser, adminUserId).Scan(&isAdmin, &dbEmail)
-	if err != nil {
+	if err := config.DB.QueryRowContext(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
 		return
 	}
-
 	if requestEmail != dbEmail {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Hey, I too have some brain."})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unauthorized access attempt detected."})
 		return
 	}
-
 	if !isAdmin {
 		c.JSON(http.StatusForbidden, gin.H{"message": "You are not an admin"})
 		return
 	}
 
-	// get the mentor user id from params
-	mentorUserId := c.Param("mentorUserId")
+	mentorUserID := c.Param("mentorUserId")
 
-	// get the mentor id from mentorUserId
-	queryMentor := `SELECT mentor_id FROM mentors WHERE user_id = $1`
-	var mentorId uuid.UUID
-
-	err = config.DB.QueryRowContext(ctx, queryMentor, mentorUserId).Scan(&mentorId)
-	if err != nil {
-		log.Println(err)
+	if err := db.ApproveMentor(ctx, mentorUserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to approve mentor"})
 		return
 	}
 
-	// update mentor approval
-	queryUpdate := `UPDATE mentors SET approval_status = $1 WHERE mentor_id = $2`
-	_, err = config.DB.ExecContext(ctx, queryUpdate, true, mentorId)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to approve mentor"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Mentor approved successfully",
-	})
+	c.JSON(http.StatusOK, gin.H{"message": "Mentor approved successfully"})
 }
 
-
+// RejectMentor deletes a mentor's user account
 func RejectMentor(c *gin.Context) {
-	adminUserId := c.Param("adminUserId")
-
+	adminUserID := c.Param("adminUserId")
 	requestEmail, _ := c.Get("email")
 
+	ctx := c.Request.Context()
 	var isAdmin bool
 	var dbEmail string
-	queryUser := `SELECT is_admin, email FROM users WHERE id = $1;`
 
-	ctx := c.Request.Context()
-	err := config.DB.QueryRowContext(ctx, queryUser, adminUserId).Scan(&isAdmin, &dbEmail)
-	if err != nil {
+	if err := config.DB.QueryRowContext(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
 		return
 	}
-
 	if requestEmail != dbEmail {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Hey, I too have some brain."})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unauthorized access attempt detected."})
 		return
 	}
-
 	if !isAdmin {
 		c.JSON(http.StatusForbidden, gin.H{"message": "You are not an admin"})
 		return
 	}
 
-	// get mentor user id from params
-	mentorUserId := c.Param("mentorUserId")
+	mentorUserID := c.Param("mentorUserId")
 
-	// delete user
-	queryDelete := `DELETE FROM users WHERE id = $1`
-	_, err = config.DB.ExecContext(ctx, queryDelete, mentorUserId)
-	if err != nil {
-		log.Println(err)
+	if err := db.RejectMentor(ctx, mentorUserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to reject mentor"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Mentor rejected and user deleted successfully",
-	})
+	c.JSON(http.StatusOK, gin.H{"message": "Mentor rejected and user deleted successfully"})
 }
