@@ -233,7 +233,7 @@ const LandingPage = () => {
             {[
               { icon: <Calendar />, label: "Duration", value: "90 Days", desc: "Intensive program" },
               { icon: <Globe />, label: "Mode", value: "100% Online", desc: "Learn from anywhere" },
-              { icon: <Users />, label: "Cohort Size", value: "10-12 Startups", desc: "Exclusive community" }
+              { icon: <Users />, label: "Cohort Size", value: "15 Startups", desc: "Exclusive community" }
             ].map((item, index) => (
               <div key={index} className="group text-center bg-gradient-to-br from-blue-50 to-white p-10 rounded-2xl hover:shadow-xl transition-all duration-500 hover:-translate-y-2 transform border border-blue-100">
                 <div className="bg-blue-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg">

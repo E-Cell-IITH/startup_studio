@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
     User,
-    Mail,
     Phone,
     Globe,
-    Users,
     X,
     ExternalLink,
     Award,
-    Star,
-    Briefcase,
-    Check,
     Search,
     Building2,
     Loader2
 } from 'lucide-react';
-import Footer from '../../components/Footer/Footer';
-import Navbar from '../../components/Navbar/Navbar';
+
 import { useUser } from '../../Context/userContext';
 import { useStartUp } from '../../Context/startupContext';
 
@@ -27,14 +21,14 @@ const StartUpScreen = () => {
     const [selectedStartup, setSelectedStartup] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredStartups, setFilteredStartups] = useState([]);
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchStartUps = async () => {
             try {
-                setLoading(true); // Set loading to true when starting fetch
+                setLoading(true);
                 const data = await getAllStartups();
-                
+
                 if (data && data.startups) {
                     setStartUps(data.startups);
                     setFilteredStartups(data.startups);
@@ -42,10 +36,10 @@ const StartUpScreen = () => {
             } catch (error) {
                 console.error("Error fetching startups:", error);
             } finally {
-                setLoading(false); // Set loading to false when fetch completes
+                setLoading(false);
             }
         };
-        
+
         fetchStartUps();
     }, []);
 
@@ -69,197 +63,146 @@ const StartUpScreen = () => {
         alert("Feature in progress")
     }
 
-    // Access check - show this regardless of loading state
+    // Access check
     if (!(user?.mentor_detail?.approval_status || user?.is_admin)) {
         return (
-            <>
-                <div className="min-h-screen bg-white flex items-center justify-center">
-                    <div className="text-center py-24">
-                        <div className="w-24 h-24 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                            <Building2 className="text-gray-400" size={48} />
+            <div className="flex-1 bg-gray-50 p-8">
+                <div className="max-w-6xl mx-auto">
+                    <div className="bg-white border border-gray-200 shadow-sm p-12 text-center">
+                        <div className="w-20 h-20 bg-gray-100 flex items-center justify-center mx-auto mb-6">
+                            <Building2 className="text-gray-400" size={40} />
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                             Access Restricted
                         </h3>
-                        <p className="text-gray-600 text-lg max-w-md mx-auto">
+                        <p className="text-gray-600 text-base max-w-md mx-auto">
                             You need to be an approved mentor to access the startup directory.
                         </p>
                     </div>
                 </div>
-            </>
+            </div>
         );
     }
 
-    // Loading Skeleton Component
+    // Loading Skeleton
     const StartupCardSkeleton = () => (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-pulse">
-            <div className="p-8">
-                <div className="flex items-start space-x-5 mb-6">
-                    <div className="w-20 h-20 bg-gray-200 rounded-2xl"></div>
+        <div className="bg-white border border-gray-200 shadow-sm overflow-hidden animate-pulse">
+            <div className="p-6">
+                <div className="flex items-start space-x-4 mb-4">
+                    <div className="w-16 h-16 bg-gray-200"></div>
                     <div className="flex-1">
-                        <div className="h-6 bg-gray-200 rounded mb-2 w-3/4"></div>
-                        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                        <div className="h-5 bg-gray-200 mb-2 w-3/4"></div>
+                        <div className="h-4 bg-gray-200 w-1/2"></div>
                     </div>
                 </div>
-                <div className="mb-6">
-                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded mb-2 w-5/6"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="mb-4">
+                    <div className="h-4 bg-gray-200 mb-2"></div>
+                    <div className="h-4 bg-gray-200 mb-2 w-5/6"></div>
+                    <div className="h-4 bg-gray-200 w-3/4"></div>
                 </div>
-                <div className="flex justify-between items-center">
-                    <div className="h-4 bg-gray-200 rounded w-20"></div>
-                    <div className="h-4 bg-gray-200 rounded w-24"></div>
-                </div>
+                <div className="h-10 bg-gray-200 w-full"></div>
             </div>
         </div>
     );
 
-    // Main Loading Component
     const StartupsLoading = () => (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="text-center mb-12">
-                <div className="inline-flex items-center space-x-2 text-blue-600">
-                    <Loader2 className="animate-spin" size={24} />
-                    <span className="text-lg font-semibold">Loading startups...</span>
-                </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {[...Array(3)].map((_, index) => (
-                    <StartupCardSkeleton key={index} />
-                ))}
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            {[...Array(6)].map((_, index) => (
+                <StartupCardSkeleton key={index} />
+            ))}
         </div>
     );
 
     const StartupCard = ({ startup }) => (
-        <div
-            className="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 cursor-pointer transform hover:-translate-y-2 overflow-hidden"
-            onClick={() => openStartupModal(startup)}
-        >
-            <div className="p-8">
+        <div className="group rounded-xl bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+            <div className="p-6">
                 {/* Profile Header */}
-                <div className="flex items-start space-x-5 mb-6">
-                    <div className="relative flex-shrink-0">
-                        <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
-                            {startup.profile_photo_ref ? (
-                                <img
-                                    src={startup.profile_photo_ref}
-                                    alt={startup.startup_name}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        e.target.nextSibling.style.display = 'flex';
-                                    }}
-                                />
-                            ) : null}
-                            <div className="w-full h-full flex items-center justify-center text-white text-xl font-bold">
-                                {startup?.startup_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || "S"}
-                            </div>
-                        </div>
-                        <div className="absolute -top-1 -right-1 w-7 h-7 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-                            <Building2 size={14} className="text-white" />
-                        </div>
-                    </div>
+                <div className="flex items-start space-x-4 mb-4">
+                
                     <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2 truncate group-hover:text-blue-600 transition-colors">
+                        <h3 className="text-lg font-bold text-gray-900 mb-1 truncate group-hover:text-blue-600 transition-colors">
                             {startup.startup_name}
                         </h3>
-                        <div className="flex items-center text-blue-600 text-sm font-medium mb-3">
-                            <Award size={16} className="mr-2" />
+                        <div className="flex items-center text-blue-600 text-sm font-medium">
+                            <Award size={14} className="mr-1.5" />
                             <span>Verified Startup</span>
                         </div>
                     </div>
                 </div>
 
                 {/* About Preview */}
-                <div className="mb-6">
+                <div className="mb-4">
                     <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
                         {startup.about || 'No description available'}
                     </p>
                 </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        {startup.phone && (
-                            <div className="flex items-center space-x-2">
-                                <Phone size={14} />
-                                <span className="font-medium">Contact</span>
-                            </div>
-                        )}
-                        {startup.website && (
-                            <div className="flex items-center space-x-2">
-                                <Globe size={14} />
-                                <span className="font-medium">Website</span>
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex items-center text-blue-600 font-semibold text-sm group-hover:text-blue-700 transition-colors">
-                        <span>View Details</span>
-                        <ExternalLink size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                    </div>
+                {/* Contact Info Preview */}
+                <div className="mb-4 flex items-center space-x-4 text-sm text-gray-500">
+                    {startup.phone && (
+                        <div className="flex items-center space-x-1.5">
+                            <Phone size={14} />
+                            <span className="font-medium">Contact</span>
+                        </div>
+                    )}
+                    {startup.website && (
+                        <div className="flex items-center space-x-1.5">
+                            <Globe size={14} />
+                            <span className="font-medium">Website</span>
+                        </div>
+                    )}
                 </div>
+
+                {/* View Profile Button */}
+                <button
+                    onClick={() => openStartupModal(startup)}
+                    className="w-full bg-blue-600 rounded-xl hover:bg-blue-700 text-white py-2.5 px-4 font-semibold text-sm transition-colors duration-200 flex items-center justify-center space-x-2 cursor-pointer"
+                >
+                    <span>View Profile</span>
+                    <ExternalLink size={14} />
+                </button>
             </div>
         </div>
     );
 
     const StartupModal = ({ startup, onClose }) => (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white max-w-4xl rounded-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
                 {/* Modal Header */}
-                <div className="flex items-center justify-between p-8 border-b border-gray-100">
+                <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
                     <h2 className="text-2xl font-bold text-gray-900">Startup Profile</h2>
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 cursor-pointer rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center"
+                        className="w-10 h-10 cursor-pointer rounded-4xl bg-white border border-gray-300 hover:bg-gray-100 transition-colors flex items-center justify-center"
                     >
                         <X size={20} className="text-gray-600" />
                     </button>
                 </div>
 
                 {/* Modal Content */}
-                <div className="p-8">
+                <div className="p-6">
                     {/* Profile Header */}
-                    <div className="flex items-center space-x-8 mb-8">
+                    <div className="flex items-center space-x-6 mb-8 pb-6 border-b border-gray-200">
                         <div className="relative flex-shrink-0">
-                            <div className="w-32 h-32 rounded-3xl overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 shadow-xl">
-                                {startup.profile_photo_ref ? (
-                                    <img
-                                        src={startup.profile_photo_ref}
-                                        alt={startup.startup_name}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                            e.target.nextSibling.style.display = 'flex';
-                                        }}
-                                    />
-                                ) : null}
-                                <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">
-                                    {startup.startup_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                                </div>
-                            </div>
-                            <div className="absolute -top-2 -right-2 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-                                <Building2 size={18} className="text-white" />
-                            </div>
                         </div>
                         <div className="flex-1">
-                            <h3 className="text-3xl font-bold text-gray-900 mb-3">{startup.startup_name}</h3>
-                            <div className="flex items-center text-blue-600 mb-4">
-                                <Award size={20} className="mr-2" />
+                            <h3 className="text-3xl font-bold text-gray-900 mb-2">{startup.startup_name}</h3>
+                            <div className="flex items-center text-blue-600">
+                                <Award size={18} className="mr-2" />
                                 <span className="font-semibold">Verified Startup</span>
                             </div>
                         </div>
                     </div>
 
                     {/* About Section */}
-                    <div className="mb-8">
-                        <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                                <User size={18} className="text-blue-600" />
+                    <div className="mb-6">
+                        <h4 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
+                            <div className="w-8 h-8 bg-blue-100 flex items-center justify-center mr-3 rounded-xl">
+                                <User size={16} className="text-blue-600" />
                             </div>
                             About
                         </h4>
-                        <div className="bg-gray-50 rounded-2xl p-6">
+                        <div className="bg-gray-50 border border-gray-200 p-4 rounded-xl">
                             <p className="text-gray-700 leading-relaxed">
                                 {startup.about || 'No description available'}
                             </p>
@@ -267,26 +210,26 @@ const StartUpScreen = () => {
                     </div>
 
                     {/* Contact Information */}
-                    <div className="mb-8">
-                        <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                                <Phone size={18} className="text-blue-600" />
+                    <div className="mb-6">
+                        <h4 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
+                            <div className="w-8 h-8 bg-blue-100 flex items-center justify-center mr-3 rounded-xl">
+                                <Phone size={16} className="text-blue-600" />
                             </div>
                             Contact Information
                         </h4>
-                        <div className="bg-gray-50 rounded-2xl p-6 space-y-4">
+                        <div className="bg-gray-50 border border-gray-200 p-4 space-y-3 rounded-xl">
                             {startup.phone && (
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                                        <Phone className="text-gray-600" size={18} />
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-white border border-gray-300 flex items-center justify-center shadow-sm">
+                                        <Phone className="text-gray-600" size={16} />
                                     </div>
                                     <span className="text-gray-800 font-medium">{startup.phone}</span>
                                 </div>
                             )}
                             {startup.website && (
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                                        <Globe className="text-gray-600" size={18} />
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-white border border-gray-300 flex items-center justify-center shadow-sm">
+                                        <Globe className="text-gray-600" size={16} />
                                     </div>
                                     <a
                                         href={startup.website}
@@ -295,16 +238,19 @@ const StartUpScreen = () => {
                                         className="text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-2 transition-colors"
                                     >
                                         <span>Visit Website</span>
-                                        <ExternalLink size={16} />
+                                        <ExternalLink size={14} />
                                     </a>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex space-x-4 pt-6 border-t border-gray-100">
-                        <button onClick={handleStartupConnectClick} className="flex-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    {/* Action Button */}
+                    <div className="pt-4 border-t border-gray-200">
+                        <button 
+                            onClick={handleStartupConnectClick} 
+                            className="w-full cursor-pointer rounded-xl bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 font-bold transition-all duration-200 shadow-md hover:shadow-lg"
+                        >
                             Connect with Startup
                         </button>
                     </div>
@@ -313,78 +259,49 @@ const StartUpScreen = () => {
         </div>
     );
 
-    // Show loading state while fetching (after access control check)
-    if (loading) {
-        return (
-            <>
-                <div className=" bg-white">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                        <div className="text-center">
-                            <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Startups</h1>
-                           
-                        </div>
-
-                        {/* Search Bar - disabled while loading */}
-                        <div className="max-w-2xl mx-auto mt-12">
-                            <div className="relative">
-                                <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400" size={24} />
-                                <input
-                                    type="text"
-                                    placeholder="Search startups by name or description..."
-                                    disabled
-                                    className="w-full pl-16 pr-6 py-5 text-lg border-2 border-gray-200 rounded-3xl bg-gray-50 cursor-not-allowed"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <StartupsLoading />
-            </>
-        );
-    }
-
     return (
-        <>
-            <div className=" bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                    <div className="text-center">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Startups</h1>
-                  
-                    </div>
-
-                    {/* Search Bar */}
-                    <div className="max-w-2xl mx-auto mt-12">
+        <div className="flex-1 bg-gray-50">
+            {/* Header Section */}
+            <div className="">
+                <div className="max-w-6xl mx-auto px-8 py-8">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-6">Our Startups</h1>
+                    
+                    {/* Search Bar - 2/3 width */}
+                    <div className="max-w-4xl">
                         <div className="relative">
-                            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400" size={24} />
+                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                             <input
                                 type="text"
                                 placeholder="Search startups by name or description..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-16 pr-6 py-5 text-lg border-2 border-gray-200 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all shadow-sm"
+                                disabled={loading}
+                                className="w-full rounded-xl pl-12 pr-4 py-3 text-base border-2 border-gray-300 focus:outline-none focus:border-blue-500 transition-colors shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                             />
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Startups Grid */}
-            <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                {filteredStartups && filteredStartups.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Content Section */}
+            <div className="max-w-6xl mx-auto px-8 py-8">
+                {loading ? (
+                    <StartupsLoading />
+                ) : filteredStartups && filteredStartups.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredStartups.map((startup) => (
                             <StartupCard key={startup.user_id} startup={startup} />
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-24">
-                        <div className="w-24 h-24 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                            <Building2 className="text-gray-400" size={48} />
+                    <div className="bg-white border border-gray-200 shadow-sm p-12 text-center">
+                        <div className="w-20 h-20 bg-gray-100 flex items-center justify-center mx-auto mb-6">
+                            <Building2 className="text-gray-400" size={40} />
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
                             {searchTerm ? 'No startups found' : 'No startups available'}
                         </h3>
-                        <p className="text-gray-600 text-lg max-w-md mx-auto">
+                        <p className="text-gray-600 text-base max-w-md mx-auto">
                             {searchTerm
                                 ? 'Try adjusting your search terms to find the perfect startup.'
                                 : 'Check back later for new startups joining our platform.'
@@ -398,7 +315,7 @@ const StartUpScreen = () => {
             {selectedStartup && (
                 <StartupModal startup={selectedStartup} onClose={closeStartupModal} />
             )}
-        </>
+        </div>
     );
 };
 

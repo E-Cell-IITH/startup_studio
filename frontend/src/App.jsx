@@ -12,6 +12,7 @@ import ProfileScreen from './routes/ProfileScreen/ProfileScreen'
 import MentorApproval from './routes/MentorApproval/MentorApproval'
 import MainLayout from './Layout/Layout'
 import CohortScreen from './routes/CohortScreen/CohortScreen'
+import StartupApproval from './routes/StartupApproval/StartupApproval'
 
 function App() {
   return (
@@ -44,8 +45,12 @@ function App() {
             <MentorApproval />
           </ProtectedRoute>
         } />
+        <Route path='/startup-approval' element={
+          <ProtectedRoute>
+            <StartupApproval />
+          </ProtectedRoute>
+        } />
       </Route>
-
     </Routes>
   )
 }

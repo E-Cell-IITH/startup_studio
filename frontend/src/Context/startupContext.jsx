@@ -47,9 +47,34 @@ export const StartupProvider = ({ children }) => {
         }
     }
 
+    async function getAllNonApprovedStartups(userId) {
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/admin/startups/approval/${userId}`, {
+                method: "GET",
+                credentials: "include",
+            })
+
+            if (response.status != 200) {
+                showError("Error fetching non approved mentors", 3000)
+                return
+            }
+
+            const data = await response.json()
+
+            showSuccess("Found all non approved mentors", 4000)
+
+            return data
 
 
-    return <StartupContext.Provider value={{ getAllStartups }}>
+        } catch (e) {
+            console.log("error fetching non approved mentors", e)
+        }
+    }
+
+
+
+    return <StartupContext.Provider value={{ getAllStartups, getAllNonApprovedStartups }}>
         {children}
     </StartupContext.Provider>
 

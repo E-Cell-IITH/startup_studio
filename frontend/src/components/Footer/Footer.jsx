@@ -2,19 +2,15 @@ import React from 'react';
 import {
     Building,
     Mail,
-    Phone,
-    MapPin,
-    Facebook,
-    Twitter,
     Linkedin,
     Instagram,
     Github,
-    ExternalLink,
     Users,
     BookOpen,
     Briefcase,
     Award,
-    Heart
+    Heart,
+    Globe,
 } from 'lucide-react';
 
 const Footer = () => {
@@ -52,19 +48,20 @@ const Footer = () => {
     ];
 
     const socialLinks = [
+        { name: "Website", icon: Globe, href: "https://ecell.iith.ac.in", color: "hover:text-gray-900" },
         { name: "LinkedIn", icon: Linkedin, href: "https://in.linkedin.com/company/ecell-iith", color: "hover:text-blue-600" },
-        { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/ecell_iith/?hl=en", color: "hover:text-pink-600" },      
-        { name: "GitHub", icon: Github, href: "https://github.com/orgs/E-Cell-IITH", color: "hover:text-gray-900" }
+        { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/ecell_iith/?hl=en", color: "hover:text-pink-600" },
+        { name: "GitHub", icon: Github, href: "https://github.com/orgs/E-Cell-IITH", color: "hover:text-gray-900" },
     ];
 
     return (
-        <footer className="bg-gray-50 border-t border-gray-200">
+        <footer className="bg-gray-50 border border-gray-200">
 
-            
+
 
             {/* Bottom Footer */}
-            <div className="bg-white border-t border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="bg-white">
+                <div className="max-w-6xl bottom-0 mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
                         {/* Copyright and Credits */}
                         <div className="text-center lg:text-left">

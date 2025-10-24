@@ -15,8 +15,7 @@ import {
     Star
 } from 'lucide-react';
 import { useUser } from '../../Context/userContext';
-import Navbar from '../../components/Navbar/Navbar';
-import Footer from '../../components/Footer/Footer';
+
 
 const ProfileScreen = () => {
 
@@ -39,22 +38,6 @@ const ProfileScreen = () => {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
                 <div className="relative">
-                    <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 border-4 border-blue-500">
-                        {userData.startup_detail?.profile_photo_ref || userData.mentor_detail?.profile_photo_ref ? (
-                            <img
-                                src={userData.startup_detail?.profile_photo_ref || userData.mentor_detail?.profile_photo_ref}
-                                alt="Profile"
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    e.target.nextSibling.style.display = 'flex';
-                                }}
-                            />
-                        ) : null}
-                        <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white text-3xl font-bold">
-                            {userData.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                        </div>
-                    </div>
                 </div>
 
                 <div className="flex-1 text-center md:text-left">
@@ -279,7 +262,7 @@ const ProfileScreen = () => {
 
     return (
         <div className="">
-            {/* <Navbar /> */}
+
             <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
                 <ProfileHeader />
                 <ContactInfo />
