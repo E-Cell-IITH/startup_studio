@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Building2, Globe, Phone, Target, Lightbulb, TrendingUp, Users, Zap, Award, Code, Eye, GraduationCap, ChevronRight } from 'lucide-react';
+import { useUser } from '../../Context/userContext';
+import { useNavigate } from 'react-router-dom';
 
-// Move FormField component outside the main component to prevent recreation
 const FormField = ({ icon: Icon, label, name, type = "text", placeholder, required = true, rows = 4, helpText, formData, handleInputChange, isLoading }) => {
     return (
         <div className="space-y-2">
@@ -52,8 +53,11 @@ const FormField = ({ icon: Icon, label, name, type = "text", placeholder, requir
 
 const StartupRegistration = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const { startupRegistration } = useUser()
     const [loadingMessage, setLoadingMessage] = useState('');
     const [currentStep, setCurrentStep] = useState(1);
+    const navigate = useNavigate()
+    const { user } = useUser()
     const [formData, setFormData] = useState({
         startup_name: '',
         website: '',
@@ -79,18 +83,19 @@ const StartupRegistration = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         setIsLoading(true);
         setLoadingMessage('Uploading your startup profile...');
-
+        if (!user || !user.user_id) {
+            console.error('User is not logegd in');
+            alert('Please log in to register your startup');
+            return;
+        }
         try {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            setLoadingMessage('Registration successful! Redirecting...');
-            console.log('Form submitted:', formData);
-            setTimeout(() => {
-                setIsLoading(false);
-                alert('Registration Complete!');
-            }, 1000);
+            const result = await startupRegistration(formData, user.user_id);
+            if (result != null) {
+                setLoadingMessage('Registration successful! Redirecting...');
+                setTimeout(() => navigate("/mentors"), 1000);
+            }
         } catch (err) {
             console.error("Registration error:", err);
             setIsLoading(false);

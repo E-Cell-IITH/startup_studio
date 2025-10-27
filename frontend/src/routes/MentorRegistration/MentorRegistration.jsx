@@ -48,13 +48,7 @@ const MentorRegistration = () => {
     }
   };
 
-  // const handleFileUpload = (e) => {
-  //   const file = e.target.files[0];
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     profile_photo_ref: file
-  //   }));
-  // };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,11 +58,7 @@ const MentorRegistration = () => {
       return;
     }
 
-    // const file = formData.profile_photo_ref;
-    // if (!file) {
-    //   alert("Please upload a profile photo");
-    //   return;
-    // }
+   
 
     setIsLoading(true);
     setLoadingMessage('Creating your mentor profile...');

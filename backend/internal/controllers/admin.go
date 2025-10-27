@@ -108,3 +108,34 @@ func RejectMentor(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Mentor rejected and user deleted successfully"})
 }
+
+// Get all non approved startups
+func GetAllNonApprovedStartups(c *gin.Context) {
+	userID := c.Param("userId")
+	requestEmail, _ := c.Get("email")
+
+	ctx := c.Request.Context()
+	var isAdmin bool
+	var dbEmail string
+
+	query := `SELECT is_admin, email FROM users WHERE id = $1;`
+	if err := config.DB.QueryRowContext(ctx, query, userID).Scan(&isAdmin, &dbEmail); err != nil {
+		log.Println("user check error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
+		return
+	}
+
+	if requestEmail != dbEmail {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unauthorized access attempt detected."})
+		return
+	}
+	if !isAdmin {
+		c.JSON(http.StatusForbidden, gin.H{"message": "You are not an admin"})
+		return
+	}
+
+	
+
+	
+
+}

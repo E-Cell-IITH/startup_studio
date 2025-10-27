@@ -1,0 +1,10 @@
+ALTER TABLE startups DROP COLUMN problem_statement;
+ALTER TABLE startups DROP COLUMN solution;
+ALTER TABLE startups DROP COLUMN market_understanding;
+ALTER TABLE startups DROP COLUMN customer_understanding;
+ALTER TABLE startups DROP COLUMN competitive_understanding;
+ALTER TABLE startups DROP COLUMN usp;
+ALTER TABLE startups DROP COLUMN tech_understanding;
+ALTER TABLE startups DROP COLUMN vision;
+ALTER TABLE startups DROP COLUMN campus_startup;
+ALTER TABLE startups ADD COLUMN about TEXT;

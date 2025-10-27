@@ -79,7 +79,7 @@ export const UserProvider = ({ children }) => {
 
       const data = await response.json()
 
-      
+
 
       if (data.startup_id) {
         setUser(prev => ({
@@ -112,27 +112,24 @@ export const UserProvider = ({ children }) => {
 
   async function startupRegistration(formData, user_id) {
     try {
-      // const res = await fetch(
-      //   `${BACKEND_URL}/api/auth/generate-presign?filename=${file.name}&user_id=${user_id}`, {
-      //   credentials: "include"
-      // })
-      // const { upload_url, file_url } = await res.json()
-
-      // await fetch(upload_url, {
-      //   method: "PUT",
-      //   body: file,
-      // })
-
 
       const resStartUpRegister = await fetch(`${BACKEND_URL}/api/auth/startup-registration`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           startup_name: formData.startup_name,
-          phone: formData.phone,
           website: formData.website,
+          phone: formData.phone,
+          problem_statement: formData.problem_statement,
+          solution: formData.solution,
+          market_understanding: formData.market_understanding,
+          customer_understanding: formData.customer_understanding,
+          competitive_understanding: formData.competitive_understanding,
+          usp: formData.usp,
+          tech_understanding: formData.tech_understanding,
+          vision: formData.vision,
+          campus_startup: formData.campus_startup,
           user_id: user_id,
-          about : formData.about,
         }),
         credentials: "include"
       })

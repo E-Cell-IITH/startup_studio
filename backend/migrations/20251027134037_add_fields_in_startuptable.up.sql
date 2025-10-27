@@ -1,0 +1,10 @@
+ALTER TABLE startups DROP COLUMN about;
+ALTER TABLE startups ADD COLUMN problem_statement TEXT;
+ALTER TABLE startups ADD COLUMN solution TEXT;
+ALTER TABLE startups ADD COLUMN market_understanding TEXT;
+ALTER TABLE startups ADD COLUMN customer_understanding TEXT;
+ALTER TABLE startups ADD COLUMN competitive_understanding TEXT;
+ALTER TABLE startups ADD COLUMN usp TEXT;
+ALTER TABLE startups ADD COLUMN tech_understanding TEXT;
+ALTER TABLE startups ADD COLUMN vision TEXT;
+ALTER TABLE startups ADD COLUMN campus_startup VARCHAR(10) DEFAULT 'no';

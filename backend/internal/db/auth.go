@@ -57,8 +57,7 @@ func InsertUser(ctx context.Context, fullName, email string) (*models.User, erro
 	return &user, nil
 }
 
-func InsertStartup(ctx context.Context, startup models.Startup) (string, error) {
-	// generate uuid for startup (based on user ID)
+func InsertStartup(ctx context.Context, startup models.StartupRegistration) (string, error) {
 	uuidStr, err := helpers.GenerateUUIDFromEmail(startup.UserID)
 	if err != nil {
 		log.Printf("Failed to generate uuid: %v", err)
@@ -67,9 +66,9 @@ func InsertStartup(ctx context.Context, startup models.Startup) (string, error) 
 
 	query := `
 		INSERT INTO startups
-		(startup_id, user_id, startup_name, website, about, phone_number)
+		(startup_id, user_id, startup_name, website, phone_number,approval_status,problem_statement,solution,market_understanding,customer_understanding,competitive_understanding,usp,tech_understanding,vision)
 		VALUES
-		($1, $2, $3, $4, $5, $6)
+		($1, $2, $3, $4, $5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
 	`
 
 	_, err = config.DB.ExecContext(ctx, query,
@@ -77,8 +76,16 @@ func InsertStartup(ctx context.Context, startup models.Startup) (string, error) 
 		startup.UserID,
 		startup.StartupName,
 		startup.Website,
-		startup.About,
 		startup.Phone,
+		false,
+		startup.ProblemStatement,
+		startup.Solution,
+		startup.MarketUnderstanding,
+		startup.CustomerUnderstanding,
+		startup.CompetitiveUnderstanding,
+		startup.USP,
+		startup.TechUnderstanding,
+		startup.Vision,
 	)
 
 	if err != nil {
@@ -89,7 +96,7 @@ func InsertStartup(ctx context.Context, startup models.Startup) (string, error) 
 	return uuidStr, nil
 }
 
-// MarkUserAsRegistered updates the user's registration status to true.
+
 func MarkUserAsRegistered(ctx context.Context, userID string) error {
 	query := `
 		UPDATE users
@@ -176,8 +183,6 @@ func InsertMentorExpertise(ctx context.Context, mentorID string, expertises []st
 	}
 }
 
-
-
 // ---------------------
 // User
 // ---------------------
@@ -197,21 +202,20 @@ func GetUserDetailsByEmail(ctx context.Context, email string) (*models.User, err
 	return &user, nil
 }
 
-
 // ---------------------
 // Startup
 // ---------------------
-func GetStartupByUserID(ctx context.Context, userID string) (*models.Startup, string, error) {
+func GetStartupByUserID(ctx context.Context, userID string) (*models.StartupRegistration, string, error) {
 	query := `
-		SELECT startup_id, startup_name, website, phone_number, COALESCE(about, '')
+		SELECT startup_id, startup_name, website, phone_number,approval_status,  COALESCE(about, '')
 		FROM startups
 		WHERE user_id = $1
 	`
 
-	var startup models.Startup
+	var startup models.StartupRegistration
 	var startupID string
 	err := config.DB.QueryRowContext(ctx, query, userID).
-		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.About)
+		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.ApprovalStatus)
 	if err != nil {
 		return nil, "", err
 	}

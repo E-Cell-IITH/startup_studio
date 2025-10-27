@@ -20,10 +20,10 @@ func GetAllStartups(ctx context.Context) ([]models.StartupDetail, error) {
 		       COALESCE(s.about, '')
 		FROM startups s
 		JOIN users u ON s.user_id = u.id
-		WHERE u.is_admin = false
+		WHERE u.is_admin = false AND s.approval_status = $1
 	`
 
-	rows, err := config.DB.QueryContext(ctx, query)
+	rows, err := config.DB.QueryContext(ctx, query, true)
 	if err != nil {
 		log.Println("error fetching startups:", err)
 		return nil, err
@@ -34,7 +34,7 @@ func GetAllStartups(ctx context.Context) ([]models.StartupDetail, error) {
 
 	for rows.Next() {
 		var startupID string
-		var s models.Startup
+		var s models.StartupRegistration
 
 		err := rows.Scan(
 			&startupID,
@@ -42,14 +42,14 @@ func GetAllStartups(ctx context.Context) ([]models.StartupDetail, error) {
 			&s.StartupName,
 			&s.Website,
 			&s.Phone,
-			&s.About,
+			
 		)
 		if err != nil {
 			log.Println("error scanning startup row:", err)
 			continue
 		}
 
-		sDetail := models.StartupDetail{Startup: s}
+		sDetail := models.StartupDetail{StartupRegistration: s}
 
 		// fetch mentorships for each startup
 		sDetail.Mentorships, _ = GetMentorshipsForStartup(ctx, startupID)

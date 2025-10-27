@@ -79,7 +79,7 @@ func Login(c *gin.Context) {
 }
 
 func StartupRegistration(c *gin.Context) {
-	var startup models.Startup
+	var startup models.StartupRegistration
 
 	if err := c.ShouldBindBodyWithJSON(&startup); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload"})
@@ -161,7 +161,6 @@ func MentorRegistration(c *gin.Context) {
 	})
 }
 
-
 func Logout(c *gin.Context) {
 
 	// set cookie life 0
@@ -214,7 +213,7 @@ func GetUserDetails(c *gin.Context) {
 	// check if user is a startup
 	startup, startupID, err := db.GetStartupByUserID(ctx, currUser.UserID.String())
 	if err == nil {
-		sDetail := models.StartupDetail{Startup: *startup}
+		sDetail := models.StartupDetail{StartupRegistration: *startup}
 		sDetail.Mentorships, _ = db.GetStartupMentorships(ctx, startupID)
 		resp.StartupDetail = &sDetail
 		c.JSON(http.StatusOK, resp)
