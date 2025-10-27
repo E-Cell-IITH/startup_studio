@@ -7,7 +7,7 @@ const FormField = ({ icon: Icon, label, name, type = "text", placeholder, requir
     return (
         <div className="space-y-2">
             <label className="flex items-center text-sm font-semibold text-gray-700">
-                <Icon className="w-4 h-4 mr-2 text-blue-600" />
+                {Icon ? <Icon className="w-4 h-4 mr-2 text-blue-600" /> : <p></p>}
                 {label}
                 {required && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -59,6 +59,7 @@ const StartupRegistration = () => {
     const navigate = useNavigate()
     const { user } = useUser()
     const [formData, setFormData] = useState({
+        about: '',
         startup_name: '',
         website: '',
         phone: '',
@@ -118,7 +119,7 @@ const StartupRegistration = () => {
     );
 
     const steps = [
-        { id: 1, title: 'Basic Info', fields: ['startup_name', 'phone', 'website', 'campus_startup'] },
+        { id: 1, title: 'Basic Info', fields: ['startup_name', 'phone', 'website', 'campus_startup', 'about'] },
         { id: 2, title: 'Problem & Solution', fields: ['problem_statement', 'solution'] },
         { id: 3, title: 'Market & Customers', fields: ['market_understanding', 'customer_understanding'] },
         { id: 4, title: 'Competition & Edge', fields: ['competitive_understanding', 'usp'] },
@@ -156,6 +157,16 @@ const StartupRegistration = () => {
                             label="Startup Name"
                             name="startup_name"
                             placeholder="Enter your startup name"
+                            formData={formData}
+                            handleInputChange={handleInputChange}
+                            isLoading={isLoading}
+                        />
+                        <FormField
+                            key="about"
+                            // icon={Building2}
+                            label="About"
+                            name="about"
+                            placeholder="About your startup"
                             formData={formData}
                             handleInputChange={handleInputChange}
                             isLoading={isLoading}

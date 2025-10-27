@@ -14,4 +14,5 @@ type StartupRegistration struct {
 	USP                      string `json:"usp"`
 	TechUnderstanding        string `json:"tech_understanding"`
 	Vision                   string `json:"vision"`
+	About                    string `json:"about"`
 }

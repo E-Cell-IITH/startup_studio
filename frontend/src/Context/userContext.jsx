@@ -120,6 +120,7 @@ export const UserProvider = ({ children }) => {
           startup_name: formData.startup_name,
           website: formData.website,
           phone: formData.phone,
+          about: formData.about,
           problem_statement: formData.problem_statement,
           solution: formData.solution,
           market_understanding: formData.market_understanding,

@@ -1,0 +1,1 @@
+ALTER TABLE startups ADD COLUMN about TEXT;

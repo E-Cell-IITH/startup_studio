@@ -66,9 +66,9 @@ func InsertStartup(ctx context.Context, startup models.StartupRegistration) (str
 
 	query := `
 		INSERT INTO startups
-		(startup_id, user_id, startup_name, website, phone_number,approval_status,problem_statement,solution,market_understanding,customer_understanding,competitive_understanding,usp,tech_understanding,vision)
+		(startup_id, user_id, startup_name, website, phone_number,approval_status,problem_statement,solution,market_understanding,customer_understanding,competitive_understanding,usp,tech_understanding,vision, about)
 		VALUES
-		($1, $2, $3, $4, $5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+		($1, $2, $3, $4, $5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
 	`
 
 	_, err = config.DB.ExecContext(ctx, query,
@@ -86,6 +86,7 @@ func InsertStartup(ctx context.Context, startup models.StartupRegistration) (str
 		startup.USP,
 		startup.TechUnderstanding,
 		startup.Vision,
+		startup.About,
 	)
 
 	if err != nil {
