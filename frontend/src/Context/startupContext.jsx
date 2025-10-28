@@ -61,7 +61,7 @@ export const StartupProvider = ({ children }) => {
             }
 
             const data = await response.json()
-            console.log(data)
+            // console.log(data)
 
             showSuccess("Found all non approved startups", 4000)
 

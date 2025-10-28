@@ -97,7 +97,6 @@ func InsertStartup(ctx context.Context, startup models.StartupRegistration) (str
 	return uuidStr, nil
 }
 
-
 func MarkUserAsRegistered(ctx context.Context, userID string) error {
 	query := `
 		UPDATE users
@@ -210,7 +209,7 @@ func GetStartupByUserID(ctx context.Context, userID string) (*models.StartupResp
 	var startup models.StartupResponse
 	var startupID string
 	err := config.DB.QueryRowContext(ctx, query, userID).
-		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.ApprovalStatus,&startup.About)
+		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.ApprovalStatus, &startup.About)
 	if err != nil {
 		return nil, "", err
 	}
@@ -243,6 +242,7 @@ func GetStartupMentorships(ctx context.Context, startupID string) ([]models.Ment
 			continue
 		}
 		mentorships = append(mentorships, ms)
+		// log.Println(mentorships)
 	}
 	if err := rows.Err(); err != nil {
 		log.Println("rows iteration error (startup mentorships):", err)
@@ -333,5 +333,8 @@ func GetMentorMentorships(ctx context.Context, mentorID string) []models.Mentors
 		}
 		result = append(result, ms)
 	}
+
+	// log.Println(result)
+
 	return result
 }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
     User,
-    Mail,
     Phone,
     Globe,
     Users,
@@ -10,9 +9,7 @@ import {
     Award,
     Star,
     Briefcase,
-    Check,
     Search,
-    Loader2,
     Building2
 } from 'lucide-react';
 import { useMentor } from '../../Context/mentorContext';

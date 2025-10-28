@@ -9,7 +9,6 @@ import (
 	"github.com/E-Cell-IITH/startup_studio/internal/models"
 )
 
-// GetAllMentors fetches all approved mentors and their related details
 func GetAllMentors(ctx context.Context) ([]models.MentorDetail, error) {
 	query := `
 		SELECT mentor_id,
@@ -71,7 +70,6 @@ func GetAllMentors(ctx context.Context) ([]models.MentorDetail, error) {
 	return mentors, nil
 }
 
-// GetAllMentorExpertise fetches mentor expertise
 func GetAllMentorExpertise(ctx context.Context, mentorID string) ([]string, error) {
 	localCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -94,7 +92,6 @@ func GetAllMentorExpertise(ctx context.Context, mentorID string) ([]string, erro
 	return expertise, nil
 }
 
-// GetAllMentorExperience fetches mentor experience
 func GetAllMentorExperience(ctx context.Context, mentorID string) ([]string, error) {
 	localCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -117,7 +114,7 @@ func GetAllMentorExperience(ctx context.Context, mentorID string) ([]string, err
 	return experience, nil
 }
 
-// GetAllMentorMentorships fetches mentorships for a mentor
+
 func GetAllMentorMentorships(ctx context.Context, mentorID string) ([]models.MentorshipInfo, error) {
 	localCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -143,6 +140,8 @@ func GetAllMentorMentorships(ctx context.Context, mentorID string) ([]models.Men
 			mentorships = append(mentorships, ms)
 		}
 	}
+
+	// log.Println(mentorships)
 
 	return mentorships, nil
 }
