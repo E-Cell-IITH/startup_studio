@@ -10,7 +10,6 @@ import (
 	"github.com/lib/pq"
 )
 
-// GetAllNonApprovedMentors fetches mentors pending admin approval.
 func GetAllNonApprovedMentors(ctx context.Context) ([]models.Mentor, error) {
 	query := `
 		SELECT 
@@ -64,7 +63,6 @@ func GetAllNonApprovedMentors(ctx context.Context) ([]models.Mentor, error) {
 	return mentors, nil
 }
 
-// ApproveMentor updates a mentor's approval status to true
 func ApproveMentor(ctx context.Context, mentorUserID string) error {
 	var mentorID uuid.UUID
 	querySelect := `SELECT mentor_id FROM mentors WHERE user_id = $1`
@@ -83,7 +81,6 @@ func ApproveMentor(ctx context.Context, mentorUserID string) error {
 	return nil
 }
 
-// RejectMentor deletes a mentor user entirely (rejects their application)
 func RejectMentor(ctx context.Context, mentorUserID string) error {
 	queryDelete := `DELETE FROM users WHERE id = $1`
 	if _, err := config.DB.ExecContext(ctx, queryDelete, mentorUserID); err != nil {
@@ -93,53 +90,66 @@ func RejectMentor(ctx context.Context, mentorUserID string) error {
 	return nil
 }
 
-// get all non approved startups
-func GetAllNonApprovedStartups(ctx context.Context) ([]models.StartupDetail, error) {
-	query :=
-		`
-	SELECT s.startup_id,
-		       s.user_id,
-		       s.startup_name,
-		       s.website,
-		       s.phone_number,
-		       COALESCE(s.about, '')
-		FROM startups s
-		JOIN users u ON s.user_id = u.id
-		WHERE u.is_admin = false AND approval_status = $1
+func GetAllNonApprovedStartups(ctx context.Context) ([]*models.StartupResponse, error) {
+	query := `
+		SELECT 
+    s.user_id,
+    s.startup_name,
+    s.website,
+    s.phone_number,
+    COALESCE(s.about, '') AS about,
+    COALESCE(s.problem_statement, '') AS problem_statement,
+    COALESCE(s.solution, '') AS solution,
+    COALESCE(s.market_understanding, '') AS market_understanding,
+    COALESCE(s.customer_understanding, '') AS customer_understanding,
+    COALESCE(s.competitive_understanding, '') AS competitive_understanding,
+    COALESCE(s.usp, '') AS usp,
+    COALESCE(s.tech_understanding, '') AS tech_understanding,
+    COALESCE(s.vision, '') AS vision
+	FROM startups AS s
+		INNER JOIN users AS u 
+    		ON s.user_id = u.id
+		WHERE 
+    		u.is_admin = FALSE 
+    	AND s.approval_status = $1
+	ORDER BY 
+    	s.created_at DESC;
+
 	`
 
 	rows, err := config.DB.QueryContext(ctx, query, false)
-
 	if err != nil {
 		log.Println("error fetching startups:", err)
 		return nil, err
 	}
-
 	defer rows.Close()
 
-	var startups []models.StartupDetail
+	var startups []*models.StartupResponse
+
 	for rows.Next() {
-		var startupID string
-		var s models.StartupRegistration
+		s := new(models.StartupResponse)
 
 		err := rows.Scan(
-			&startupID,
 			&s.UserID,
 			&s.StartupName,
 			&s.Website,
 			&s.Phone,
+			&s.About,
+			&s.ProblemStatement,
+			&s.Solution,
+			&s.MarketUnderstanding,
+			&s.CustomerUnderstanding,
+			&s.CompetitiveUnderstanding,
+			&s.USP,
+			&s.TechUnderstanding,
+			&s.Vision,
 		)
 		if err != nil {
 			log.Println("error scanning startup row:", err)
 			continue
 		}
 
-		sDetail := models.StartupDetail{StartupRegistration: s}
-
-		// fetch mentorships for each startup
-		sDetail.Mentorships, _ = GetMentorshipsForStartup(ctx, startupID)
-
-		startups = append(startups, sDetail)
+		startups = append(startups, s)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -147,5 +157,31 @@ func GetAllNonApprovedStartups(ctx context.Context) ([]models.StartupDetail, err
 	}
 
 	return startups, nil
+}
 
+func ApproveStartup(ctx context.Context, startupUserid string) error {
+	var startupID uuid.UUID
+	querySelect := `SELECT startup_id FROM startups WHERE user_id = $1`
+
+	if err := config.DB.QueryRowContext(ctx, querySelect, startupUserid).Scan(&startupID); err != nil {
+		log.Println("error finding startup:", err)
+		return err
+	}
+
+	queryUpdate := `UPDATE startups SET approval_status = TRUE WHERE startup_id = $1`
+	if _, err := config.DB.ExecContext(ctx, queryUpdate, startupID); err != nil {
+		log.Println("error updating startup approval:", err)
+		return err
+	}
+
+	return nil
+}
+
+func RejectStartup(ctx context.Context, startupUserid string) error {
+	queryDelete := `DELETE FROM users WHERE id = $1`
+	if _, err := config.DB.ExecContext(ctx, queryDelete, startupUserid); err != nil {
+		log.Println("error deleting startup user:", err)
+		return err
+	}
+	return nil
 }

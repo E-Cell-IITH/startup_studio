@@ -9,11 +9,9 @@ import (
 	"github.com/E-Cell-IITH/startup_studio/internal/models"
 )
 
-// GetAllStartups fetches all startups (excluding admins)
 func GetAllStartups(ctx context.Context) ([]models.StartupDetail, error) {
 	query := `
-		SELECT s.startup_id,
-		       s.user_id,
+		SELECT s.user_id,
 		       s.startup_name,
 		       s.website,
 		       s.phone_number,
@@ -33,26 +31,24 @@ func GetAllStartups(ctx context.Context) ([]models.StartupDetail, error) {
 	var startups []models.StartupDetail
 
 	for rows.Next() {
-		var startupID string
-		var s models.StartupRegistration
+		var s models.StartupResponse
 
 		err := rows.Scan(
-			&startupID,
 			&s.UserID,
 			&s.StartupName,
 			&s.Website,
 			&s.Phone,
-			
+			&s.About,
 		)
 		if err != nil {
 			log.Println("error scanning startup row:", err)
 			continue
 		}
 
-		sDetail := models.StartupDetail{StartupRegistration: s}
+		sDetail := models.StartupDetail{StartupResponse: s}
 
 		// fetch mentorships for each startup
-		sDetail.Mentorships, _ = GetMentorshipsForStartup(ctx, startupID)
+		// sDetail.Mentorships, _ = GetMentorshipsForStartup(ctx, startupID)
 
 		startups = append(startups, sDetail)
 	}
@@ -64,7 +60,7 @@ func GetAllStartups(ctx context.Context) ([]models.StartupDetail, error) {
 	return startups, nil
 }
 
-// GetMentorshipsForStartup fetches mentors linked to a startup
+
 func GetMentorshipsForStartup(ctx context.Context, startupID string) ([]models.MentorshipInfo, error) {
 	// short-lived context for query
 	localCtx, cancel := context.WithTimeout(ctx, 3*time.Second)

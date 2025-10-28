@@ -27,14 +27,9 @@ func SetUpRoutes(router *gin.Engine) {
 
 	auth.Use(middlewares.AuthMiddleware)
 	{
-		// presigned url route
-		// auth.GET("/generate-presign", helpers.GetPresignedURL)
-		// get user id or mentor id
 		auth.GET("/getId/:userId", helpers.GetUserOrMentorId)
 		auth.POST("/startup-registration", controllers.StartupRegistration)
 		auth.POST("/mentor-registration", controllers.MentorRegistration)
-
-		// profile route
 		auth.GET("/me", controllers.GetUserDetails)
 	}
 
@@ -60,6 +55,8 @@ func SetUpRoutes(router *gin.Engine) {
 		admin.PATCH("/mentor/approve/:adminUserId/:mentorUserId", controllers.ApproveAMentor)
 		admin.DELETE("/mentor/reject/:adminUserId/:mentorUserId", controllers.RejectMentor)
 		admin.GET("/startups/approval/:userId", controllers.GetAllNonApprovedStartups)
+		admin.PATCH("/startup/approve/:adminUserId/:startupUserId", controllers.ApproveStartup)
+		admin.DELETE("/startup/reject/:adminUserId/:startupUserId", controllers.RejectStartup)
 	}
 
 }

@@ -186,7 +186,7 @@ func GetUserDetails(c *gin.Context) {
 	var resp models.UserResponse
 	ctx := c.Request.Context()
 
-	// get email from middleware context
+	// get email from middleware 
 	emailVal, exists := c.Get("email")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "email not found in token"})
@@ -209,28 +209,34 @@ func GetUserDetails(c *gin.Context) {
 		return
 	}
 	resp.User = *currUser
+	// log.Println(resp.User)
 
 	// check if user is a startup
 	startup, startupID, err := db.GetStartupByUserID(ctx, currUser.UserID.String())
 	if err == nil {
-		sDetail := models.StartupDetail{StartupRegistration: *startup}
+		sDetail := models.StartupDetail{StartupResponse: *startup}
 		sDetail.Mentorships, _ = db.GetStartupMentorships(ctx, startupID)
 		resp.StartupDetail = &sDetail
+		// log.Println(resp)
 		c.JSON(http.StatusOK, resp)
 		return
+	} else{
+		log.Println(err)
 	}
 
 	// check if user is a mentor
 	mentor, mentorID, err := db.GetMentorByUserID(ctx, currUser.UserID.String())
 	if err == nil {
-		mDetail := models.MentorDetail{Mentor: *mentor}
+		mDetail := models.MentorDetail{Mentor:	 *mentor}
 		mDetail.Expertise = db.GetMentorExpertise(ctx, mentorID)
 		mDetail.Experience = db.GetMentorExperience(ctx, mentorID)
 		mDetail.Mentorships = db.GetMentorMentorships(ctx, mentorID)
 		resp.MentorDetail = &mDetail
+		// log.Println(resp)
 		c.JSON(http.StatusOK, resp)
 		return
 	}
+
 
 	// fallback: just return user info
 	c.JSON(http.StatusOK, resp)

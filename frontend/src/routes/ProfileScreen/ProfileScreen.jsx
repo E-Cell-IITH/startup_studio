@@ -23,7 +23,7 @@ const ProfileScreen = () => {
 
     const userData = user;
 
-    // console.log(userData)
+    console.log(userData)
 
     const mentorships = userData.startup_detail?.mentorships || userData.mentor_detail?.mentorships
 

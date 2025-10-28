@@ -184,9 +184,6 @@ func InsertMentorExpertise(ctx context.Context, mentorID string, expertises []st
 	}
 }
 
-// ---------------------
-// User
-// ---------------------
 func GetUserDetailsByEmail(ctx context.Context, email string) (*models.User, error) {
 	query := `
 		SELECT id, full_name, email, is_registered, is_admin
@@ -203,24 +200,22 @@ func GetUserDetailsByEmail(ctx context.Context, email string) (*models.User, err
 	return &user, nil
 }
 
-// ---------------------
-// Startup
-// ---------------------
-func GetStartupByUserID(ctx context.Context, userID string) (*models.StartupRegistration, string, error) {
+func GetStartupByUserID(ctx context.Context, userID string) (*models.StartupResponse, string, error) {
 	query := `
-		SELECT startup_id, startup_name, website, phone_number,approval_status,  COALESCE(about, '')
+		SELECT startup_id, startup_name, website, phone_number,approval_status,COALESCE(about, '')
 		FROM startups
 		WHERE user_id = $1
 	`
 
-	var startup models.StartupRegistration
+	var startup models.StartupResponse
 	var startupID string
 	err := config.DB.QueryRowContext(ctx, query, userID).
-		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.ApprovalStatus)
+		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.ApprovalStatus,&startup.About)
 	if err != nil {
 		return nil, "", err
 	}
 	startup.UserID = userID
+	// log.Println(startup)
 	return &startup, startupID, nil
 }
 
@@ -255,9 +250,6 @@ func GetStartupMentorships(ctx context.Context, startupID string) ([]models.Ment
 	return mentorships, nil
 }
 
-// ---------------------
-// Mentor
-// ---------------------
 func GetMentorByUserID(ctx context.Context, userID string) (*models.Mentor, string, error) {
 	query := `
 		SELECT mentor_id, phone_number, linked_in_url, approval_status, COALESCE(about, '')

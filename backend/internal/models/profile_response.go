@@ -7,7 +7,7 @@ type UserResponse struct {
 }
 
 type StartupDetail struct {
-	StartupRegistration
+	StartupResponse
 	Mentorships []MentorshipInfo `json:"mentorships"`
 }
 
