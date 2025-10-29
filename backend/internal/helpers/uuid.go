@@ -6,9 +6,9 @@ import (
 	"github.com/google/uuid"
 )
 
-func GenerateUUIDFromEmail(emailStr string) (string, error) {
+func GenerateUUID(randomstring string) (string, error) {
 	hash := sha256.New()
-	hash.Write([]byte(emailStr))
+	hash.Write([]byte(randomstring))
 	hashed := hash.Sum(nil)
 
 	truncatedHash := hashed[:16]

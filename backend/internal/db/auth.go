@@ -33,7 +33,7 @@ func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 
 // InsertUser inserts a new user if they do not exist.
 func InsertUser(ctx context.Context, fullName, email string) (*models.User, error) {
-	uuidStr, err := helpers.GenerateUUIDFromEmail(email)
+	uuidStr, err := helpers.GenerateUUID(email)
 	if err != nil {
 		log.Printf("Failed to generate UUID: %v", err)
 		return nil, err
@@ -58,7 +58,7 @@ func InsertUser(ctx context.Context, fullName, email string) (*models.User, erro
 }
 
 func InsertStartup(ctx context.Context, startup models.StartupRegistration) (string, error) {
-	uuidStr, err := helpers.GenerateUUIDFromEmail(startup.UserID)
+	uuidStr, err := helpers.GenerateUUID(startup.UserID)
 	if err != nil {
 		log.Printf("Failed to generate uuid: %v", err)
 		return "", err
@@ -127,7 +127,7 @@ func GetUserNameByID(ctx context.Context, userID string) (string, error) {
 
 // InsertMentor inserts a mentor record into the mentors table
 func InsertMentor(ctx context.Context, mentor models.Mentor) (string, error) {
-	uuidStr, err := helpers.GenerateUUIDFromEmail(mentor.UserID)
+	uuidStr, err := helpers.GenerateUUID(mentor.UserID)
 	if err != nil {
 		log.Printf("Failed to generate mentor UUID: %v", err)
 		return "", err

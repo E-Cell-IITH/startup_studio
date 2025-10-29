@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/E-Cell-IITH/startup_studio/config"
+	"github.com/E-Cell-IITH/startup_studio/internal/helpers"
 	"github.com/E-Cell-IITH/startup_studio/internal/models"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
@@ -185,3 +186,43 @@ func RejectStartup(ctx context.Context, startupUserid string) error {
 	}
 	return nil
 }
+func ConnectMentorWithStartup(ctx context.Context, startupUserID string, mentorUserID string) error {
+	mentorshipID, err := helpers.GenerateUUID(mentorUserID)
+	if err != nil {
+		log.Println("error generating mentorship uuid:", err)
+		return err
+	}
+
+	queryStartupID := `
+		SELECT startup_id FROM startups WHERE user_id = $1
+	`
+
+	queryMentorID := `
+		SELECT mentor_id FROM mentors WHERE user_id = $1
+	`
+
+	var startupID, mentorID string
+
+	if err := config.DB.QueryRowContext(ctx, queryStartupID, startupUserID).Scan(&startupID); err != nil {
+		log.Println("error fetching startup_id:", err)
+		return err
+	}
+
+	if err := config.DB.QueryRowContext(ctx, queryMentorID, mentorUserID).Scan(&mentorID); err != nil {
+		log.Println("error fetching mentor_id:", err)
+		return err
+	}
+
+	queryConnect := `
+		INSERT INTO mentorships (mentorship_id, mentor_id, startup_id)
+		VALUES ($1, $2, $3)
+	`
+
+	if _, err := config.DB.ExecContext(ctx, queryConnect, mentorshipID, mentorID, startupID); err != nil {
+		log.Println("error inserting mentorship record:", err)
+		return err
+	}
+
+	return nil
+}
+

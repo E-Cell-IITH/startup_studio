@@ -206,3 +206,37 @@ func RejectStartup(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Startup rejected successfully"})
 }
+
+func ConnectMentorWithStartup(c *gin.Context) {
+	adminUserID := c.Param("adminUserId")
+	requestEmail, _ := c.Get("email")
+
+	ctx := c.Request.Context()
+	var isAdmin bool
+	var dbEmail string
+
+	if err := config.DB.QueryRowContext(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
+		return
+	}
+	if requestEmail != dbEmail {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unauthorized access attempt detected."})
+		return
+	}
+	if !isAdmin {
+		c.JSON(http.StatusForbidden, gin.H{"message": "You are not an admin"})
+		return
+	}
+
+	startupUserId := c.Param("startupUserId")
+	mentorUserId := c.Param("mentorUserId")
+
+	if err := db.ConnectMentorWithStartup(ctx, startupUserId, mentorUserId); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to connect mentor and startup"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Connected mentor with startup"})
+
+}

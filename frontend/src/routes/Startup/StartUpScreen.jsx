@@ -59,9 +59,6 @@ const StartUpScreen = () => {
         setSelectedStartup(null);
     };
 
-    const handleStartupConnectClick = () => {
-        alert("Feature in progress")
-    }
 
     // Access check
     if (!(user?.mentor_detail?.approval_status || user?.is_admin)) {
@@ -245,15 +242,7 @@ const StartUpScreen = () => {
                         </div>
                     </div>
 
-                    {/* Action Button */}
-                    <div className="pt-4 border-t border-gray-200">
-                        <button 
-                            onClick={handleStartupConnectClick} 
-                            className="w-full cursor-pointer rounded-xl bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 font-bold transition-all duration-200 shadow-md hover:shadow-lg"
-                        >
-                            Connect with Startup
-                        </button>
-                    </div>
+                   
                 </div>
             </div>
         </div>

@@ -57,7 +57,7 @@ func SetUpRoutes(router *gin.Engine) {
 		admin.GET("/startups/approval/:userId", controllers.GetAllNonApprovedStartups)
 		admin.PATCH("/startup/approve/:adminUserId/:startupUserId", controllers.ApproveStartup)
 		admin.DELETE("/startup/reject/:adminUserId/:startupUserId", controllers.RejectStartup)
-		admin.PUT("/connect/:adminUserId/:startupUserId/:mentorUserId")
+		admin.PUT("/connect/:adminUserId/:startupUserId/:mentorUserId", controllers.ConnectMentorWithStartup)
 	}
 
 }

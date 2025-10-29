@@ -14,15 +14,21 @@ import {
 } from 'lucide-react';
 import { useMentor } from '../../Context/mentorContext';
 import { useUser } from '../../Context/userContext';
+import { useStartUp } from '../../Context/startupContext';
 
 const MentorScreen = () => {
     const { user } = useUser()
-    const { getAllMentors } = useMentor();
+    const { getAllMentors, connectMentorWithStartup } = useMentor();
+    const {getAllStartups} = useStartUp()
     const [mentors, setMentors] = useState([]);
     const [selectedMentor, setSelectedMentor] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredMentors, setFilteredMentors] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [availableStartups, setAvailableStartups] = useState([]);
+    const [selectedStartup, setSelectedStartup] = useState('');
+    const [showStartupSelector, setShowStartupSelector] = useState(false);
+
 
     useEffect(() => {
         const fetchMentors = async () => {
@@ -128,7 +134,7 @@ const MentorScreen = () => {
             <div className="p-6">
                 {/* Profile Header */}
                 <div className="flex items-start space-x-4 mb-4">
-                   
+
                     <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-bold text-gray-900 mb-1 truncate group-hover:text-blue-600 transition-colors">
                             {mentor.mentor_name}
@@ -198,7 +204,7 @@ const MentorScreen = () => {
                 <div className="p-6">
                     {/* Profile Header */}
                     <div className="flex items-center space-x-6 mb-8 pb-6 border-b border-gray-200">
-                   
+
                         <div className="flex-1">
                             <h3 className="text-3xl font-bold text-gray-900 mb-2">{mentor.mentor_name}</h3>
                             <div className="flex items-center text-blue-600">
@@ -307,12 +313,67 @@ const MentorScreen = () => {
 
                     {/* Action Button */}
                     <div className="pt-4 border-t border-gray-200">
-                        <button 
-                            onClick={handleConnectClick} 
-                            className="w-full cursor-pointer rounded-xl bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 font-bold transition-all duration-200 shadow-md hover:shadow-lg"
-                        >
-                            Connect with Mentor
-                        </button>
+                        {user?.is_admin ? (
+                            <>
+                                <button
+                                    onClick={async () => {
+                                        const startupsData = await getAllStartups();
+                                        setAvailableStartups(startupsData?.startups || []);
+                                        setShowStartupSelector(true);
+                                    }}
+                                    className="w-full cursor-pointer rounded-xl bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 font-bold transition-all duration-200 shadow-md hover:shadow-lg"
+                                >
+                                    Connect with Startup
+                                </button>
+
+                                {/* Startup Selection Modal */}
+                                {showStartupSelector && (
+                                    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                                        <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
+                                            <h3 className="text-lg font-bold mb-4">Select a Startup</h3>
+                                            <select
+                                                className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+                                                onChange={(e) => setSelectedStartup(e.target.value)}
+                                                value={selectedStartup}
+                                            >
+                                                <option value="">-- Choose a startup --</option>
+                                                {availableStartups.map((startup) => (
+                                                    <option key={startup.startup_id} value={startup.user_id}>
+                                                        {startup.startup_name}
+                                                    </option>
+                                                ))}
+                                            </select>
+
+                                            <div className="flex justify-end gap-3">
+                                                <button
+                                                    className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+                                                    onClick={() => setShowStartupSelector(false)}
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                                                    onClick={async () => {
+                                                        if (!selectedStartup) {
+                                                            showError("Please select a startup");
+                                                            return;
+                                                        }
+                                                        const success = await connectMentorWithStartup(
+                                                            user.user_id,
+                                                            selectedStartup,
+                                                            mentor.user_id
+                                                        );
+                                                        if (success) setShowStartupSelector(false);
+                                                    }}
+                                                >
+                                                    Confirm
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        ) : null}
                     </div>
                 </div>
             </div>
@@ -325,7 +386,7 @@ const MentorScreen = () => {
             <div className="">
                 <div className="max-w-6xl mx-auto px-8 py-8">
                     <h1 className="text-3xl font-bold text-gray-900 mb-6">Our Mentors</h1>
-                    
+
                     {/* Search Bar - 2/3 width */}
                     <div className="max-w-4xl">
                         <div className="relative">

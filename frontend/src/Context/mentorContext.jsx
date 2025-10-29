@@ -68,8 +68,8 @@ export const MentorProvider = ({ children }) => {
     async function rejectMentor(adminUserId, mentorUserId) {
         try {
             const response = await fetch(`${BACKEND_URL}/api/admin/mentor/reject/${adminUserId}/${mentorUserId}`, {
-                method : "DELETE",
-                credentials : "include"
+                method: "DELETE",
+                credentials: "include"
             })
 
             if (response.status != 200) {
@@ -91,15 +91,15 @@ export const MentorProvider = ({ children }) => {
 
     }
 
-    async function getAllMentors(){
-        try{    
+    async function getAllMentors() {
+        try {
             const response = await fetch(`${BACKEND_URL}/api/mentors/`, {
-                credentials : "include"
+                credentials: "include"
             })
 
-            if(response.status != 200){
+            if (response.status != 200) {
                 showError("Fetching Mentors Failed")
-                return 
+                return
             }
 
             const data = await response.json()
@@ -111,16 +111,38 @@ export const MentorProvider = ({ children }) => {
             return data
 
 
-        }catch(e){
+        } catch (e) {
             console.error(e)
             showError("Error fetching All Mentors")
             return
         }
     }
 
+    async function connectMentorWithStartup(adminUserId, startupUserId, mentorUserId) {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/admin/connect/${adminUserId}/${startupUserId}/${mentorUserId}`, {
+                method: "PUT",
+                credentials: "include"
+            });
+
+            if (response.status !== 200) {
+                showError("Connection failed");
+                return false;
+            }
+
+            showSuccess("Mentor successfully connected with startup");
+            return true;
+        } catch (error) {
+            console.error("Error connecting mentor with startup:", error);
+            showError("Error connecting mentor with startup");
+            return false;
+        }
+    }
 
 
-    return <MentorContext.Provider value={{ getAllNonApprovedMentors, approveMentor, rejectMentor, getAllMentors }}>
+
+
+    return <MentorContext.Provider value={{ getAllNonApprovedMentors, approveMentor, rejectMentor, getAllMentors, connectMentorWithStartup }}>
         {children}
 
     </MentorContext.Provider>
