@@ -9,7 +9,7 @@ import (
 )
 
 func SetUpRouter() *gin.Engine {
-	gin.SetMode(gin.DebugMode)
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
 	origins := os.Getenv("ALLOWED_ORIGINS")
