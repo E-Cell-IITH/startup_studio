@@ -231,7 +231,7 @@ const LandingPage = () => {
 
           <div className="grid md:grid-cols-3 gap-10 mb-16">
             {[
-              { icon: <Calendar />, label: "Duration", value: "90 Days", desc: "Intensive program" },
+              { icon: <Calendar />, label: "Duration", value: "60 Days", desc: "Intensive program" },
               { icon: <Globe />, label: "Mode", value: "100% Online", desc: "Learn from anywhere" },
               { icon: <Users />, label: "Cohort Size", value: "15 Startups", desc: "Exclusive community" }
             ].map((item, index) => (
