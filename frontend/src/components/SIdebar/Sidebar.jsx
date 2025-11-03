@@ -93,12 +93,15 @@ const Sidebar = () => {
             ) : (
               <div className="w-6"></div>
             )}
-            {/* Mobile close button */}
+            {/* Close button for all devices */}
             <button
-              onClick={() => setIsMobileOpen(false)}
-              className="lg:hidden text-white p-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+              onClick={() => {
+                setIsMobileOpen(false);
+                setIsOpen(!isOpen);
+              }}
+              className="text-white p-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
             >
-              <X size={20} />
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
 
@@ -113,17 +116,16 @@ const Sidebar = () => {
                   to={item.href}
                   onClick={() => setIsMobileOpen(false)}
                   className={`flex items-center px-4 py-3 mb-2 rounded-lg transition-all duration-200 group relative cursor-pointer
-                    ${isActive 
-                      ? 'bg-blue-700 text-white' 
+                    ${isActive
+                      ? 'bg-blue-700 text-white'
                       : 'text-blue-100 hover:bg-blue-700 hover:text-white'
                     }
                   `}
                 >
                   <Icon size={22} className="flex-shrink-0" />
                   <span
-                    className={`ml-3 font-medium transition-opacity duration-300 whitespace-nowrap ${
-                      isOpen ? 'opacity-100' : 'opacity-0 w-0'
-                    }`}
+                    className={`ml-3 font-medium transition-opacity duration-300 whitespace-nowrap ${isOpen ? 'opacity-100' : 'opacity-0 w-0'
+                      }`}
                   >
                     {item.name}
                   </span>
@@ -140,9 +142,8 @@ const Sidebar = () => {
           {/* User Info & Logout */}
           <div className="border-t border-blue-500 p-4">
             <div
-              className={`text-white mb-3 transition-all duration-300 ${
-                isOpen ? 'opacity-100' : 'opacity-0 h-0 mb-0 overflow-hidden'
-              }`}
+              className={`text-white mb-3 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 h-0 mb-0 overflow-hidden'
+                }`}
             >
               <div className="font-semibold text-sm truncate">{user.full_name}</div>
               <div className="text-blue-200 text-xs truncate">{user.email}</div>
@@ -162,9 +163,8 @@ const Sidebar = () => {
             >
               <LogOut size={20} className="flex-shrink-0" />
               <span
-                className={`ml-3 font-medium transition-opacity duration-300 ${
-                  isOpen ? 'opacity-100' : 'opacity-0 w-0'
-                }`}
+                className={`ml-3 font-medium transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'
+                  }`}
               >
                 Logout
               </span>
@@ -178,10 +178,10 @@ const Sidebar = () => {
         </div>
       </aside>
 
+      {/* Desktop Spacer */}
       <div
-        className={`hidden lg:block transition-all duration-300 ${
-          isOpen ? 'w-64' : 'w-20'
-        }`}
+        className={`hidden lg:block transition-all duration-300 ${isOpen ? 'w-64' : 'w-20'
+          }`}
       ></div>
 
       {/* Spacer for mobile header */}
