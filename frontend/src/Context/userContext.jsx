@@ -16,6 +16,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const { showSuccess, showError } = useToast();
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const INVESTOR_BASE_API_KEY = import.meta.env.VITE_INVESTOR_BASE_API_KEY
 
 
 
@@ -43,9 +44,10 @@ export const UserProvider = ({ children }) => {
 
       setUser({
         user_id: data.user_id,
+        email: data.email,
       });
 
-      // console.log(data)
+      console.log(data)
 
 
 
@@ -113,6 +115,33 @@ export const UserProvider = ({ children }) => {
   async function startupRegistration(formData, user_id) {
     try {
 
+      const investorBaseAPICall = await fetch(
+        `
+        https://jhtnruktmtjqrfoiyrep.supabase.co/functions/v1/submit-and-evaluate-startup
+        `
+        , {
+          method: 'POST',
+          headers: { "Content-Type": "application/json" },
+          apiKey: INVESTOR_BASE_API_KEY,
+          Authorization: `Bearer ${INVESTOR_BASE_API_KEY}`,
+          body: JSON.stringify({
+            startup_name: formData.startup_name,
+            founder_email: user.email,
+            linkedin_profile_url: formData.linkedin_profile_url,
+            problem_statement: formData.problem_statement,
+            solution: formData.solution,
+            market_understanding: formData.market_understanding,
+            customer_understanding: formData.customer_understanding,
+            competitive_understanding: formData.competitive_understanding,
+            unique_selling_proposition: formData.usp,
+            technical_understanding: formData.tech_understanding,
+            vision: formData.vision,
+            campus_affiliation: formData.campus_startup,
+          })
+        })
+
+      console.log(investorBaseAPICall)
+
       const resStartUpRegister = await fetch(`${BACKEND_URL}/api/auth/startup-registration`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -131,6 +160,7 @@ export const UserProvider = ({ children }) => {
           vision: formData.vision,
           campus_startup: formData.campus_startup,
           user_id: user_id,
+          linkedin_profile_url: formData.linkedin_profile_url,
         }),
         credentials: "include"
       })

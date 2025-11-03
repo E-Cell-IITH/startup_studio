@@ -11,7 +11,6 @@ import ProtectedRoute from './routes/ProtectedRoute/ProtectedRoute'
 import ProfileScreen from './routes/ProfileScreen/ProfileScreen'
 import MentorApproval from './routes/MentorApproval/MentorApproval'
 import MainLayout from './Layout/Layout'
-import CohortScreen from './routes/CohortScreen/CohortScreen'
 import StartupApproval from './routes/StartupApproval/StartupApproval'
 
 function App() {
@@ -19,7 +18,6 @@ function App() {
     <Routes>
       <Route path='/' element={<LandingPage />} />
       <Route path='/login' element={<LoginScreen />} />
-      <Route path='/cohort-registration' element={<CohortScreen />} />
       <Route path='/role' element={<FilterRoleScreen />} />
       <Route path='/mentor-register' element={<MentorRegistration />} />
       <Route path='/startup-register' element={<StartupRegistration />} />

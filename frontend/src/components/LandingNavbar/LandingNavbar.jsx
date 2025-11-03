@@ -40,7 +40,7 @@ const LandingNavbar = () => {
             <a href="/startups" className="text-white hover:text-blue-200 transition-colors duration-300 font-medium whitespace-nowrap">
               Startups
             </a>
-            <a href="/cohort-registration" className="bg-white text-blue-600 px-4 xl:px-6 py-2 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 whitespace-nowrap">
+            <a href="/login" className="bg-white text-blue-600 px-4 xl:px-6 py-2 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 whitespace-nowrap">
               Join the Cohort
             </a>
           </div>
@@ -82,7 +82,7 @@ const LandingNavbar = () => {
               Startups
             </a>
             <a 
-              href="/cohort-registration" 
+              href="/login" 
               className="block text-center bg-white text-blue-600 px-6 py-2.5 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300 shadow-md mx-4 mt-4"
               onClick={handleLinkClick}
             >

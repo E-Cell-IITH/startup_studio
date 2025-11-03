@@ -119,7 +119,7 @@ const StartupRegistration = () => {
     );
 
     const steps = [
-        { id: 1, title: 'Basic Info', fields: ['startup_name', 'phone', 'website', 'campus_startup', 'about'] },
+        { id: 1, title: 'Basic Info', fields: ['startup_name', 'phone', 'website', "linkedin_profile_url", 'campus_startup', 'about'] },
         { id: 2, title: 'Problem & Solution', fields: ['problem_statement', 'solution'] },
         { id: 3, title: 'Market & Customers', fields: ['market_understanding', 'customer_understanding'] },
         { id: 4, title: 'Competition & Edge', fields: ['competitive_understanding', 'usp'] },
@@ -189,6 +189,16 @@ const StartupRegistration = () => {
                             name="website"
                             type="url"
                             placeholder="https://your-startup.com"
+                            formData={formData}
+                            handleInputChange={handleInputChange}
+                            isLoading={isLoading}
+                        />
+                        <FormField
+                            key="linkedin_profile_url"
+                            // icon={Building2}
+                            label="LinkedIn URL"
+                            name="linkedin_profile_url"
+                            placeholder="Enter your startup name"
                             formData={formData}
                             handleInputChange={handleInputChange}
                             isLoading={isLoading}
