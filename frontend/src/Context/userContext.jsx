@@ -47,7 +47,7 @@ export const UserProvider = ({ children }) => {
         email: data.email,
       });
 
-      console.log(data)
+      // console.log(data)
 
 
 
@@ -140,7 +140,10 @@ export const UserProvider = ({ children }) => {
           })
         })
 
-      console.log(investorBaseAPICall)
+      if (investorBaseAPICall.status != 201) {
+        showError('Startup Registration Failed')
+        return null
+      }
 
       const resStartUpRegister = await fetch(`${BACKEND_URL}/api/auth/startup-registration`, {
         method: "POST",
