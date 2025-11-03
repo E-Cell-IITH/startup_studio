@@ -1,0 +1,1 @@
+ALTER TABLE startups DROP COLUMN linked_in_url;

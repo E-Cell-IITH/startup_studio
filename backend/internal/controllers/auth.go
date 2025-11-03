@@ -75,6 +75,7 @@ func Login(c *gin.Context) {
 		"message":       "Login Successful",
 		"user_id":       user.UserID,
 		"is_registered": user.IsRegistered,
+		"email" : user.UserEmail,
 	})
 }
 

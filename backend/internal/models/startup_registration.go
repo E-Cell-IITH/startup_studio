@@ -4,6 +4,7 @@ type StartupRegistration struct {
 	StartupName              string `json:"startup_name" binding:"required"`
 	Website                  string `json:"website"`
 	Phone                    string `json:"phone"`
+	LinkedInURL 			 string `json:"linkedin_profile_url"`
 	UserID                   string `json:"user_id" binding:"required"`
 	ApprovalStatus           bool   `json:"approval_status"`
 	ProblemStatement         string `json:"problem_statement"`
