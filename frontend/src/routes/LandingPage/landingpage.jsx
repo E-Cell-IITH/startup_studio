@@ -82,7 +82,7 @@ const LandingPage = () => {
             className={`transition-all duration-2000 transform ${isVisible['hero-title'] ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
               }`}
           >
-            <Link to="/cohort-registration" className="max-w-sm group border-2 border-blue-600 cursor-pointer text-blue-600 px-10 py-4 rounded-full font-semibold text-lg hover:bg-blue-700 transition-all hover:text-white duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transform mx-auto">
+            <Link to="/login" className="max-w-sm group border-2 border-blue-600 cursor-pointer text-blue-600 px-10 py-4 rounded-full font-semibold text-lg hover:bg-blue-700 transition-all hover:text-white duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transform mx-auto">
               Join Cohort
               <ArrowRight
                 size={20}
@@ -325,7 +325,7 @@ const LandingPage = () => {
           <p className="text-2xl mb-10 font-light">
             Applications for the upcoming cohort are now open.
           </p>
-          <Link to="/cohort-registration" className="max-w-md group hover:cursor-pointer bg-white text-blue-600 px-12 py-5 rounded-full font-bold text-xl hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-3 mx-auto shadow-2xl hover:shadow-3xl hover:scale-110 transform">
+          <Link to="/login" className="max-w-md group hover:cursor-pointer bg-white text-blue-600 px-12 py-5 rounded-full font-bold text-xl hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-3 mx-auto shadow-2xl hover:shadow-3xl hover:scale-110 transform">
             Apply Now
             <ArrowRight size={28} className="group-hover:translate-x-2 transition-transform duration-300" />
           </Link>
