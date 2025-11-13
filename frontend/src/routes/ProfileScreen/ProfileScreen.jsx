@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
     User,
     Mail,
@@ -30,10 +29,7 @@ const ProfileScreen = () => {
     const isStartup = userData.mentor_detail === undefined && userData.startup_detail !== undefined;
     const isMentor = userData.startup_detail === undefined && userData.mentor_detail !== undefined;
 
-    const handleChangePhoto = () => {
-        alert('Change photo functionality to be implemented');
-    };
-
+   
     const ProfileHeader = () => (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">

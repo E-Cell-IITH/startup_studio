@@ -15,6 +15,7 @@ import {
 import { useMentor } from '../../Context/mentorContext';
 import { useUser } from '../../Context/userContext';
 import { useStartUp } from '../../Context/startupContext';
+import { useToast } from '../../Context/toastContext';
 
 const MentorScreen = () => {
     const { user } = useUser()
@@ -28,6 +29,7 @@ const MentorScreen = () => {
     const [availableStartups, setAvailableStartups] = useState([]);
     const [selectedStartup, setSelectedStartup] = useState('');
     const [showStartupSelector, setShowStartupSelector] = useState(false);
+    const {showError} = useToast()
 
 
     useEffect(() => {
