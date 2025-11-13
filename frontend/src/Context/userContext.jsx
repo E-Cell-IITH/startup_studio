@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState} from "react";
 import { useToast } from "./toastContext";
 
 const UserContext = createContext();
@@ -115,35 +115,35 @@ export const UserProvider = ({ children }) => {
   async function startupRegistration(formData, user_id) {
     try {
 
-      const investorBaseAPICall = await fetch(
-        `
-        https://jhtnruktmtjqrfoiyrep.supabase.co/functions/v1/submit-and-evaluate-startup
-        `
-        , {
-          method: 'POST',
-          headers: { "Content-Type": "application/json" },
-          apiKey: INVESTOR_BASE_API_KEY,
-          Authorization: `Bearer ${INVESTOR_BASE_API_KEY}`,
-          body: JSON.stringify({
-            startup_name: formData.startup_name,
-            founder_email: user.email,
-            linkedin_profile_url: formData.linkedin_profile_url,
-            problem_statement: formData.problem_statement,
-            solution: formData.solution,
-            market_understanding: formData.market_understanding,
-            customer_understanding: formData.customer_understanding,
-            competitive_understanding: formData.competitive_understanding,
-            unique_selling_proposition: formData.usp,
-            technical_understanding: formData.tech_understanding,
-            vision: formData.vision,
-            campus_affiliation: formData.campus_startup,
-          })
-        })
+      // const investorBaseAPICall = await fetch(
+      //   `
+      //   https://jhtnruktmtjqrfoiyrep.supabase.co/functions/v1/submit-and-evaluate-startup
+      //   `
+      //   , {
+      //     method: 'POST',
+      //     headers: { "Content-Type": "application/json" },
+      //     apiKey: INVESTOR_BASE_API_KEY,
+      //     Authorization: `Bearer ${INVESTOR_BASE_API_KEY}`,
+      //     body: JSON.stringify({
+      //       startup_name: formData.startup_name,
+      //       founder_email: user.email,
+      //       linkedin_profile_url: formData.linkedin_profile_url,
+      //       problem_statement: formData.problem_statement,
+      //       solution: formData.solution,
+      //       market_understanding: formData.market_understanding,
+      //       customer_understanding: formData.customer_understanding,
+      //       competitive_understanding: formData.competitive_understanding,
+      //       unique_selling_proposition: formData.usp,
+      //       technical_understanding: formData.tech_understanding,
+      //       vision: formData.vision,
+      //       campus_affiliation: formData.campus_startup,
+      //     })
+      //   })
 
-      if (investorBaseAPICall.status != 201) {
-        showError('Startup Registration Failed')
-        return null
-      }
+      // if (investorBaseAPICall.status != 201) {
+      //   showError('Startup Registration Failed')
+      //   return null
+      // }
 
       const resStartUpRegister = await fetch(`${BACKEND_URL}/api/auth/startup-registration`, {
         method: "POST",
@@ -188,7 +188,7 @@ export const UserProvider = ({ children }) => {
     catch (e) {
       console.error("Startup reg error:", e);
       showError("Startup Registration Failed.", 5000);
-      throw err;
+      throw e;
     }
 
   }

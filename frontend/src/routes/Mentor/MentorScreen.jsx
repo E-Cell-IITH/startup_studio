@@ -71,10 +71,6 @@ const MentorScreen = () => {
         setSelectedMentor(null);
     };
 
-    const handleConnectClick = () => {
-        alert("Feature in progress")
-    }
-
     // Access check
     if (!(user?.startup_detail?.approval_status || user?.mentor_detail?.approval_status || user?.is_admin)) {
         return (
