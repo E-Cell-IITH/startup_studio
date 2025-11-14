@@ -23,7 +23,7 @@ jobs:
         with: 
           node-version: '22'
 
-      - name: Install Dependencies
+      - name: Build frontend
         run: |
           cd frontend 
           npm install 
@@ -32,11 +32,20 @@ jobs:
       - name: Set up go lang 
         uses: actions/setup-go@v6
 
-      - name: Install backend dependencies 
+      - name: Build backend 
         run: |
           cd backend 
           go mod tidy 
           go build 
+
+  deploy: 
+    runs-on: ubuntu-latest
+    needs: build 
+    steps: 
+      - name: Checkout code 
+        uses: actions/checkout@v5
+
+      - name: Set up SSH key for deployment
     
       
           
