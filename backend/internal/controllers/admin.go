@@ -18,7 +18,7 @@ func GetAllNonApprovedMentors(c *gin.Context) {
 	var dbEmail string
 
 	query := `SELECT is_admin, email FROM users WHERE id = $1;`
-	if err := config.DB.QueryRowContext(ctx, query, userID).Scan(&isAdmin, &dbEmail); err != nil {
+	if err := config.DB.QueryRow(ctx, query, userID).Scan(&isAdmin, &dbEmail); err != nil {
 		log.Println("user check error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
 		return
@@ -50,7 +50,7 @@ func ApproveAMentor(c *gin.Context) {
 	var isAdmin bool
 	var dbEmail string
 
-	if err := config.DB.QueryRowContext(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
+	if err := config.DB.QueryRow(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
 		return
@@ -82,7 +82,7 @@ func RejectMentor(c *gin.Context) {
 	var isAdmin bool
 	var dbEmail string
 
-	if err := config.DB.QueryRowContext(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
+	if err := config.DB.QueryRow(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
 		return
@@ -116,7 +116,7 @@ func GetAllNonApprovedStartups(c *gin.Context) {
 	var dbEmail string
 
 	query := `SELECT is_admin, email FROM users WHERE id = $1;`
-	if err := config.DB.QueryRowContext(ctx, query, userID).Scan(&isAdmin, &dbEmail); err != nil {
+	if err := config.DB.QueryRow(ctx, query, userID).Scan(&isAdmin, &dbEmail); err != nil {
 		log.Println("user check error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
 		return
@@ -150,7 +150,7 @@ func ApproveStartup(c *gin.Context) {
 	var isAdmin bool
 	var dbEmail string
 
-	if err := config.DB.QueryRowContext(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
+	if err := config.DB.QueryRow(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
 		return
@@ -183,7 +183,7 @@ func RejectStartup(c *gin.Context) {
 	var isAdmin bool
 	var dbEmail string
 
-	if err := config.DB.QueryRowContext(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
+	if err := config.DB.QueryRow(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
 		return
@@ -215,7 +215,7 @@ func ConnectMentorWithStartup(c *gin.Context) {
 	var isAdmin bool
 	var dbEmail string
 
-	if err := config.DB.QueryRowContext(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
+	if err := config.DB.QueryRow(ctx, `SELECT is_admin, email FROM users WHERE id = $1;`, adminUserID).Scan(&isAdmin, &dbEmail); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error."})
 		return

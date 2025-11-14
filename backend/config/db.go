@@ -1,27 +1,31 @@
 package config
 
 import (
-	"database/sql"
+	"context"
 	"log"
 	"os"
-
-	_ "github.com/lib/pq" // don't forget to add it. It doesn't be added automatically
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// connect with db
-var DB *sql.DB
+var DB *pgxpool.Pool
 
 func ConnectDatabase() {
-
 	DB_URL := os.Getenv("DB_URL")
-	if DB_URL == ""{
+	if DB_URL == "" {
 		log.Fatal("DB_URL not found")
 	}
-	db, errSql := sql.Open("postgres", DB_URL)
-	if errSql != nil {
-		log.Fatal("Connection to Failed")
-	} else {
-		DB = db
-		log.Println("Successfully connected to database!")
+
+	pool, err := pgxpool.New(context.Background(), DB_URL)
+	if err != nil {
+		log.Fatalf("Unable to create connection pool: %v", err)
 	}
+
+	// Test the connection
+	err = pool.Ping(context.Background())
+	if err != nil {
+		log.Fatalf("Unable to connect to database: %v", err)
+	}
+
+	DB = pool
+	log.Println("Successfully connected to database!")
 }

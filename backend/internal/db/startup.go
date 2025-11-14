@@ -21,7 +21,7 @@ func GetAllStartups(ctx context.Context) ([]models.StartupDetail, error) {
 		WHERE u.is_admin = false AND s.approval_status = $1
 	`
 
-	rows, err := config.DB.QueryContext(ctx, query, true)
+	rows, err := config.DB.Query(ctx, query, true)
 	if err != nil {
 		log.Println("error fetching startups:", err)
 		return nil, err
@@ -74,7 +74,7 @@ func GetMentorshipsForStartup(ctx context.Context, startupID string) ([]models.M
 		WHERE m.startup_id = $1
 	`
 
-	rows, err := config.DB.QueryContext(localCtx, query, startupID)
+	rows, err := config.DB.Query(localCtx, query, startupID)
 	if err != nil {
 		log.Println("error fetching mentorships for startup:", err)
 		return nil, err

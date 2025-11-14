@@ -22,7 +22,7 @@ func GetAllMentors(ctx context.Context) ([]models.MentorDetail, error) {
 		WHERE approval_status = $1;
 	`
 
-	rows, err := config.DB.QueryContext(ctx, query, true)
+	rows, err := config.DB.Query(ctx, query, true)
 	if err != nil {
 		log.Println("error fetching mentors:", err)
 		return nil, err
@@ -75,7 +75,7 @@ func GetAllMentorExpertise(ctx context.Context, mentorID string) ([]string, erro
 	defer cancel()
 
 	query := `SELECT expertise FROM mentor_expertise WHERE mentor_id = $1`
-	rows, err := config.DB.QueryContext(localCtx, query, mentorID)
+	rows, err := config.DB.Query(localCtx, query, mentorID)
 	if err != nil {
 		log.Println("error fetching mentor expertise:", err)
 		return nil, err
@@ -97,7 +97,7 @@ func GetAllMentorExperience(ctx context.Context, mentorID string) ([]string, err
 	defer cancel()
 
 	query := `SELECT experience FROM experience WHERE mentor_id = $1`
-	rows, err := config.DB.QueryContext(localCtx, query, mentorID)
+	rows, err := config.DB.Query(localCtx, query, mentorID)
 	if err != nil {
 		log.Println("error fetching mentor experience:", err)
 		return nil, err
@@ -126,7 +126,7 @@ func GetAllMentorMentorships(ctx context.Context, mentorID string) ([]models.Men
 		WHERE m.mentor_id = $1
 	`
 
-	rows, err := config.DB.QueryContext(localCtx, query, mentorID)
+	rows, err := config.DB.Query(localCtx, query, mentorID)
 	if err != nil {
 		log.Println("error fetching mentor mentorships:", err)
 		return nil, err

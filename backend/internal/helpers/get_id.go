@@ -23,7 +23,7 @@ func GetUserOrMentorId(c *gin.Context) {
 	`
 	ctx := c.Request.Context()
 
-	err := config.DB.QueryRowContext(ctx, queryStartUp, userId).Scan(&startupId)
+	err := config.DB.QueryRow(ctx, queryStartUp, userId).Scan(&startupId)
 
 
 	if err != nil && err != sql.ErrNoRows {
@@ -52,7 +52,7 @@ func GetUserOrMentorId(c *gin.Context) {
 		`
 	SELECT mentor_id from mentors WHERE user_id = $1
 	`
-	err = config.DB.QueryRowContext(ctx, queryMentor, userId).Scan(&mentorId)
+	err = config.DB.QueryRow(ctx, queryMentor, userId).Scan(&mentorId)
 	if err != nil && err != sql.ErrNoRows{
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{

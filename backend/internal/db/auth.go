@@ -17,7 +17,7 @@ func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 
 	var user models.User
 
-	err := config.DB.QueryRowContext(ctx, query, email).Scan(&user.UserID, &user.UserName, &user.IsRegistered)
+	err := config.DB.QueryRow(ctx, query, email).Scan(&user.UserID, &user.UserName, &user.IsRegistered)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, sql.ErrNoRows
@@ -45,8 +45,9 @@ func InsertUser(ctx context.Context, fullName, email string) (*models.User, erro
 
 	var user models.User
 
-	err = config.DB.QueryRowContext(ctx, query, uuidStr, fullName, email, false).
+	err = config.DB.QueryRow(ctx, query, uuidStr, fullName, email, false).
 		Scan(&user.UserID, &user.UserName, &user.IsRegistered)
+
 	if err != nil {
 		log.Printf("Failed to insert user: %v", err)
 		return nil, err
@@ -71,7 +72,7 @@ func InsertStartup(ctx context.Context, startup models.StartupRegistration) (str
 		($1, $2, $3, $4, $5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
 	`
 
-	_, err = config.DB.ExecContext(ctx, query,
+	_, err = config.DB.Exec(ctx, query,
 		uuidStr,
 		startup.UserID,
 		startup.StartupName,
@@ -105,7 +106,7 @@ func MarkUserAsRegistered(ctx context.Context, userID string) error {
 		WHERE id = $1;
 	`
 
-	_, err := config.DB.ExecContext(ctx, query, userID)
+	_, err := config.DB.Exec(ctx, query, userID)
 	if err != nil {
 		log.Printf("Error updating user registration: %v", err)
 		return err
@@ -118,7 +119,7 @@ func MarkUserAsRegistered(ctx context.Context, userID string) error {
 func GetUserNameByID(ctx context.Context, userID string) (string, error) {
 	query := `SELECT full_name FROM users WHERE id = $1`
 	var name string
-	err := config.DB.QueryRowContext(ctx, query, userID).Scan(&name)
+	err := config.DB.QueryRow(ctx, query, userID).Scan(&name)
 	if err != nil {
 		log.Printf("DB error in GetUserNameByID: %v", err)
 		return "", err
@@ -139,8 +140,9 @@ func InsertMentor(ctx context.Context, mentor models.Mentor) (string, error) {
 		(mentor_id, user_id, linked_in_url, phone_number, about, approval_status, mentor_name)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
+	var returnedUUID string
 
-	_, err = config.DB.ExecContext(ctx, query,
+	err = config.DB.QueryRow(ctx, query,
 		uuidStr,
 		mentor.UserID,
 		mentor.LinkedInURL,
@@ -148,7 +150,7 @@ func InsertMentor(ctx context.Context, mentor models.Mentor) (string, error) {
 		mentor.About,
 		false,
 		mentor.MentorName,
-	)
+	).Scan(&returnedUUID)
 	if err != nil {
 		log.Printf("Error inserting mentor: %v", err)
 		return "", err
@@ -161,7 +163,7 @@ func InsertMentor(ctx context.Context, mentor models.Mentor) (string, error) {
 func InsertMentorExperience(ctx context.Context, mentorID string, experiences []string) {
 	for _, exp := range experiences {
 		expID, _ := uuid.NewUUID()
-		_, err := config.DB.ExecContext(ctx, `
+		_, err := config.DB.Exec(ctx, `
 			INSERT INTO experience (experience_id, experience, mentor_id)
 			VALUES ($1, $2, $3)
 		`, expID, exp, mentorID)
@@ -174,7 +176,7 @@ func InsertMentorExperience(ctx context.Context, mentorID string, experiences []
 // InsertMentorExpertise inserts a list of expertise for a given mentor
 func InsertMentorExpertise(ctx context.Context, mentorID string, expertises []string) {
 	for _, exp := range expertises {
-		_, err := config.DB.ExecContext(ctx, `
+		_, err := config.DB.Exec(ctx, `
 			INSERT INTO mentor_expertise (mentor_id, expertise)
 			VALUES ($1, $2)
 		`, mentorID, exp)
@@ -192,7 +194,7 @@ func GetUserDetailsByEmail(ctx context.Context, email string) (*models.User, err
 	`
 
 	var user models.User
-	err := config.DB.QueryRowContext(ctx, query, email).
+	err := config.DB.QueryRow(ctx, query, email).
 		Scan(&user.UserID, &user.UserName, &user.UserEmail, &user.IsRegistered, &user.IsAdmin)
 	if err != nil {
 		return nil, err
@@ -209,7 +211,7 @@ func GetStartupByUserID(ctx context.Context, userID string) (*models.StartupResp
 
 	var startup models.StartupResponse
 	var startupID string
-	err := config.DB.QueryRowContext(ctx, query, userID).
+	err := config.DB.QueryRow(ctx, query, userID).
 		Scan(&startupID, &startup.StartupName, &startup.Website, &startup.Phone, &startup.ApprovalStatus, &startup.About)
 	if err != nil {
 		return nil, "", err
@@ -228,7 +230,7 @@ func GetStartupMentorships(ctx context.Context, startupID string) ([]models.Ment
 		WHERE m.startup_id = $1
 	`
 
-	rows, err := config.DB.QueryContext(ctx, query, startupID)
+	rows, err := config.DB.Query(ctx, query, startupID)
 	if err != nil {
 		log.Println("error fetching startup mentorships:", err)
 		return nil, err
@@ -260,7 +262,7 @@ func GetMentorByUserID(ctx context.Context, userID string) (*models.Mentor, stri
 
 	var mentor models.Mentor
 	var mentorID string
-	err := config.DB.QueryRowContext(ctx, query, userID).
+	err := config.DB.QueryRow(ctx, query, userID).
 		Scan(&mentorID, &mentor.Phone, &mentor.LinkedInURL, &mentor.ApprovalStatus, &mentor.About)
 	if err != nil {
 		return nil, "", err
@@ -271,7 +273,7 @@ func GetMentorByUserID(ctx context.Context, userID string) (*models.Mentor, stri
 
 func GetMentorExpertise(ctx context.Context, mentorID string) []string {
 	query := `SELECT expertise FROM mentor_expertise WHERE mentor_id = $1`
-	rows, err := config.DB.QueryContext(ctx, query, mentorID)
+	rows, err := config.DB.Query(ctx, query, mentorID)
 	if err != nil {
 		log.Println("error fetching expertise:", err)
 		return nil
@@ -292,7 +294,7 @@ func GetMentorExpertise(ctx context.Context, mentorID string) []string {
 
 func GetMentorExperience(ctx context.Context, mentorID string) []string {
 	query := `SELECT experience FROM experience WHERE mentor_id = $1`
-	rows, err := config.DB.QueryContext(ctx, query, mentorID)
+	rows, err := config.DB.Query(ctx, query, mentorID)
 	if err != nil {
 		log.Println("error fetching experience:", err)
 		return nil
@@ -318,7 +320,7 @@ func GetMentorMentorships(ctx context.Context, mentorID string) []models.Mentors
 		JOIN startups s ON m.startup_id = s.startup_id
 		WHERE m.mentor_id = $1
 	`
-	rows, err := config.DB.QueryContext(ctx, query, mentorID)
+	rows, err := config.DB.Query(ctx, query, mentorID)
 	if err != nil {
 		log.Println("error fetching mentor mentorships:", err)
 		return nil

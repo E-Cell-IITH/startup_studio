@@ -29,7 +29,7 @@ func GetAllNonApprovedMentors(ctx context.Context) ([]models.Mentor, error) {
 		GROUP BY m.mentor_id;
 	`
 
-	rows, err := config.DB.QueryContext(ctx, query)
+	rows, err := config.DB.Query(ctx, query)
 	if err != nil {
 		log.Println("error fetching non-approved mentors:", err)
 		return nil, err
@@ -68,13 +68,13 @@ func ApproveMentor(ctx context.Context, mentorUserID string) error {
 	var mentorID uuid.UUID
 	querySelect := `SELECT mentor_id FROM mentors WHERE user_id = $1`
 
-	if err := config.DB.QueryRowContext(ctx, querySelect, mentorUserID).Scan(&mentorID); err != nil {
+	if err := config.DB.QueryRow(ctx, querySelect, mentorUserID).Scan(&mentorID); err != nil {
 		log.Println("error finding mentor:", err)
 		return err
 	}
 
 	queryUpdate := `UPDATE mentors SET approval_status = TRUE WHERE mentor_id = $1`
-	if _, err := config.DB.ExecContext(ctx, queryUpdate, mentorID); err != nil {
+	if _, err := config.DB.Exec(ctx, queryUpdate, mentorID); err != nil {
 		log.Println("error updating mentor approval:", err)
 		return err
 	}
@@ -84,7 +84,7 @@ func ApproveMentor(ctx context.Context, mentorUserID string) error {
 
 func RejectMentor(ctx context.Context, mentorUserID string) error {
 	queryDelete := `DELETE FROM users WHERE id = $1`
-	if _, err := config.DB.ExecContext(ctx, queryDelete, mentorUserID); err != nil {
+	if _, err := config.DB.Exec(ctx, queryDelete, mentorUserID); err != nil {
 		log.Println("error deleting mentor user:", err)
 		return err
 	}
@@ -118,7 +118,7 @@ func GetAllNonApprovedStartups(ctx context.Context) ([]*models.StartupResponse, 
 
 	`
 
-	rows, err := config.DB.QueryContext(ctx, query, false)
+	rows, err := config.DB.Query(ctx, query, false)
 	if err != nil {
 		log.Println("error fetching startups:", err)
 		return nil, err
@@ -164,13 +164,13 @@ func ApproveStartup(ctx context.Context, startupUserid string) error {
 	var startupID uuid.UUID
 	querySelect := `SELECT startup_id FROM startups WHERE user_id = $1`
 
-	if err := config.DB.QueryRowContext(ctx, querySelect, startupUserid).Scan(&startupID); err != nil {
+	if err := config.DB.QueryRow(ctx, querySelect, startupUserid).Scan(&startupID); err != nil {
 		log.Println("error finding startup:", err)
 		return err
 	}
 
 	queryUpdate := `UPDATE startups SET approval_status = TRUE WHERE startup_id = $1`
-	if _, err := config.DB.ExecContext(ctx, queryUpdate, startupID); err != nil {
+	if _, err := config.DB.Exec(ctx, queryUpdate, startupID); err != nil {
 		log.Println("error updating startup approval:", err)
 		return err
 	}
@@ -180,7 +180,7 @@ func ApproveStartup(ctx context.Context, startupUserid string) error {
 
 func RejectStartup(ctx context.Context, startupUserid string) error {
 	queryDelete := `DELETE FROM users WHERE id = $1`
-	if _, err := config.DB.ExecContext(ctx, queryDelete, startupUserid); err != nil {
+	if _, err := config.DB.Exec(ctx, queryDelete, startupUserid); err != nil {
 		log.Println("error deleting startup user:", err)
 		return err
 	}
@@ -203,12 +203,12 @@ func ConnectMentorWithStartup(ctx context.Context, startupUserID string, mentorU
 
 	var startupID, mentorID string
 
-	if err := config.DB.QueryRowContext(ctx, queryStartupID, startupUserID).Scan(&startupID); err != nil {
+	if err := config.DB.QueryRow(ctx, queryStartupID, startupUserID).Scan(&startupID); err != nil {
 		log.Println("error fetching startup_id:", err)
 		return err
 	}
 
-	if err := config.DB.QueryRowContext(ctx, queryMentorID, mentorUserID).Scan(&mentorID); err != nil {
+	if err := config.DB.QueryRow(ctx, queryMentorID, mentorUserID).Scan(&mentorID); err != nil {
 		log.Println("error fetching mentor_id:", err)
 		return err
 	}
@@ -218,7 +218,7 @@ func ConnectMentorWithStartup(ctx context.Context, startupUserID string, mentorU
 		VALUES ($1, $2, $3)
 	`
 
-	if _, err := config.DB.ExecContext(ctx, queryConnect, mentorshipID, mentorID, startupID); err != nil {
+	if _, err := config.DB.Exec(ctx, queryConnect, mentorshipID, mentorID, startupID); err != nil {
 		log.Println("error inserting mentorship record:", err)
 		return err
 	}
