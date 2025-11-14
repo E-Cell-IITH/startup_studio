@@ -50,9 +50,19 @@ jobs:
           # Generate a deployment name based on the current date and time
           DEPLOYMENT_NAME="deployment-$(date +'%Y-%m-%d-%H%M%S')"
 
+          # SSH into the server
           ssh -o StrictHostKeyChecking=no azureuser@20.244.20.98 << EOF
-            # Navigate to the frontend directory and build it
+          # Ensure that nvm and Go are available in the SSH session
+          export PATH=\$PATH:/usr/local/go/bin  # Add Go to the PATH
+
+          # Ensure nvm is sourced properly (needed for Node.js installed via nvm)
+          export NVM_DIR="/home/azureuser/.nvm"
+          [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
+          nvm use 22  # Make sure to use Node v22 (or adjust to the correct version)
+
+          # Navigate to the frontend directory and build it
           cd ~/startup_studio/frontend
+          npm install
           npm run build
 
           # Attach to the frontend tmux session, stop it, and restart it
