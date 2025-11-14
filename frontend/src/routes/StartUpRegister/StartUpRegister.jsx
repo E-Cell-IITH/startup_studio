@@ -245,7 +245,7 @@ const StartupRegistration = () => {
               label="Contact Number"
               name="phone"
               type="tel"
-              placeholder="+91 XXXXX XXXXX"
+              placeholder="XXXXX XXXXX"
               formData={formData}
               handleInputChange={handleInputChange}
               isLoading={isLoading}
