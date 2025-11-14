@@ -1,13 +1,13 @@
 package helpers
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 
 	"github.com/E-Cell-IITH/startup_studio/config"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 func GetUserOrMentorId(c *gin.Context) {
@@ -26,7 +26,7 @@ func GetUserOrMentorId(c *gin.Context) {
 	err := config.DB.QueryRow(ctx, queryStartUp, userId).Scan(&startupId)
 
 
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil && err != pgx.ErrNoRows {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to fetch startup id",
@@ -53,7 +53,7 @@ func GetUserOrMentorId(c *gin.Context) {
 	SELECT mentor_id from mentors WHERE user_id = $1
 	`
 	err = config.DB.QueryRow(ctx, queryMentor, userId).Scan(&mentorId)
-	if err != nil && err != sql.ErrNoRows{
+	if err != nil && err != pgx.ErrNoRows{
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to fetch mentor id",

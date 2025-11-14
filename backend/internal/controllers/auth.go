@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"database/sql"
 	"errors"
 	"log"
 	"net/http"
@@ -11,6 +10,7 @@ import (
 	"github.com/E-Cell-IITH/startup_studio/internal/helpers"
 	"github.com/E-Cell-IITH/startup_studio/internal/models"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 	"google.golang.org/api/idtoken"
 )
 
@@ -49,7 +49,7 @@ func Login(c *gin.Context) {
 	// Fetch or insert user
 	user, err := db.GetUserByEmail(ctx, emailStr)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			user, err = db.InsertUser(ctx, fullName, emailStr)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
@@ -202,7 +202,7 @@ func GetUserDetails(c *gin.Context) {
 	// fetch user info
 	currUser, err := db.GetUserDetailsByEmail(ctx, email)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch user"})

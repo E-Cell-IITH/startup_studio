@@ -2,13 +2,13 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"log"
 
 	"github.com/E-Cell-IITH/startup_studio/config"
 	"github.com/E-Cell-IITH/startup_studio/internal/helpers"
 	"github.com/E-Cell-IITH/startup_studio/internal/models"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 // GetUserByEmail fetches an existing user by email.
@@ -19,8 +19,8 @@ func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 
 	err := config.DB.QueryRow(ctx, query, email).Scan(&user.UserID, &user.UserName, &user.IsRegistered)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, sql.ErrNoRows
+		if err == pgx.ErrNoRows {
+			return nil, pgx.ErrNoRows
 		}
 		log.Printf("DB error in GetUserByEmail: %v", err)
 		return nil, err
