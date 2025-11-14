@@ -38,11 +38,11 @@ jobs:
           go mod tidy 
           go build 
 
-  deploy: 
+  deploy:
     runs-on: ubuntu-latest
-    needs: build 
-    steps: 
-    - name: Checkout code 
+    needs: build
+    steps:
+    - name: Checkout code
       uses: actions/checkout@v5
 
     - name: Set up SSH key
@@ -50,13 +50,36 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
+        # Replace with your actual server's IP or domain
         ssh-keyscan -H 20.244.20.98 >> ~/.ssh/known_hosts
 
     - name: Deploy to server
       run: |
+        # Generate a deployment name based on the current date and time
+        DEPLOYMENT_NAME="deployment-$(date +'%Y-%m-%d-%H%M%S')"
+
         ssh -o StrictHostKeyChecking=no azureuser@20.244.20.98 << EOF
-          echo "Successfully SSH'd into the server!"
+          # Navigate to the frontend directory and build it
+          cd ~/startup_studio/frontend
+          npm run build
+
+          # Attach to the frontend tmux session, stop it, and restart it
+          tmux send-keys -t frontend C-c  # Stop the current process if running
+          tmux send-keys -t frontend "npm run start" C-m  # Start the new frontend process
+          tmux detach -s frontend  # Detach from the frontend session
+
+          # Now for the backend deployment
+          cd ~/startup_studio/backend
+          go build -o prod/$DEPLOYMENT_NAME .
+
+          # Attach to the backend tmux session, stop it, and restart it
+          tmux send-keys -t backend C-c  # Stop the current process if running
+          tmux send-keys -t backend "./prod/$DEPLOYMENT_NAME" C-m  # Start the new backend process
+          tmux detach -s backend  # Detach from the backend session
+
+          echo "Deployment completed successfully with name: $DEPLOYMENT_NAME"
         EOF
+
 
 
         
