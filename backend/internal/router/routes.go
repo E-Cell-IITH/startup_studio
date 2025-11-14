@@ -28,7 +28,7 @@ func SetUpRoutes(router *gin.Engine) {
 	auth.Use(middlewares.AuthMiddleware)
 	{
 		auth.GET("/getId/:userId", helpers.GetUserOrMentorId)
-		auth.POST("/startup-registration", controllers.StartupRegistration)
+		// auth.POST("/startup-registration", controllers.StartupRegistration)
 		auth.POST("/mentor-registration", controllers.MentorRegistration)
 		auth.GET("/me", controllers.GetUserDetails)
 	}
