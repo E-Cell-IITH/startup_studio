@@ -1,0 +1,43 @@
+name: Prod Deployment
+
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - closed
+    branches:
+    - main
+
+
+jobs: 
+  build: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout code 
+        uses: actions/checkout@v5
+
+      - name: Set up node js 
+        uses: actions/setup-node@v6
+        with: 
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cd frontend 
+          npm install 
+          npm run build
+
+      - name: Set up go lang 
+        uses: actions/setup-go@v6
+
+      - name: Install backend dependencies 
+        run: |
+          cd backend 
+          go mod tidy 
+          go build 
+    
+      
+          
+      
