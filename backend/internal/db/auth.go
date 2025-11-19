@@ -136,10 +136,12 @@ func InsertMentor(ctx context.Context, mentor models.Mentor) (string, error) {
 	}
 
 	query := `
-		INSERT INTO mentors
-		(mentor_id, user_id, linked_in_url, phone_number, about, approval_status, mentor_name)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+    INSERT INTO mentors
+    (mentor_id, user_id, linked_in_url, phone_number, about, approval_status, mentor_name)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING mentor_id
 	`
+
 	var returnedUUID string
 
 	err = config.DB.QueryRow(ctx, query,
