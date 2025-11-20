@@ -106,9 +106,6 @@ const StartupRegistration = () => {
     campus_startup: "no",
   });
 
-  useEffect(() => {
-    alert("Entries for this cohort have been closed");
-  },[]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -119,25 +116,25 @@ const StartupRegistration = () => {
   };
 
   const handleSubmit = async (e) => {
-    // e.preventDefault();
-    // setIsLoading(true);
-    // setLoadingMessage("Uploading your startup profile...");
-    // if (!user || !user.user_id) {
-    //   console.error("User is not logegd in");
-    //   alert("Please log in to register your startup");
-    //   return;
-    // }
-    // try {
-    //   const result = await startupRegistration(formData, user.user_id);
-    //   if (result != null) {
-    //     setLoadingMessage("Registration successful! Redirecting...");
-    //     setTimeout(() => navigate("/mentors"), 1000);
-    //   }
-    // } catch (err) {
-    //   console.error("Registration error:", err);
-    //   setIsLoading(false);
-    //   setLoadingMessage("");
-    // }
+    e.preventDefault();
+    setIsLoading(true);
+    setLoadingMessage("Uploading your startup profile...");
+    if (!user || !user.user_id) {
+      console.error("User is not logegd in");
+      alert("Please log in to register your startup");
+      return;
+    }
+    try {
+      const result = await startupRegistration(formData, user.user_id);
+      if (result != null) {
+        setLoadingMessage("Registration successful! Redirecting...");
+        setTimeout(() => navigate("/mentors"), 1000);
+      }
+    } catch (err) {
+      console.error("Registration error:", err);
+      setIsLoading(false);
+      setLoadingMessage("");
+    }
   };
 
   const PulsingDots = () => (
